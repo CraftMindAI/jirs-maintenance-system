@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { onAuthStateChanged, signOut, type User } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 import Icon from "@/components/ui/Icon";
 
 const NAV_LINKS = [
@@ -13,14 +15,27 @@ const NAV_LINKS = [
 
 export default function Header() {
   const pathname = usePathname();
+  const router = useRouter();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 30);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => setUser(currentUser));
+    return unsubscribe;
+  }, []);
+
+  const handleLogout = async () => {
+    setMobileMenuOpen(false);
+    await signOut(auth);
+    router.push("/");
+  };
 
   const isActive = (href: string) => {
     return pathname === href;
@@ -64,18 +79,29 @@ export default function Header() {
             </div>
           </div>
           <div className="hidden md:flex items-center gap-6">
-            <Link
-              href="/login"
-              className="font-label-md text-primary dark:text-white font-bold hover:opacity-80 transition-opacity"
-            >
-              Login
-            </Link>
-            <Link
-              href="/signup"
-              className="bg-primary hover:bg-primary-container text-white px-6 py-2.5 rounded-xl font-label-md font-bold hover:shadow-xl hover:shadow-primary/20 transition-all scale-100 active:scale-95"
-            >
-              Sign Up
-            </Link>
+            {user ? (
+              <button
+                onClick={handleLogout}
+                className="bg-primary hover:bg-primary-container text-white px-6 py-2.5 rounded-xl font-label-md font-bold hover:shadow-xl hover:shadow-primary/20 transition-all scale-100 active:scale-95 cursor-pointer"
+              >
+                Logout
+              </button>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="font-label-md text-primary dark:text-white font-bold hover:opacity-80 transition-opacity"
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/signup"
+                  className="bg-primary hover:bg-primary-container text-white px-6 py-2.5 rounded-xl font-label-md font-bold hover:shadow-xl hover:shadow-primary/20 transition-all scale-100 active:scale-95"
+                >
+                  Sign Up
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile hamburger menu toggle */}
@@ -110,20 +136,31 @@ export default function Header() {
             })}
           </div>
           <div className="flex flex-col gap-4 mt-auto">
-            <Link
-              href="/login"
-              onClick={() => setMobileMenuOpen(false)}
-              className="w-full py-4 text-center font-bold text-lg text-primary border border-primary/20 rounded-xl hover:bg-surface-container-low transition-colors"
-            >
-              Login
-            </Link>
-            <Link
-              href="/signup"
-              onClick={() => setMobileMenuOpen(false)}
-              className="w-full py-4 text-center font-bold text-lg text-white bg-primary rounded-xl hover:opacity-95 transition-opacity"
-            >
-              Sign Up
-            </Link>
+            {user ? (
+              <button
+                onClick={handleLogout}
+                className="w-full py-4 text-center font-bold text-lg text-white bg-primary rounded-xl hover:opacity-95 transition-opacity cursor-pointer"
+              >
+                Logout
+              </button>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full py-4 text-center font-bold text-lg text-primary border border-primary/20 rounded-xl hover:bg-surface-container-low transition-colors"
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/signup"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full py-4 text-center font-bold text-lg text-white bg-primary rounded-xl hover:opacity-95 transition-opacity"
+                >
+                  Sign Up
+                </Link>
+              </>
+            )}
           </div>
         </div>
       )}
