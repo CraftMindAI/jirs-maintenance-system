@@ -127,6 +127,32 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* Lumina Prism Engine Theme Classes */
+.glass {
+  background: rgba(23, 31, 51, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.vibrant-gradient {
+  background: linear-gradient(135deg, #8083ff 0%, #494bd6 100%);
+}
+
+.vibrant-shadow {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #464554;
+  border-radius: 10px;
+}
+
 .glass-card {
   background: rgba(255, 255, 255, 0.55);
   backdrop-filter: blur(16px);
@@ -137,7 +163,7 @@ body {
 
 @media (prefers-color-scheme: dark) {
   .glass-card {
-    background: rgba(13, 30, 51, 0.6);
+    background: rgba(23, 31, 51, 0.7);
     border: 1px solid rgba(255, 255, 255, 0.05);
     box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.4);
   }
@@ -216,32 +242,6 @@ body {
   animation: pulse-slow 8s ease-in-out infinite;
 }
 
-/* Navbar Link Underline Animation */
-.nav-link-underline {
-  position: relative;
-}
-.nav-link-underline::after {
-  content: '';
-  position: absolute;
-  width: 100%;
-  transform: scaleX(0);
-  height: 2px;
-  bottom: -4px;
-  left: 0;
-  background-color: var(--color-primary);
-  transform-origin: bottom right;
-  transition: transform 0.25s ease-out;
-}
-.nav-link-underline:hover::after {
-  transform: scaleX(1);
-  transform-origin: bottom left;
-}
-@media (prefers-color-scheme: dark) {
-  .nav-link-underline::after {
-    background-color: var(--color-primary);
-  }
-}
-
 /* Accent Card Details */
 .card-shine {
   position: relative;
@@ -265,4 +265,3 @@ body {
 .card-shine:hover::before {
   left: 150%;
 }
-
