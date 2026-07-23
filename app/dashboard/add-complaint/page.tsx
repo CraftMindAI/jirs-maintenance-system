@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Icon from "@/components/ui/Icon";
 import { Complaint } from "../page";
+import { auth } from "@/lib/firebase";
 
 export default function AddComplaint() {
   const router = useRouter();
@@ -106,6 +107,7 @@ export default function AddComplaint() {
         status: "Pending",
         date: new Date().toISOString().split("T")[0],
         description,
+        submittedBy: auth.currentUser?.email || undefined,
       };
 
       // Store in local storage

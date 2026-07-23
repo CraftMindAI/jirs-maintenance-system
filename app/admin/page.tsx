@@ -17,10 +17,10 @@ export default function AdminDashboardHome() {
   }, []);
 
   const getStats = () => {
-    const total = complaints.length || 12; // fallback if empty
-    const active = complaints.filter(c => c.status !== "Completed" && c.status !== "Verified").length || 4;
-    const progress = complaints.filter(c => c.status === "In Progress").length || 3;
-    const closed = complaints.filter(c => c.status === "Completed" || c.status === "Verified").length || 8;
+    const total = complaints.length;
+    const active = complaints.filter(c => c.status !== "Completed" && c.status !== "Verified").length;
+    const progress = complaints.filter(c => c.status === "In Progress").length;
+    const closed = complaints.filter(c => c.status === "Completed" || c.status === "Verified").length;
     return { total, active, progress, closed };
   };
 
@@ -168,60 +168,59 @@ export default function AdminDashboardHome() {
         </div>
 
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl overflow-hidden shadow-sm">
-          {/* Table view */}
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="border-b border-slate-100 dark:border-slate-800 text-xs font-black uppercase text-slate-400 bg-slate-50/50 dark:bg-slate-900/50">
-                  <th className="py-4 px-6">Ticket ID</th>
-                  <th className="py-4 px-6">Complaint Type</th>
-                  <th className="py-4 px-6">Department</th>
-                  <th className="py-4 px-6">Priority</th>
-                  <th className="py-4 px-6">Status</th>
-                  <th className="py-4 px-6">Date</th>
-                  <th className="py-4 px-6 text-right">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800 font-semibold text-sm">
-                {(complaints.length > 0 ? complaints.slice(0, 3) : [
-                  { id: "TKT-1082", category: "Plumbing", location: "Block B, Room 108", priority: "High", status: "In Progress", date: "2026-07-22" },
-                  { id: "TKT-2094", category: "Electrical", location: "Physics Lab 3", priority: "High", status: "Completed", date: "2026-07-20" },
-                  { id: "TKT-0931", category: "Carpentry", location: "Central Library", priority: "Medium", status: "Assigned", date: "2026-07-21" },
-                ]).map((item) => (
-                  <tr key={item.id} className="hover:bg-slate-50/40 dark:hover:bg-slate-800/30 transition-colors">
-                    <td className="py-4 px-6 text-slate-800 dark:text-slate-100 font-bold">{item.id}</td>
-                    <td className="py-4 px-6 text-slate-500 dark:text-slate-400">{item.category}</td>
-                    <td className="py-4 px-6 text-slate-500 dark:text-slate-400 text-xs">{item.location}</td>
-                    <td className="py-4 px-6">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${
-                        item.priority === "High" ? "bg-red-500/10 text-red-500 border border-red-500/20" :
-                        item.priority === "Medium" ? "bg-amber-500/10 text-amber-500 border border-amber-500/20" :
-                        "bg-slate-500/10 text-slate-500 border border-slate-500/20"
-                      }`}>
-                        {item.priority}
-                      </span>
-                    </td>
-                    <td className="py-4 px-6">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider ${
-                        item.status === "Pending" ? "bg-amber-500/15 text-amber-500 border border-amber-500/30" :
-                        item.status === "Assigned" ? "bg-indigo-500/15 text-indigo-500 border border-indigo-500/30" :
-                        item.status === "In Progress" ? "bg-sky-500/15 text-sky-500 border border-sky-500/30" :
-                        "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
-                      }`}>
-                        {item.status}
-                      </span>
-                    </td>
-                    <td className="py-4 px-6 text-slate-400 dark:text-slate-500 text-xs">{item.date}</td>
-                    <td className="py-4 px-6 text-right">
-                      <Link href={`/admin/view-complaints?ticket=${item.id}`} className="text-primary dark:text-blue-300 hover:text-opacity-80 transition-opacity">
-                        View
-                      </Link>
-                    </td>
+          {complaints.length > 0 ? (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-slate-100 dark:border-slate-800 text-xs font-black uppercase text-slate-400 bg-slate-50/50 dark:bg-slate-900/50">
+                    <th className="py-4 px-6">Ticket ID</th>
+                    <th className="py-4 px-6">Complaint Type</th>
+                    <th className="py-4 px-6">Department</th>
+                    <th className="py-4 px-6">Priority</th>
+                    <th className="py-4 px-6">Status</th>
+                    <th className="py-4 px-6">Date</th>
+                    <th className="py-4 px-6 text-right">Action</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800 font-semibold text-sm">
+                  {complaints.slice(0, 3).map((item) => (
+                    <tr key={item.id} className="hover:bg-slate-50/40 dark:hover:bg-slate-800/30 transition-colors">
+                      <td className="py-4 px-6 text-slate-800 dark:text-slate-100 font-bold">{item.id}</td>
+                      <td className="py-4 px-6 text-slate-500 dark:text-slate-400">{item.category}</td>
+                      <td className="py-4 px-6 text-slate-500 dark:text-slate-400 text-xs">{item.location}</td>
+                      <td className="py-4 px-6">
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${
+                          item.priority === "High" ? "bg-red-500/10 text-red-500 border border-red-500/20" :
+                          item.priority === "Medium" ? "bg-amber-500/10 text-amber-500 border border-amber-500/20" :
+                          "bg-slate-500/10 text-slate-500 border border-slate-500/20"
+                        }`}>
+                          {item.priority}
+                        </span>
+                      </td>
+                      <td className="py-4 px-6">
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider ${
+                          item.status === "Pending" ? "bg-amber-500/15 text-amber-500 border border-amber-500/30" :
+                          item.status === "Assigned" ? "bg-indigo-500/15 text-indigo-500 border border-indigo-500/30" :
+                          item.status === "In Progress" ? "bg-sky-500/15 text-sky-500 border border-sky-500/30" :
+                          "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+                        }`}>
+                          {item.status}
+                        </span>
+                      </td>
+                      <td className="py-4 px-6 text-slate-400 dark:text-slate-500 text-xs">{item.date}</td>
+                      <td className="py-4 px-6 text-right">
+                        <Link href={`/admin/view-complaints?ticket=${item.id}`} className="text-primary dark:text-blue-300 hover:text-opacity-80 transition-opacity">
+                          View
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <p className="text-sm text-slate-400 dark:text-slate-500 text-center py-16">No complaints logged yet.</p>
+          )}
         </div>
       </div>
       

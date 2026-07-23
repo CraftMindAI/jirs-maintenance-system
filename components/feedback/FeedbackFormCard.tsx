@@ -5,17 +5,52 @@ import Icon from "@/components/ui/Icon";
 
 const MAX_LENGTH = 500;
 
+export const FEEDBACK_UPDATED_EVENT = "jmms-feedback-updated";
+
+type StoredFeedback = {
+  name: string;
+  role: string;
+  date: string;
+  initials: string;
+  message: string;
+  verified: boolean;
+};
+
 export default function FeedbackFormCard() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState<"idle" | "submitting" | "submitted">("idle");
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (!name.trim() || !email.trim() || !message.trim()) return;
+
     setStatus("submitting");
     setTimeout(() => {
+      const newFeedback: StoredFeedback = {
+        name,
+        role: email.includes("staff") || email.includes("faculty") ? "Staff member" : "Student",
+        date: "Just now",
+        initials: name
+          .split(" ")
+          .map((n) => n[0])
+          .join("")
+          .toUpperCase()
+          .slice(0, 2),
+        verified: false,
+        message,
+      };
+
+      const stored = localStorage.getItem("jmms_feedback");
+      const list: StoredFeedback[] = stored ? JSON.parse(stored) : [];
+      localStorage.setItem("jmms_feedback", JSON.stringify([newFeedback, ...list]));
+      window.dispatchEvent(new Event(FEEDBACK_UPDATED_EVENT));
+
       setStatus("submitted");
+      setName("");
+      setEmail("");
       setMessage("");
-      event.currentTarget.reset();
       setTimeout(() => setStatus("idle"), 1500);
     }, 1200);
   };
@@ -41,6 +76,8 @@ export default function FeedbackFormCard() {
             type="text"
             required
             placeholder="John Doe"
+            value={name}
+            onChange={(event) => setName(event.target.value)}
             className="w-full rounded-xl p-3.5 font-body-md premium-input dark:text-slate-100"
           />
         </div>
@@ -53,6 +90,8 @@ export default function FeedbackFormCard() {
             type="email"
             required
             placeholder="john@jirs.ac.in"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
             className="w-full rounded-xl p-3.5 font-body-md premium-input dark:text-slate-100"
           />
         </div>
@@ -96,7 +135,7 @@ export default function FeedbackFormCard() {
                 : "Submit Feedback"}
           </button>
           <button
-            type="reset"
+            type="button"
             onClick={() => setMessage("")}
             className="px-6 border border-outline-variant dark:border-white/10 text-on-surface-variant dark:text-slate-300 font-bold rounded-xl hover:bg-surface-container-high dark:hover:bg-slate-800 transition-colors text-sm cursor-pointer"
           >

@@ -2,9 +2,13 @@
 
 import { useEffect, useState, FormEvent } from "react";
 import Icon from "@/components/ui/Icon";
+import { auth, db } from "@/lib/firebase";
+import { onAuthStateChanged } from "firebase/auth";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 
 export default function DashboardSettings() {
   const [activeTab, setActiveTab] = useState<"profile" | "security">("profile");
+  const [uid, setUid] = useState<string | null>(null);
 
   // Profile states
   const [fullName, setFullName] = useState("Siddharth Roy");
@@ -14,6 +18,11 @@ export default function DashboardSettings() {
   const [role, setRole] = useState("Student");
   const [profileSaving, setProfileSaving] = useState(false);
   const [profileSaved, setProfileSaved] = useState(false);
+  const [originalProfile, setOriginalProfile] = useState({
+    name: "Siddharth Roy",
+    phone: "+91 99001 12233",
+    department: "Hostel Block B",
+  });
 
   // Security states
   const [currentPassword, setCurrentPassword] = useState("");
@@ -26,29 +35,76 @@ export default function DashboardSettings() {
   const [securityUpdated, setSecurityUpdated] = useState(false);
   const [passwordError, setPasswordError] = useState<string | null>(null);
 
-  // Sync profile details on mount
+  // Sync profile details on mount — real signed-in user first, local overrides as fallback
   useEffect(() => {
-    const stored = localStorage.getItem("jmms_profile");
-    if (stored) {
-      const data = JSON.parse(stored);
-      setFullName(data.name || "Siddharth Roy");
-      setEmail(data.email || "siddharth.r@jirs.ac.in");
-      setPhone(data.phone || "+91 99001 12233");
-      setDepartment(data.department || "Hostel Block B");
-      setRole(data.role || "Student");
-    }
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        setUid(user.uid);
+        try {
+          const docSnap = await getDoc(doc(db, "users", user.uid));
+          const data = docSnap.exists() ? docSnap.data() : null;
+          const name = data?.name || user.displayName || "";
+          const phone = data?.phone || "";
+          const department = data?.department || "";
+          setFullName(name);
+          setEmail(user.email || "");
+          setPhone(phone);
+          setDepartment(department);
+          setRole(data?.role || "Student");
+          setOriginalProfile({ name, phone, department });
+          return;
+        } catch (error) {
+          console.error("Error fetching user doc:", error);
+        }
+      }
+
+      // Guest / offline fallback
+      const stored = localStorage.getItem("jmms_profile");
+      const fallback = stored
+        ? JSON.parse(stored)
+        : {
+            name: "Siddharth Roy",
+            email: "siddharth.r@jirs.ac.in",
+            phone: "+91 99001 12233",
+            department: "Hostel Block B",
+            role: "Student",
+          };
+      setFullName(fallback.name);
+      setEmail(fallback.email);
+      setPhone(fallback.phone);
+      setDepartment(fallback.department);
+      setRole(fallback.role);
+      setOriginalProfile({
+        name: fallback.name,
+        phone: fallback.phone,
+        department: fallback.department,
+      });
+    });
+
+    return () => unsubscribe();
   }, []);
 
   const handleSaveProfile = (e: FormEvent) => {
     e.preventDefault();
     setProfileSaving(true);
 
-    setTimeout(() => {
+    setTimeout(async () => {
       const updated = { name: fullName, email, phone, department, role };
       localStorage.setItem("jmms_profile", JSON.stringify(updated));
-      
-      // Also update the global custom event so the layout shell can re-render if it listens, 
-      // or at least updates the localStorage values.
+
+      if (uid) {
+        try {
+          await setDoc(
+            doc(db, "users", uid),
+            { name: fullName, phone, department },
+            { merge: true },
+          );
+        } catch (error) {
+          console.error("Error updating user doc:", error);
+        }
+      }
+
+      setOriginalProfile({ name: fullName, phone, department });
       setProfileSaving(false);
       setProfileSaved(true);
       setTimeout(() => setProfileSaved(false), 2000);
@@ -185,9 +241,9 @@ export default function DashboardSettings() {
                       id="email"
                       type="email"
                       required
+                      disabled
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="w-full rounded-xl px-4 py-3 font-body-md text-sm premium-input dark:text-slate-100"
+                      className="w-full rounded-xl px-4 py-3 font-body-md text-sm border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-400 outline-none"
                     />
                   </div>
                 </div>
@@ -245,10 +301,9 @@ export default function DashboardSettings() {
                   <button
                     type="button"
                     onClick={() => {
-                      setFullName("Siddharth Roy");
-                      setEmail("siddharth.r@jirs.ac.in");
-                      setPhone("+91 99001 12233");
-                      setDepartment("Hostel Block B");
+                      setFullName(originalProfile.name);
+                      setPhone(originalProfile.phone);
+                      setDepartment(originalProfile.department);
                     }}
                     className="px-6 border border-slate-200 dark:border-slate-800 text-slate-500 font-bold rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-xs cursor-pointer"
                   >

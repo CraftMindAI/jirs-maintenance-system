@@ -4,13 +4,56 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Icon from "@/components/ui/Icon";
 import { Complaint } from "../page";
+import { auth, db } from "@/lib/firebase";
+import { onAuthStateChanged } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
+
+const ADMIN_ROLES = ["admin"];
 
 export default function MyComplaints() {
   const [complaints, setComplaints] = useState<Complaint[]>([]);
+  const [userProfile, setUserProfile] = useState<{
+    name: string;
+    role: string;
+    email: string;
+  } | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [priorityFilter, setPriorityFilter] = useState("all");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
+
+  // Sync auth state (role + email decide which complaints this user may see)
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        try {
+          const docSnap = await getDoc(doc(db, "users", user.uid));
+          const data = docSnap.exists() ? docSnap.data() : null;
+          setUserProfile({
+            name: data?.name || user.displayName || "User",
+            role: data?.role || "Student",
+            email: user.email || "",
+          });
+        } catch (error) {
+          console.error("Error fetching user doc:", error);
+          setUserProfile({
+            name: "Siddharth Roy",
+            role: "Student",
+            email: "siddharth.r@jirs.ac.in",
+          });
+        }
+      } else {
+        // Mock fallback for presentation
+        setUserProfile({
+          name: "Siddharth Roy",
+          role: "Student",
+          email: "siddharth.r@jirs.ac.in",
+        });
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   // Sync state
   useEffect(() => {
@@ -19,6 +62,14 @@ export default function MyComplaints() {
       setComplaints(JSON.parse(stored));
     }
   }, []);
+
+  const isAdmin =
+    !!userProfile && ADMIN_ROLES.includes(userProfile.role.toLowerCase());
+
+  // Admins see every complaint; students/staff only see the ones they raised
+  const visibleComplaints = isAdmin
+    ? complaints
+    : complaints.filter((c) => c.submittedBy === userProfile?.email);
 
   const saveComplaints = (updatedList: Complaint[]) => {
     localStorage.setItem("jmms_complaints", JSON.stringify(updatedList));
@@ -50,7 +101,7 @@ export default function MyComplaints() {
     }
   };
 
-  const filteredComplaints = complaints
+  const filteredComplaints = visibleComplaints
     .filter((c) => {
       const matchQuery =
         c.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -71,10 +122,12 @@ export default function MyComplaints() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="font-display text-3xl font-black text-slate-800 dark:text-slate-100 tracking-tight">
-            My Maintenance Tickets
+            {isAdmin ? "All Maintenance Tickets" : "My Maintenance Tickets"}
           </h1>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Manage, filter, and track status logs for all raised complaints.
+            {isAdmin
+              ? "Manage, filter, and track status logs for every complaint raised campus-wide."
+              : "Manage, filter, and track status logs for the complaints you've raised."}
           </p>
         </div>
         <Link
