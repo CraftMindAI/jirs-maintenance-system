@@ -220,9 +220,9 @@ export default function AddComplaint() {
                 onChange={(e) => setPriority(e.target.value)}
                 className="w-full rounded-xl px-4 py-3.5 font-body-md premium-input dark:text-slate-100 dark:bg-slate-950 cursor-pointer"
               >
-                <option value="High">High (Immediate resolving)</option>
-                <option value="Medium">Medium (Standard priority)</option>
-                <option value="Low">Low (Scheduled maintenance)</option>
+                <option value="High">High Priority</option>
+                <option value="Medium">Medium Priority</option>
+                <option value="Low">Low Priority</option>
               </select>
             </div>
 

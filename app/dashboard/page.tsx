@@ -12,7 +12,7 @@ export type Complaint = {
   category: string;
   location: string;
   priority: "High" | "Medium" | "Low";
-  status: "Pending" | "Assigned" | "In Progress" | "Completed" | "Verified";
+  status: "Pending" | "Approved" | "Assigned" | "In Progress" | "Completed" | "Verified";
   date: string;
   description: string;
   technicianName?: string;
@@ -20,6 +20,7 @@ export type Complaint = {
   assignedDate?: string;
   remarks?: string;
   submittedBy?: string;
+  userId?: string;
 };
 
 const ADMIN_ROLES = ["admin"];

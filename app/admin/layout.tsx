@@ -106,8 +106,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           {children}
         </main>
 
-        {/* Lumina Admin Footer */}
-        <Footer />
+       
 
       </div>
 

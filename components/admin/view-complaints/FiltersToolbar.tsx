@@ -1,5 +1,37 @@
 import Icon from "@/components/ui/Icon";
+import Dropdown from "@/components/ui/Dropdown";
 import { TECHNICIANS } from "./constants";
+
+const STATUS_OPTIONS = [
+  { value: "all", label: "All Statuses" },
+  { value: "Pending", label: "Pending" },
+  { value: "Approved", label: "Approved" },
+  { value: "Assigned", label: "Assigned" },
+  { value: "In Progress", label: "In Progress" },
+  { value: "Completed", label: "Completed" },
+];
+
+const PRIORITY_OPTIONS = [
+  { value: "all", label: "All Priorities" },
+  { value: "High", label: "High" },
+  { value: "Medium", label: "Medium" },
+  { value: "Low", label: "Low" },
+];
+
+const DEPT_OPTIONS = [
+  { value: "all", label: "All Departments" },
+  { value: "Electrical", label: "Electrical" },
+  { value: "Plumbing", label: "Plumbing" },
+  { value: "Civil", label: "Civil" },
+  { value: "Carpentry", label: "Carpentry" },
+  { value: "HVAC", label: "HVAC" },
+];
+
+const TECH_OPTIONS = [
+  { value: "all", label: "All Technicians" },
+  { value: "unassigned", label: "Unassigned" },
+  ...TECHNICIANS.map((t) => ({ value: t.name, label: t.name })),
+];
 
 export default function FiltersToolbar({
   searchQuery,
@@ -38,54 +70,10 @@ export default function FiltersToolbar({
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className="w-full px-4 py-3 rounded-xl border border-[#464554]/20 bg-[#131b2e] text-[#dae2fd] text-xs font-bold outline-none cursor-pointer"
-        >
-          <option value="all">All Statuses</option>
-          <option value="Pending">Pending</option>
-          <option value="Assigned">Assigned</option>
-          <option value="In Progress">In Progress</option>
-          <option value="Completed">Completed</option>
-          <option value="Verified">Verified</option>
-        </select>
-
-        <select
-          value={priorityFilter}
-          onChange={(e) => setPriorityFilter(e.target.value)}
-          className="w-full px-4 py-3 rounded-xl border border-[#464554]/20 bg-[#131b2e] text-[#dae2fd] text-xs font-bold outline-none cursor-pointer"
-        >
-          <option value="all">All Priorities</option>
-          <option value="High">High</option>
-          <option value="Medium">Medium</option>
-          <option value="Low">Low</option>
-        </select>
-
-        <select
-          value={deptFilter}
-          onChange={(e) => setDeptFilter(e.target.value)}
-          className="w-full px-4 py-3 rounded-xl border border-[#464554]/20 bg-[#131b2e] text-[#dae2fd] text-xs font-bold outline-none cursor-pointer"
-        >
-          <option value="all">All Departments</option>
-          <option value="Electrical">Electrical</option>
-          <option value="Plumbing">Plumbing</option>
-          <option value="Civil">Civil</option>
-          <option value="Carpentry">Carpentry</option>
-          <option value="HVAC">HVAC</option>
-        </select>
-
-        <select
-          value={techFilter}
-          onChange={(e) => setTechFilter(e.target.value)}
-          className="w-full px-4 py-3 rounded-xl border border-[#464554]/20 bg-[#131b2e] text-[#dae2fd] text-xs font-bold outline-none cursor-pointer"
-        >
-          <option value="all">All Technicians</option>
-          <option value="unassigned">Unassigned</option>
-          {TECHNICIANS.map((t) => (
-            <option key={t.name} value={t.name}>{t.name}</option>
-          ))}
-        </select>
+        <Dropdown options={STATUS_OPTIONS} value={statusFilter} onChange={setStatusFilter} />
+        <Dropdown options={PRIORITY_OPTIONS} value={priorityFilter} onChange={setPriorityFilter} />
+        <Dropdown options={DEPT_OPTIONS} value={deptFilter} onChange={setDeptFilter} />
+        <Dropdown options={TECH_OPTIONS} value={techFilter} onChange={setTechFilter} />
       </div>
     </div>
   );
