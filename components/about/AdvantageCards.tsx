@@ -36,10 +36,10 @@ export default function AdvantageCards() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {ADVANTAGES.map((advantage, i) => (
             <Reveal key={advantage.title} delay={i * 100}>
-              <div className="p-8 rounded-2xl border border-outline-variant/30 hover:shadow-xl transition-all bg-surface h-full">
-                <Icon name={advantage.icon} className="text-primary text-3xl mb-4" />
-                <h4 className="font-headline text-lg font-semibold mb-2">{advantage.title}</h4>
-                <p className="text-on-surface-variant">{advantage.description}</p>
+              <div className="glass-card glass-card-hover p-8 rounded-3xl h-full card-shine">
+                <Icon name={advantage.icon} className="text-primary dark:text-blue-300 text-4xl mb-6 block" />
+                <h4 className="font-headline text-xl font-bold text-primary dark:text-slate-100 mb-3 tracking-tight">{advantage.title}</h4>
+                <p className="text-on-surface-variant dark:text-slate-400 text-sm leading-relaxed">{advantage.description}</p>
               </div>
             </Reveal>
           ))}

@@ -25,22 +25,25 @@ const TESTIMONIALS = [
 
 export default function Testimonials() {
   return (
-    <section id="feedback" className="py-24 md:py-32 bg-primary text-white">
-      <Container>
-        <SectionHeading eyebrow="Testimonials" title="Community Feedback" light />
+    <section id="feedback" className="py-24 md:py-32 bg-slate-950 text-white relative overflow-hidden">
+      {/* Glow elements */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
+
+      <Container className="relative z-10">
+        <SectionHeading eyebrow="Success Stories" title="Trusted by Campus Administrators" light />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
           {TESTIMONIALS.map((testimonial, i) => (
             <Reveal key={testimonial.name} delay={i * 100}>
-              <div className="bg-white/5 p-10 rounded-3xl backdrop-blur-md border border-white/10 relative overflow-hidden h-full">
+              <div className="bg-slate-900/40 backdrop-blur-md border border-white/5 p-10 rounded-3xl relative overflow-hidden h-full flex flex-col justify-between hover:border-white/10 transition-all duration-300 shadow-2xl">
                 <Icon
                   name="format_quote"
-                  className="absolute -top-4 -right-4 text-9xl opacity-5"
+                  className="absolute -top-4 -right-4 text-9xl opacity-5 text-primary"
                 />
-                <p className="text-lg mb-10 leading-relaxed italic font-body-lg opacity-90">
+                <p className="text-lg mb-10 leading-relaxed italic font-body-lg text-slate-300 relative z-10">
                   &ldquo;{testimonial.quote}&rdquo;
                 </p>
-                <div className="flex items-center gap-5">
-                  <div className="w-14 h-14 rounded-full border-2 border-tertiary-fixed overflow-hidden relative">
+                <div className="flex items-center gap-5 relative z-10 mt-auto border-t border-white/5 pt-6">
+                  <div className="w-14 h-14 rounded-full border-2 border-primary/40 overflow-hidden relative shrink-0">
                     <Image
                       src={testimonial.avatar}
                       alt={`Portrait of ${testimonial.name}`}
@@ -49,8 +52,8 @@ export default function Testimonials() {
                     />
                   </div>
                   <div>
-                    <div className="font-bold text-xl">{testimonial.name}</div>
-                    <div className="text-sm text-tertiary-fixed/70">{testimonial.role}</div>
+                    <div className="font-bold text-xl text-white">{testimonial.name}</div>
+                    <div className="text-sm text-primary">{testimonial.role}</div>
                   </div>
                 </div>
               </div>

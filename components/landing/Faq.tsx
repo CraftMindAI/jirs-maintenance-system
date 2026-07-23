@@ -29,17 +29,17 @@ export default function Faq() {
           {FAQS.map((faq, i) => (
             <details
               key={faq.question}
-              className="group bg-white border border-outline-variant/30 rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+              className="group bg-white dark:bg-slate-900/40 border border-outline-variant/20 dark:border-white/5 rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300"
               open={i === 0}
             >
-              <summary className="flex justify-between items-center p-8 cursor-pointer font-bold text-primary hover:bg-surface-container-low transition-colors list-none">
-                <span className="text-xl">{faq.question}</span>
+              <summary className="flex justify-between items-center p-6 md:p-8 cursor-pointer font-bold text-primary dark:text-slate-100 hover:bg-surface-container-low/50 dark:hover:bg-slate-800/30 transition-colors list-none">
+                <span className="text-lg md:text-xl tracking-tight">{faq.question}</span>
                 <Icon
                   name="expand_more"
-                  className="group-open:rotate-180 transition-transform text-secondary-container"
+                  className="group-open:rotate-180 transition-transform text-primary dark:text-blue-300"
                 />
               </summary>
-              <div className="p-8 pt-0 text-on-surface-variant leading-relaxed border-t border-outline-variant/10 font-body-lg">
+              <div className="p-6 md:p-8 pt-0 text-on-surface-variant dark:text-slate-400 leading-relaxed border-t border-outline-variant/10 dark:border-white/5 text-sm md:text-base">
                 {faq.answer}
               </div>
             </details>

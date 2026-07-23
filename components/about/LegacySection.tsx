@@ -32,26 +32,26 @@ export default function LegacySection() {
           </Reveal>
           <Reveal delay={100}>
             <div>
-              <h2 className="font-headline text-3xl md:text-4xl font-semibold text-primary mb-6">
+              <h2 className="font-headline text-3xl md:text-4xl font-bold text-primary dark:text-slate-100 mb-6 tracking-tight">
                 Legacy of Excellence
               </h2>
-              <p className="font-body-lg text-on-surface-variant mb-6">
+              <p className="font-body-lg text-on-surface-variant dark:text-slate-400 mb-6 text-base leading-relaxed">
                 Founded in 1999 by the visionary educationist Dr. Chenraj
                 Roychand, JAIN International Residential School (JIRS) has
                 grown into one of India&rsquo;s premier residential schools.
                 Our 350-acre sprawling campus is more than just a school;
                 it&rsquo;s a global learning hub.
               </p>
-              <p className="font-body-lg text-on-surface-variant mb-8">
+              <p className="font-body-lg text-on-surface-variant dark:text-slate-400 mb-8 text-base leading-relaxed">
                 Guided by an international curriculum and traditional Indian
                 values, we foster an environment where 700+ learners from
                 across the globe grow into ethical leaders of tomorrow.
               </p>
               <div className="grid grid-cols-2 gap-4">
                 {STATS.map((stat) => (
-                  <div key={stat.label} className="p-4 bg-surface-container rounded-xl">
-                    <span className="block text-primary font-bold text-xl">{stat.value}</span>
-                    <span className="text-label-md opacity-70">{stat.label}</span>
+                  <div key={stat.label} className="p-5 bg-surface-container dark:bg-slate-900/60 border border-outline-variant/10 dark:border-white/5 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+                    <span className="block text-primary dark:text-blue-300 font-black text-2xl">{stat.value}</span>
+                    <span className="text-xs uppercase tracking-wider text-on-surface-variant dark:text-slate-400 font-semibold mt-1 block">{stat.label}</span>
                   </div>
                 ))}
               </div>

@@ -42,16 +42,16 @@ export default function WhyChooseUs() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {REASONS.map((reason, i) => (
             <Reveal key={reason.title} delay={i * 100}>
-              <div className="glass-card p-12 rounded-3xl shadow-xl shadow-primary/5 hover:-translate-y-2 transition-all duration-300 group h-full">
+              <div className="glass-card glass-card-hover p-10 rounded-3xl group h-full card-shine">
                 <div
-                  className={`w-16 h-16 ${reason.iconBg} rounded-2xl flex items-center justify-center mb-8 ${reason.hoverBg} group-hover:text-white transition-colors`}
+                  className={`w-16 h-16 ${reason.iconBg} dark:bg-slate-900/50 rounded-2xl flex items-center justify-center mb-8 text-primary dark:text-blue-300 group-hover:bg-primary group-hover:text-white transition-colors duration-300 shadow-inner`}
                 >
-                  <Icon name={reason.icon} className="text-4xl" />
+                  <Icon name={reason.icon} className="text-3xl" />
                 </div>
-                <h3 className="font-headline text-2xl font-semibold text-primary mb-4">
+                <h3 className="font-headline text-2xl font-bold text-primary dark:text-slate-100 mb-4 tracking-tight">
                   {reason.title}
                 </h3>
-                <p className="text-on-surface-variant leading-relaxed opacity-80">
+                <p className="text-on-surface-variant dark:text-slate-400 leading-relaxed text-sm">
                   {reason.description}
                 </p>
               </div>
