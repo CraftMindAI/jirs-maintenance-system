@@ -6,7 +6,7 @@ import Icon from "@/components/ui/Icon";
 import Dropdown from "@/components/ui/Dropdown";
 import { Complaint } from "@/app/dashboard/page";
 import { auth, db } from "@/lib/firebase";
-import { addDoc, collection, Bytes, serverTimestamp } from "firebase/firestore";
+import { addDoc, collection, doc, updateDoc, Bytes, serverTimestamp } from "firebase/firestore";
 
 const MAX_IMAGES = 2;
 
@@ -26,7 +26,29 @@ const PRIORITY_OPTIONS = [
   { value: "Low", label: "Low Priority" },
 ];
 
-export default function ComplaintForm() {
+export type ExistingComplaintImage = {
+  bytes: Bytes;
+  type: string;
+  name: string;
+  preview: string;
+};
+
+export default function ComplaintForm({
+  mode = "create",
+  complaintId,
+  initialData,
+  initialImages,
+}: {
+  mode?: "create" | "edit";
+  complaintId?: string;
+  initialData?: {
+    category: string;
+    location: string;
+    priority: string;
+    description: string;
+  };
+  initialImages?: ExistingComplaintImage[];
+}) {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -34,12 +56,13 @@ export default function ComplaintForm() {
   const [error, setError] = useState<string | null>(null);
 
   // Form states
-  const [category, setCategory] = useState("");
-  const [location, setLocation] = useState("");
-  const [priority, setPriority] = useState("Medium");
-  const [description, setDescription] = useState("");
+  const [category, setCategory] = useState(initialData?.category || "");
+  const [location, setLocation] = useState(initialData?.location || "");
+  const [priority, setPriority] = useState(initialData?.priority || "Medium");
+  const [description, setDescription] = useState(initialData?.description || "");
 
-  // Image upload states (up to MAX_IMAGES)
+  // Image upload states (up to MAX_IMAGES, counting existing + newly attached)
+  const [existingImages, setExistingImages] = useState<ExistingComplaintImage[]>(initialImages || []);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [dragActive, setDragActive] = useState(false);
@@ -72,7 +95,7 @@ export default function ComplaintForm() {
 
   const processFiles = (files: File[]) => {
     const validTypes = ["image/jpeg", "image/png", "image/jpg"];
-    const remainingSlots = MAX_IMAGES - imageFiles.length;
+    const remainingSlots = MAX_IMAGES - existingImages.length - imageFiles.length;
 
     if (remainingSlots <= 0) {
       setError(`You can attach up to ${MAX_IMAGES} images.`);
@@ -106,9 +129,17 @@ export default function ComplaintForm() {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  const fileToBytes = async (file: File): Promise<Bytes> => {
+  const removeExistingImage = (index: number) => {
+    setExistingImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const fileToImageRecord = async (file: File) => {
     const buffer = await file.arrayBuffer();
-    return Bytes.fromUint8Array(new Uint8Array(buffer));
+    return {
+      data: Bytes.fromUint8Array(new Uint8Array(buffer)),
+      type: file.type,
+      name: file.name,
+    };
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -137,7 +168,27 @@ export default function ComplaintForm() {
     setSubmitting(true);
 
     try {
-      const images = await Promise.all(imageFiles.map(fileToBytes));
+      const newImages = await Promise.all(imageFiles.map(fileToImageRecord));
+
+      if (mode === "edit" && complaintId) {
+        const keptImages = existingImages.map(({ bytes, type, name }) => ({ data: bytes, type, name }));
+
+        await updateDoc(doc(db, "complaints", complaintId), {
+          category,
+          location,
+          priority,
+          description,
+          images: [...keptImages, ...newImages],
+        });
+
+        setSubmitting(false);
+        setSuccess(true);
+
+        setTimeout(() => {
+          router.push("/admin/view-complaints");
+        }, 1500);
+        return;
+      }
 
       await addDoc(collection(db, "complaints"), {
         userId: user.uid,
@@ -146,7 +197,7 @@ export default function ComplaintForm() {
         priority,
         description,
         status: "Pending",
-        images,
+        images: newImages,
         createdAt: serverTimestamp(),
       });
 
@@ -175,15 +226,16 @@ export default function ComplaintForm() {
     } catch (err) {
       console.error("Error submitting complaint:", err);
       setSubmitting(false);
-      setError("Failed to submit complaint. Please try again.");
+      setError(mode === "edit" ? "Failed to update complaint. Please try again." : "Failed to submit complaint. Please try again.");
     }
   };
 
   const handleReset = () => {
-    setCategory("");
-    setLocation("");
-    setPriority("Medium");
-    setDescription("");
+    setCategory(initialData?.category || "");
+    setLocation(initialData?.location || "");
+    setPriority(initialData?.priority || "Medium");
+    setDescription(initialData?.description || "");
+    setExistingImages(initialImages || []);
     setImageFiles([]);
     setImagePreviews([]);
     if (fileInputRef.current) fileInputRef.current.value = "";
@@ -198,9 +250,13 @@ export default function ComplaintForm() {
           <div className="w-16 h-16 bg-[#4edea3]/10 rounded-full flex items-center justify-center text-[#4edea3]">
             <Icon name="check_circle" className="text-5xl animate-bounce" />
           </div>
-          <h3 className="font-display text-2xl font-bold text-[#dae2fd]">Ticket Published!</h3>
+          <h3 className="font-display text-2xl font-bold text-[#dae2fd]">
+            {mode === "edit" ? "Ticket Updated!" : "Ticket Published!"}
+          </h3>
           <p className="text-xs text-[#908fa0] max-w-sm">
-            Complaint logged successfully. Redirecting you to incidents view...
+            {mode === "edit"
+              ? "Complaint updated successfully. Redirecting you to incidents view..."
+              : "Complaint logged successfully. Redirecting you to incidents view..."}
           </p>
         </div>
       )}
@@ -208,7 +264,9 @@ export default function ComplaintForm() {
       {submitting && (
         <div className="absolute inset-0 z-40 bg-[#171f33]/80 flex flex-col items-center justify-center space-y-4 animate-fade-in">
           <div className="w-10 h-10 border-4 border-[#464554]/30 border-t-[#8083ff] rounded-full animate-spin" />
-          <p className="text-xs font-bold text-[#dae2fd]">Publishing incident details...</p>
+          <p className="text-xs font-bold text-[#dae2fd]">
+            {mode === "edit" ? "Updating incident details..." : "Publishing incident details..."}
+          </p>
         </div>
       )}
 
@@ -281,11 +339,31 @@ export default function ComplaintForm() {
             Attach Reference Image (Optional, up to {MAX_IMAGES})
           </span>
 
-          {imagePreviews.length > 0 && (
+          {(existingImages.length > 0 || imagePreviews.length > 0) && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {existingImages.map((image, index) => (
+                <div
+                  key={`existing-${index}`}
+                  className="border border-[#464554]/20 rounded-3xl p-4 flex items-center justify-between gap-4 bg-[#131b2e]"
+                >
+                  <div className="flex items-center gap-4 min-w-0">
+                    <div className="w-14 h-14 rounded-2xl overflow-hidden relative shrink-0 border border-[#464554]/20">
+                      <img src={image.preview} alt="Preview" className="w-full h-full object-cover" />
+                    </div>
+                    <p className="text-xs font-bold text-[#dae2fd] truncate">{image.name}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => removeExistingImage(index)}
+                    className="text-red-400 p-2 hover:bg-red-500/10 rounded-xl cursor-pointer shrink-0"
+                  >
+                    <Icon name="delete" className="text-xl" />
+                  </button>
+                </div>
+              ))}
               {imagePreviews.map((preview, index) => (
                 <div
-                  key={index}
+                  key={`new-${index}`}
                   className="border border-[#464554]/20 rounded-3xl p-4 flex items-center justify-between gap-4 bg-[#131b2e]"
                 >
                   <div className="flex items-center gap-4 min-w-0">
@@ -308,7 +386,7 @@ export default function ComplaintForm() {
             </div>
           )}
 
-          {imagePreviews.length < MAX_IMAGES && (
+          {existingImages.length + imagePreviews.length < MAX_IMAGES && (
             <div
               onDragEnter={handleDrag}
               onDragOver={handleDrag}
@@ -335,7 +413,7 @@ export default function ComplaintForm() {
               <div>
                 <p className="font-bold text-xs text-[#dae2fd]">Drag & drop photo or click to upload</p>
                 <p className="text-[10px] text-[#908fa0] mt-1">
-                  Supported: JPG, PNG, JPEG · {MAX_IMAGES - imagePreviews.length} slot(s) left
+                  Supported: JPG, PNG, JPEG · {MAX_IMAGES - existingImages.length - imagePreviews.length} slot(s) left
                 </p>
               </div>
             </div>
@@ -347,7 +425,7 @@ export default function ComplaintForm() {
             type="submit"
             className="flex-1 py-4 vibrant-gradient text-white rounded-xl font-bold shadow-lg shadow-[#8083ff]/20 text-xs cursor-pointer flex items-center justify-center gap-2 uppercase tracking-wider"
           >
-            <Icon name="send" /> Submit Incident
+            <Icon name={mode === "edit" ? "save" : "send"} /> {mode === "edit" ? "Update Ticket" : "Submit Incident"}
           </button>
           <button
             type="button"

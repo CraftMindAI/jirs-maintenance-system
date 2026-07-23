@@ -161,10 +161,10 @@ export default function MyComplaints() {
           >
             <option value="all">All Statuses</option>
             <option value="Pending">Pending</option>
+            <option value="Verified">Verified</option>
             <option value="Assigned">Assigned</option>
             <option value="In Progress">In Progress</option>
             <option value="Completed">Completed</option>
-            <option value="Verified">Verified</option>
           </select>
         </div>
         {/* Priority Filter */}

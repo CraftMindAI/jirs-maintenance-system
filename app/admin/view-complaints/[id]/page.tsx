@@ -1,0 +1,130 @@
+"use client";
+
+import { use, useState } from "react";
+import BackToComplaintsButton from "@/components/admin/view-complaints/detail/BackToComplaintsButton";
+import PostedByCard from "@/components/admin/view-complaints/detail/PostedByCard";
+import ComplaintInfoCard from "@/components/admin/view-complaints/detail/ComplaintInfoCard";
+import ComplaintTrackDetailsCard from "@/components/admin/view-complaints/detail/ComplaintTrackDetailsCard";
+import ComplaintImagesCard from "@/components/admin/view-complaints/detail/ComplaintImagesCard";
+import ComplaintDetailSkeleton from "@/components/admin/view-complaints/detail/ComplaintDetailSkeleton";
+import Toast from "@/components/admin/view-complaints/Toast";
+import { useComplaintDetail } from "@/hooks/useComplaintDetail";
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import Icon from "@/components/ui/Icon";
+
+export default function ViewComplaintDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const resolvedParams = use(params);
+  const complaintId = resolvedParams.id;
+
+  const { complaint, poster, images, loading, error } = useComplaintDetail(complaintId);
+
+  const [statusOverride, setStatusOverride] = useState<string | null>(null);
+  const [updatingStatus, setUpdatingStatus] = useState<boolean>(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const currentComplaint = complaint
+    ? {
+        ...complaint,
+        status: (statusOverride || complaint.status) as any,
+      }
+    : null;
+
+  const triggerToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 3000);
+  };
+
+  const handleApprove = async () => {
+    if (!complaintId) return;
+    try {
+      setUpdatingStatus(true);
+      await updateDoc(doc(db, "complaints", complaintId), {
+        status: "Approved",
+      });
+      setStatusOverride("Approved");
+      triggerToast("Complaint ticket approved successfully.");
+    } catch (err) {
+      console.error("Error approving complaint:", err);
+      triggerToast("Failed to approve complaint.");
+    } finally {
+      setUpdatingStatus(false);
+    }
+  };
+
+  const handleReject = async () => {
+    if (!complaintId) return;
+    try {
+      setUpdatingStatus(true);
+      await updateDoc(doc(db, "complaints", complaintId), {
+        status: "Rejected",
+      });
+      setStatusOverride("Rejected");
+      triggerToast("Complaint ticket marked as Rejected.");
+    } catch (err) {
+      console.error("Error rejecting complaint:", err);
+      triggerToast("Failed to reject complaint.");
+    } finally {
+      setUpdatingStatus(false);
+    }
+  };
+
+  return (
+    <div className="space-y-6 pb-12">
+      <title>{`Complaint #${complaintId} | JMMS Admin`}</title>
+
+      {/* Toast popup */}
+      {toastMessage && <Toast message={toastMessage} />}
+
+      {/* Top Header Row with Transparent Back Button */}
+      <div className="flex items-center justify-between">
+        <BackToComplaintsButton />
+        <span className="text-xs font-mono text-[#908fa0]">
+          Ticket Details Module
+        </span>
+      </div>
+
+      {loading ? (
+        <ComplaintDetailSkeleton />
+      ) : error || !currentComplaint ? (
+        <div className="bg-[#171f33] border border-[#ff516a]/20 rounded-3xl p-12 text-center shadow-sm space-y-4">
+          <div className="w-16 h-16 bg-[#ff516a]/10 rounded-full flex items-center justify-center text-[#ff516a] mx-auto">
+            <Icon name="error_outline" className="text-4xl" />
+          </div>
+          <h2 className="font-display text-xl font-bold text-[#dae2fd]">
+            {error || "Complaint Not Found"}
+          </h2>
+          <p className="text-xs text-[#908fa0]">
+            The requested ticket details could not be retrieved from the database.
+          </p>
+          <div className="pt-2">
+            <BackToComplaintsButton />
+          </div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Main Info Section */}
+          <div className="lg:col-span-2 space-y-6">
+            <ComplaintInfoCard
+              complaint={currentComplaint}
+              onApprove={handleApprove}
+              onReject={handleReject}
+              updatingStatus={updatingStatus}
+            />
+            <ComplaintTrackDetailsCard complaint={currentComplaint} />
+          </div>
+
+          {/* Sidebar Modules: Posted By & Images */}
+          <div className="space-y-6">
+            <PostedByCard poster={poster} />
+            <ComplaintImagesCard images={images} />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

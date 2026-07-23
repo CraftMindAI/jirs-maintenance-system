@@ -3,7 +3,7 @@
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Complaint } from "../../dashboard/page";
-import { TECHNICIANS } from "@/components/admin/view-complaints/constants";
+import { TechnicianOption } from "@/components/admin/view-complaints/constants";
 import PageHeader from "@/components/admin/view-complaints/PageHeader";
 import Toast from "@/components/admin/view-complaints/Toast";
 import FiltersToolbar from "@/components/admin/view-complaints/FiltersToolbar";
@@ -11,12 +11,34 @@ import ComplaintsTable from "@/components/admin/view-complaints/ComplaintsTable"
 import AssignTechnicianModal from "@/components/admin/view-complaints/AssignTechnicianModal";
 import ComplaintDetailModal from "@/components/admin/view-complaints/ComplaintDetailModal";
 import DeleteTicketModal from "@/components/admin/view-complaints/DeleteTicketModal";
+import UpdateProgressModal from "@/components/admin/view-complaints/UpdateProgressModal";
+import { auth, db } from "@/lib/firebase";
+import { onAuthStateChanged } from "firebase/auth";
+import {
+  collection,
+  query,
+  where,
+  onSnapshot,
+  doc,
+  updateDoc,
+  deleteDoc,
+  getDoc,
+  getDocs,
+  Timestamp,
+} from "firebase/firestore";
+
+const ADMIN_ROLES = ["admin", "super admin"];
+const TECHNICIAN_ROLES = ["technician"];
 
 function ViewComplaintsContent() {
   const searchParams = useSearchParams();
   const ticketParam = searchParams.get("ticket");
 
   const [complaints, setComplaints] = useState<Complaint[]>([]);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isTechnician, setIsTechnician] = useState(false);
+  const [adminProfile, setAdminProfile] = useState<{ name: string; email: string; phone: string } | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [priorityFilter, setPriorityFilter] = useState("all");
@@ -26,17 +48,98 @@ function ViewComplaintsContent() {
   // Modals / Overlays
   const [selectedComplaintId, setSelectedComplaintId] = useState<string | null>(null);
   const [assigningTicketId, setAssigningTicketId] = useState<string | null>(null);
-  const [selectedTechnician, setSelectedTechnician] = useState("");
+  const [selectedTechnicianId, setSelectedTechnicianId] = useState("");
+  const [technicians, setTechnicians] = useState<TechnicianOption[]>([]);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
+  const [updatingComplaintId, setUpdatingComplaintId] = useState<string | null>(null);
   const [showToast, setShowToast] = useState<string | null>(null);
 
-  // Sync state
+  // Resolve signed-in user + role (role decides which complaints are fetched and which actions are available)
   useEffect(() => {
-    const stored = localStorage.getItem("jmms_complaints");
-    if (stored) {
-      setComplaints(JSON.parse(stored));
-    }
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        setCurrentUserId(null);
+        setIsAdmin(false);
+        setIsTechnician(false);
+        return;
+      }
+      setCurrentUserId(user.uid);
+      try {
+        const docSnap = await getDoc(doc(db, "users", user.uid));
+        const data = docSnap.exists() ? docSnap.data() : null;
+        const role = data?.role || "";
+        setIsAdmin(ADMIN_ROLES.includes(role.toLowerCase()));
+        setIsTechnician(TECHNICIAN_ROLES.includes(role.toLowerCase()));
+        setAdminProfile({
+          name: data?.name || user.displayName || "Administrator",
+          email: user.email || "",
+          phone: data?.phone || "",
+        });
+      } catch (error) {
+        console.error("Error fetching user role:", error);
+        setIsAdmin(false);
+        setIsTechnician(false);
+      }
+    });
+
+    return () => unsubscribe();
   }, []);
+
+  // Fetch technician accounts for the Assign Technician dropdown (admin-only feature)
+  useEffect(() => {
+    if (!isAdmin) return;
+
+    const fetchTechnicians = async () => {
+      try {
+        const snapshot = await getDocs(query(collection(db, "users"), where("role", "==", "Technician")));
+        setTechnicians(
+          snapshot.docs.map((d) => ({
+            id: d.id,
+            name: d.data().name || d.data().email || "Unnamed Technician",
+            phone: d.data().phone || "",
+            email: d.data().email || "",
+          })),
+        );
+      } catch (error) {
+        console.error("Error fetching technicians:", error);
+      }
+    };
+
+    fetchTechnicians();
+  }, [isAdmin]);
+
+  // Fetch complaints from Firestore: admins/technicians see every ticket, everyone else sees only their own
+  useEffect(() => {
+    if (!currentUserId) return;
+
+    const complaintsQuery = isAdmin || isTechnician
+      ? collection(db, "complaints")
+      : query(collection(db, "complaints"), where("userId", "==", currentUserId));
+
+    const unsubscribe = onSnapshot(complaintsQuery, (snapshot) => {
+      const list: Complaint[] = snapshot.docs.map((d) => {
+        const data = d.data();
+        const createdAt = data.createdAt as Timestamp | undefined;
+        return {
+          id: d.id,
+          category: data.category,
+          location: data.location,
+          priority: data.priority,
+          status: data.status,
+          date: createdAt ? createdAt.toDate().toISOString().split("T")[0] : "",
+          description: data.description,
+          technicianName: data.technicianName,
+          technicianPhone: data.technicianPhone,
+          assignedDate: data.assignedDate,
+          remarks: data.remarks,
+          userId: data.userId,
+        };
+      });
+      setComplaints(list);
+    });
+
+    return () => unsubscribe();
+  }, [currentUserId, isAdmin, isTechnician]);
 
   useEffect(() => {
     if (ticketParam) {
@@ -44,45 +147,88 @@ function ViewComplaintsContent() {
     }
   }, [ticketParam]);
 
-  const saveComplaints = (updatedList: Complaint[]) => {
-    localStorage.setItem("jmms_complaints", JSON.stringify(updatedList));
-    setComplaints(updatedList);
-  };
-
-  const handleApproveAndAssign = (ticketId: string) => {
+  const handleOpenAssign = (ticketId: string) => {
     setAssigningTicketId(ticketId);
-    setSelectedTechnician("");
+    setSelectedTechnicianId("");
   };
 
-  const confirmAssignment = () => {
-    if (!assigningTicketId || !selectedTechnician) return;
+  const handleApprove = async (id: string) => {
+    try {
+      await updateDoc(doc(db, "complaints", id), { status: "Approved" });
+      triggerToast("Complaint approved.");
+    } catch (error) {
+      console.error("Error approving complaint:", error);
+      triggerToast("Failed to approve complaint.");
+    }
+  };
 
-    const selectedTechObj = TECHNICIANS.find(t => t.name === selectedTechnician);
+  const confirmAssignment = async () => {
+    if (!assigningTicketId || !selectedTechnicianId) return;
 
-    const updated = complaints.map((c) => {
-      if (c.id === assigningTicketId) {
-        return {
-          ...c,
-          status: "Assigned" as const,
-          technicianName: selectedTechnician,
-          technicianPhone: selectedTechObj?.phone || "",
-          assignedDate: new Date().toISOString().split("T")[0],
-          remarks: `Assigned to ${selectedTechObj?.dept} maintenance division.`,
-        };
+    const selectedTechObj = technicians.find(t => t.id === selectedTechnicianId);
+    if (!selectedTechObj) return;
+
+    const ticket = complaints.find((c) => c.id === assigningTicketId);
+
+    try {
+      await updateDoc(doc(db, "complaints", assigningTicketId), {
+        status: "Assigned",
+        technicianId: selectedTechObj.id,
+        technicianName: selectedTechObj.name,
+        technicianPhone: selectedTechObj.phone || "",
+        assignedDate: new Date().toISOString().split("T")[0],
+        remarks: `Assigned to ${selectedTechObj.name}.`,
+      });
+      setAssigningTicketId(null);
+      triggerToast("Technician assigned successfully!");
+
+      if (selectedTechObj.email && ticket) {
+        fetch("/api/notify-technician", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            technicianName: selectedTechObj.name,
+            technicianEmail: selectedTechObj.email,
+            ticketId: assigningTicketId,
+            category: ticket.category,
+            location: ticket.location,
+            priority: ticket.priority,
+            description: ticket.description,
+            adminName: adminProfile?.name || "Administrator",
+            adminEmail: adminProfile?.email || "",
+            adminPhone: adminProfile?.phone || "",
+          }),
+        }).catch((error) => console.error("Error notifying technician:", error));
       }
-      return c;
-    });
-
-    saveComplaints(updated);
-    setAssigningTicketId(null);
-    triggerToast("Technician assigned successfully!");
+    } catch (error) {
+      console.error("Error assigning technician:", error);
+      triggerToast("Failed to assign technician.");
+    }
   };
 
-  const handleDelete = (id: string) => {
-    const updated = complaints.filter((c) => c.id !== id);
-    saveComplaints(updated);
-    setShowDeleteConfirm(null);
-    triggerToast("Ticket removed from system.");
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteDoc(doc(db, "complaints", id));
+      setShowDeleteConfirm(null);
+      triggerToast("Ticket removed from system.");
+    } catch (error) {
+      console.error("Error deleting complaint:", error);
+      triggerToast("Failed to delete ticket.");
+    }
+  };
+
+  const handleUpdateProgress = async (id: string, nextStatus: "In Progress" | "Completed", remarks: string) => {
+    try {
+      await updateDoc(doc(db, "complaints", id), {
+        status: nextStatus,
+        ...(remarks.trim() ? { remarks: remarks.trim() } : {}),
+      });
+      setUpdatingComplaintId(null);
+      triggerToast(`Ticket marked as ${nextStatus}.`);
+    } catch (error) {
+      console.error("Error updating ticket progress:", error);
+      triggerToast("Failed to update ticket progress.");
+    }
   };
 
   const triggerToast = (msg: string) => {
@@ -108,6 +254,8 @@ function ViewComplaintsContent() {
   });
 
   const detailedComplaint = complaints.find((c) => c.id === selectedComplaintId) || null;
+  const updatingComplaint = complaints.find((c) => c.id === updatingComplaintId) || null;
+  const assigningComplaint = complaints.find((c) => c.id === assigningTicketId) || null;
 
   return (
     <div className="space-y-8 pb-12">
@@ -136,17 +284,24 @@ function ViewComplaintsContent() {
       {/* 3. TICKET DATA GRID */}
       <ComplaintsTable
         complaints={filteredComplaints}
+        currentUserId={currentUserId}
+        isAdmin={isAdmin}
+        isTechnician={isTechnician}
         onView={setSelectedComplaintId}
-        onAssign={handleApproveAndAssign}
+        onApprove={handleApprove}
+        onAssign={handleOpenAssign}
         onDeleteRequest={setShowDeleteConfirm}
+        onUpdateRequest={setUpdatingComplaintId}
       />
 
       {/* 4. MODAL: TECHNICIAN ALLOCATION */}
       {assigningTicketId && (
         <AssignTechnicianModal
           ticketId={assigningTicketId}
-          selectedTechnician={selectedTechnician}
-          setSelectedTechnician={setSelectedTechnician}
+          isReassign={assigningComplaint?.status === "Assigned"}
+          technicians={technicians}
+          selectedTechnicianId={selectedTechnicianId}
+          setSelectedTechnicianId={setSelectedTechnicianId}
           onCancel={() => setAssigningTicketId(null)}
           onConfirm={confirmAssignment}
         />
@@ -166,6 +321,15 @@ function ViewComplaintsContent() {
           ticketId={showDeleteConfirm}
           onCancel={() => setShowDeleteConfirm(null)}
           onConfirm={() => handleDelete(showDeleteConfirm)}
+        />
+      )}
+
+      {/* 7. MODAL: TECHNICIAN PROGRESS UPDATE */}
+      {updatingComplaint && (
+        <UpdateProgressModal
+          complaint={updatingComplaint}
+          onCancel={() => setUpdatingComplaintId(null)}
+          onConfirm={(nextStatus, remarks) => handleUpdateProgress(updatingComplaint.id, nextStatus, remarks)}
         />
       )}
     </div>
