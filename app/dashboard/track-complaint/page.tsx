@@ -1,0 +1,277 @@
+"use client";
+
+import { useEffect, useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+import Link from "next/link";
+import Icon from "@/components/ui/Icon";
+import { Complaint } from "../page";
+
+// Create a component that consumes the search params
+function TrackComplaintContent() {
+  const searchParams = useSearchParams();
+  const ticketParam = searchParams.get("ticket");
+
+  const [complaints, setComplaints] = useState<Complaint[]>([]);
+  const [selectedTicketId, setSelectedTicketId] = useState("");
+  const [zoomImage, setZoomImage] = useState<string | null>(null);
+
+  // Sync state
+  useEffect(() => {
+    const stored = localStorage.getItem("jmms_complaints");
+    if (stored) {
+      const list: Complaint[] = JSON.parse(stored);
+      setComplaints(list);
+      
+      // Select ticket: parameter priority -> then fallback to first item
+      if (ticketParam && list.some((c) => c.id === ticketParam)) {
+        setSelectedTicketId(ticketParam);
+      } else if (list.length > 0) {
+        setSelectedTicketId(list[0].id);
+      }
+    }
+  }, [ticketParam]);
+
+  const selectedComplaint = complaints.find((c) => c.id === selectedTicketId) || null;
+
+  // Timeline steps config
+  const STEPS = [
+    { key: "Pending", label: "Complaint Submitted", desc: "Your ticket has been logged and queued." },
+    { key: "Verified", label: "Verified by Admin", desc: "Support confirmed specifications and details." },
+    { key: "Assigned", label: "Technician Assigned", desc: "A specialized technician has been allocated." },
+    { key: "In Progress", label: "Work Started", desc: "Technician is on-site resolving the problem." },
+    { key: "Completed", label: "Completed", desc: "Work completed. Awaiting final verification." },
+    { key: "Closed", label: "Closed & Archived", desc: "Ticket closed and archived successfully." },
+  ];
+
+  // Helper to determine if a step is active/completed
+  const getStepStatus = (statusKey: string, currentStatus: string) => {
+    const statusOrder = ["Pending", "Verified", "Assigned", "In Progress", "Completed", "Closed"];
+    
+    // Normalize status aliases
+    let normalizedCurrent = currentStatus;
+    if (currentStatus === "Verified") normalizedCurrent = "Verified";
+    
+    const currentIdx = statusOrder.indexOf(normalizedCurrent);
+    const stepIdx = statusOrder.indexOf(statusKey);
+    
+    if (currentIdx >= stepIdx) return "completed";
+    if (currentIdx + 1 === stepIdx) return "active";
+    return "pending";
+  };
+
+  return (
+    <div className="space-y-8 pb-12">
+      <title>Track Complaint | JMMS</title>
+
+      {/* Header and selector dropdown */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div>
+          <h1 className="font-display text-3xl font-black text-slate-800 dark:text-slate-100 tracking-tight">
+            Live Ticket Tracking
+          </h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+            Monitor real-time resolution pipelines and technician comments.
+          </p>
+        </div>
+
+        {/* Ticket Selector Dropdown */}
+        {complaints.length > 0 && (
+          <div className="w-full md:w-64 space-y-1.5">
+            <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400">
+              Select Ticket to Track
+            </label>
+            <div className="relative">
+              <select
+                value={selectedTicketId}
+                onChange={(e) => setSelectedTicketId(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 dark:bg-slate-900 font-body-md text-sm font-bold outline-none focus:border-primary cursor-pointer"
+              >
+                {complaints.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.id} — {c.category}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {selectedComplaint ? (
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start">
+          
+          {/* Left Column: Progress Timeline */}
+          <div className="xl:col-span-8 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2.5rem] p-6 md:p-8 shadow-sm">
+            <h2 className="font-display text-lg font-bold text-slate-800 dark:text-slate-100 mb-6 flex items-center gap-2">
+              <Icon name="route" className="text-primary" />
+              Resolution Journey
+            </h2>
+
+            {/* Vertical timeline steps */}
+            <div className="relative pl-10 space-y-10 py-2">
+              {/* Stepper vertical guide line */}
+              <div className="absolute top-4 bottom-4 left-[15px] w-[3px] bg-slate-100 dark:bg-slate-800 rounded" />
+
+              {STEPS.map((step, idx) => {
+                const status = getStepStatus(step.key, selectedComplaint.status);
+
+                return (
+                  <div key={idx} className="relative flex flex-col items-start gap-1 group">
+                    {/* Circle Indicator */}
+                    <span className={`absolute left-[-35px] top-[2px] w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-all duration-300 ${
+                      status === "completed"
+                        ? "bg-primary border-primary text-white scale-110 shadow-lg shadow-primary/20"
+                        : status === "active"
+                        ? "bg-white dark:bg-slate-900 border-primary text-primary animate-pulse"
+                        : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-400"
+                    }`}>
+                      {status === "completed" ? (
+                        <Icon name="check" className="text-[16px] font-black" />
+                      ) : (
+                        idx + 1
+                      )}
+                    </span>
+
+                    {/* Step details */}
+                    <div className={`text-sm font-black uppercase tracking-wide transition-colors ${
+                      status === "completed"
+                        ? "text-slate-800 dark:text-slate-100"
+                        : status === "active"
+                        ? "text-primary dark:text-blue-300"
+                        : "text-slate-400 dark:text-slate-600"
+                    }`}>
+                      {step.label}
+                    </div>
+                    <p className="text-xs text-slate-400 dark:text-slate-500 max-w-lg leading-relaxed">{step.desc}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Right Column: Ticket Details & Technician Cards */}
+          <div className="xl:col-span-4 space-y-6">
+            
+            {/* Ticket Information Card */}
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm space-y-4">
+              <h3 className="font-display text-sm font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">Ticket Details</h3>
+              <div className="space-y-3 font-semibold text-sm">
+                <div className="flex justify-between items-center py-2 border-b border-slate-100 dark:border-slate-800/40">
+                  <span className="text-slate-400">Category</span>
+                  <span className="text-slate-800 dark:text-slate-100">{selectedComplaint.category}</span>
+                </div>
+                <div className="flex justify-between items-center py-2 border-b border-slate-100 dark:border-slate-800/40">
+                  <span className="text-slate-400">Urgency</span>
+                  <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${
+                    selectedComplaint.priority === "High" ? "bg-red-500/10 text-red-500" :
+                    selectedComplaint.priority === "Medium" ? "bg-amber-500/10 text-amber-500" :
+                    "bg-slate-500/10 text-slate-500"
+                  }`}>{selectedComplaint.priority}</span>
+                </div>
+                <div className="flex justify-between items-center py-2 border-b border-slate-100 dark:border-slate-800/40">
+                  <span className="text-slate-400">Location</span>
+                  <span className="text-slate-800 dark:text-slate-100 text-xs truncate max-w-[150px]">{selectedComplaint.location}</span>
+                </div>
+                <div className="flex justify-between items-center py-2">
+                  <span className="text-slate-400">Expected ETA</span>
+                  <span className="text-slate-800 dark:text-slate-100 text-xs">Within 24 Hours</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Assigned Technician Profile */}
+            {selectedComplaint.technicianName ? (
+              <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm space-y-6">
+                <h3 className="font-display text-sm font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">Assigned Technician</h3>
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 text-primary font-black text-lg flex items-center justify-center">
+                    {selectedComplaint.technicianName.charAt(0).toUpperCase()}
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-slate-800 dark:text-slate-100 text-base">{selectedComplaint.technicianName}</h4>
+                    <p className="text-xs text-slate-400">{selectedComplaint.technicianPhone || "Technician Hub"}</p>
+                  </div>
+                </div>
+                
+                <div className="space-y-3 text-xs bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-100 dark:border-slate-800/50">
+                  <div>
+                    <span className="font-bold text-slate-400 uppercase">Assigned Date:</span>
+                    <span className="text-slate-600 dark:text-slate-300 ml-2 font-semibold">{selectedComplaint.assignedDate || "N/A"}</span>
+                  </div>
+                  <div>
+                    <span className="font-bold text-slate-400 uppercase">Remarks:</span>
+                    <p className="text-slate-600 dark:text-slate-300 font-semibold leading-relaxed mt-1">{selectedComplaint.remarks || "No comments from technician."}</p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm text-center">
+                <Icon name="assignment_ind" className="text-slate-300 text-4xl mb-3 block" />
+                <h4 className="text-slate-700 dark:text-slate-300 font-bold">Unassigned</h4>
+                <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 max-w-[200px] mx-auto">
+                  Awaiting review. Technician will be allocated shortly.
+                </p>
+              </div>
+            )}
+
+            {/* Mock Complaint Image Preview */}
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm space-y-4">
+              <h3 className="font-display text-sm font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">Reference Photo</h3>
+              
+              <div
+                onClick={() => setZoomImage("https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg")}
+                className="rounded-2xl overflow-hidden aspect-[4/3] relative border border-slate-100 dark:border-slate-800/50 group cursor-zoom-in"
+              >
+                <img
+                  src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg"
+                  alt="Attachment Mock"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-slate-950/20 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity">
+                  <Icon name="zoom_in" className="text-3xl" />
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      ) : (
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2.5rem] p-16 text-center shadow-sm">
+          <Icon name="search_off" className="text-4xl text-slate-300 mb-4 block" />
+          <h3 className="font-display text-xl font-bold">No Ticket Selected</h3>
+          <p className="text-sm text-slate-400 dark:text-slate-500 mt-2 max-w-xs mx-auto">
+            You don&apos;t have any complaints registered right now. Rise one to start tracking.
+          </p>
+        </div>
+      )}
+
+      {/* Image Zoom Modal */}
+      {zoomImage && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4" onClick={() => setZoomImage(null)}>
+          <div className="relative max-w-3xl w-full aspect-square bg-slate-900 rounded-3xl overflow-hidden shadow-2xl p-2 border border-white/10 animate-scale-in">
+            <button
+              onClick={() => setZoomImage(null)}
+              className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-slate-950/80 hover:bg-slate-950 text-white flex items-center justify-center transition-colors cursor-pointer"
+            >
+              <Icon name="close" />
+            </button>
+            <img src={zoomImage} alt="Attachment Zoomed" className="w-full h-full object-contain rounded-2xl" />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default function TrackComplaint() {
+  return (
+    <Suspense fallback={
+      <div className="flex h-screen items-center justify-center">
+        <div className="w-10 h-10 border-4 border-slate-200 border-t-primary rounded-full animate-spin" />
+      </div>
+    }>
+      <TrackComplaintContent />
+    </Suspense>
+  );
+}
