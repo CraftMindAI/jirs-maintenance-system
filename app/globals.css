@@ -1,0 +1,132 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f8f9ff;
+  --foreground: #0b1c30;
+
+  --color-primary: #0f4c81;
+  --color-primary-container: #0f4c81;
+  --color-on-primary: #ffffff;
+  --color-on-primary-container: #8ebdf9;
+
+  --color-secondary: #005cba;
+  --color-secondary-container: #4b92fe;
+  --color-on-secondary-container: #002b5d;
+
+  --color-tertiary: #532800;
+  --color-tertiary-container: #743b00;
+  --color-tertiary-fixed: #ffdcc4;
+  --color-tertiary-fixed-dim: #ffb780;
+  --color-on-tertiary-fixed: #2f1400;
+
+  --color-error: #ba1a1a;
+  --color-error-container: #ffdad6;
+  --color-on-error: #ffffff;
+
+  --color-success: #28a745;
+  --color-warning: #ffc107;
+  --color-danger: #dc3545;
+
+  --color-outline: #727780;
+  --color-outline-variant: #c2c7d1;
+
+  --color-background: #f8f9ff;
+  --color-background-surface: #f5f7fa;
+  --color-on-background: #0b1c30;
+  --color-on-surface: #0b1c30;
+  --color-on-surface-variant: #49454f;
+
+  --color-surface: #f8f9ff;
+  --color-surface-dim: #cbdbf5;
+  --color-surface-bright: #f8f9ff;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #eff4ff;
+  --color-surface-container: #e5eeff;
+  --color-surface-container-high: #dce9ff;
+  --color-surface-container-highest: #d3e4fe;
+
+  --color-inverse-surface: #213145;
+  --color-inverse-primary: #a0c9ff;
+}
+
+@theme inline {
+  --color-primary: var(--color-primary);
+  --color-primary-container: var(--color-primary-container);
+  --color-on-primary: var(--color-on-primary);
+  --color-on-primary-container: var(--color-on-primary-container);
+
+  --color-secondary: var(--color-secondary);
+  --color-secondary-container: var(--color-secondary-container);
+  --color-on-secondary-container: var(--color-on-secondary-container);
+
+  --color-tertiary: var(--color-tertiary);
+  --color-tertiary-container: var(--color-tertiary-container);
+  --color-tertiary-fixed: var(--color-tertiary-fixed);
+  --color-tertiary-fixed-dim: var(--color-tertiary-fixed-dim);
+  --color-on-tertiary-fixed: var(--color-on-tertiary-fixed);
+
+  --color-error: var(--color-error);
+  --color-error-container: var(--color-error-container);
+  --color-on-error: var(--color-on-error);
+
+  --color-success: var(--color-success);
+  --color-warning: var(--color-warning);
+  --color-danger: var(--color-danger);
+
+  --color-outline: var(--color-outline);
+  --color-outline-variant: var(--color-outline-variant);
+
+  --color-background: var(--color-background);
+  --color-background-surface: var(--color-background-surface);
+  --color-on-background: var(--color-on-background);
+  --color-on-surface: var(--color-on-surface);
+  --color-on-surface-variant: var(--color-on-surface-variant);
+
+  --color-surface: var(--color-surface);
+  --color-surface-dim: var(--color-surface-dim);
+  --color-surface-bright: var(--color-surface-bright);
+  --color-surface-container-lowest: var(--color-surface-container-lowest);
+  --color-surface-container-low: var(--color-surface-container-low);
+  --color-surface-container: var(--color-surface-container);
+  --color-surface-container-high: var(--color-surface-container-high);
+  --color-surface-container-highest: var(--color-surface-container-highest);
+
+  --color-inverse-surface: var(--color-inverse-surface);
+  --color-inverse-primary: var(--color-inverse-primary);
+
+  --font-display: var(--font-poppins);
+  --font-headline: var(--font-poppins);
+  --font-body: var(--font-inter);
+  --font-label: var(--font-inter);
+
+  --spacing-margin-desktop: 40px;
+  --spacing-margin-mobile: 16px;
+  --spacing-gutter: 24px;
+  --spacing-container-max: 1440px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0b1c30;
+    --foreground: #e5eeff;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+}
+
+.hero-gradient {
+  background: linear-gradient(
+    180deg,
+    rgba(11, 28, 48, 0.75) 0%,
+    rgba(11, 28, 48, 0.35) 50%,
+    rgba(11, 28, 48, 0.85) 100%
+  );
+}
