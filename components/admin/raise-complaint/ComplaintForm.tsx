@@ -3,7 +3,28 @@
 import { useState, useRef, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Icon from "@/components/ui/Icon";
+import Dropdown from "@/components/ui/Dropdown";
 import { Complaint } from "@/app/dashboard/page";
+import { auth, db } from "@/lib/firebase";
+import { addDoc, collection, Bytes, serverTimestamp } from "firebase/firestore";
+
+const MAX_IMAGES = 2;
+
+const CATEGORY_OPTIONS = [
+  { value: "Electrical", label: "Electrical" },
+  { value: "Plumbing", label: "Plumbing" },
+  { value: "Civil", label: "Civil" },
+  { value: "Carpentry", label: "Carpentry" },
+  { value: "HVAC", label: "HVAC" },
+  { value: "Telephone", label: "Telephone" },
+  { value: "Others", label: "Others" },
+];
+
+const PRIORITY_OPTIONS = [
+  { value: "High", label: "High Priority" },
+  { value: "Medium", label: "Medium Priority" },
+  { value: "Low", label: "Low Priority" },
+];
 
 export default function ComplaintForm() {
   const router = useRouter();
@@ -18,9 +39,9 @@ export default function ComplaintForm() {
   const [priority, setPriority] = useState("Medium");
   const [description, setDescription] = useState("");
 
-  // Image upload states
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  // Image upload states (up to MAX_IMAGES)
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [dragActive, setDragActive] = useState(false);
 
   const handleDrag = (e: React.DragEvent) => {
@@ -38,40 +59,59 @@ export default function ComplaintForm() {
     e.stopPropagation();
     setDragActive(false);
 
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      processFile(e.dataTransfer.files[0]);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      processFiles(Array.from(e.dataTransfer.files));
     }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      processFile(e.target.files[0]);
+    if (e.target.files && e.target.files.length > 0) {
+      processFiles(Array.from(e.target.files));
     }
   };
 
-  const processFile = (file: File) => {
+  const processFiles = (files: File[]) => {
     const validTypes = ["image/jpeg", "image/png", "image/jpg"];
-    if (!validTypes.includes(file.type)) {
-      setError("Please upload an image file (JPG, PNG, or JPEG).");
+    const remainingSlots = MAX_IMAGES - imageFiles.length;
+
+    if (remainingSlots <= 0) {
+      setError(`You can attach up to ${MAX_IMAGES} images.`);
       return;
     }
+
+    const incoming = files.slice(0, remainingSlots);
+    const invalid = incoming.find((file) => !validTypes.includes(file.type));
+    if (invalid) {
+      setError("Please upload image files only (JPG, PNG, or JPEG).");
+      return;
+    }
+
     setError(null);
-    setImageFile(file);
+    setImageFiles((prev) => [...prev, ...incoming]);
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setImagePreview(reader.result as string);
-    };
-    reader.readAsDataURL(file);
-  };
+    incoming.forEach((file) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreviews((prev) => [...prev, reader.result as string]);
+      };
+      reader.readAsDataURL(file);
+    });
 
-  const removeImage = () => {
-    setImageFile(null);
-    setImagePreview(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  const handleSubmit = (e: FormEvent) => {
+  const removeImage = (index: number) => {
+    setImageFiles((prev) => prev.filter((_, i) => i !== index));
+    setImagePreviews((prev) => prev.filter((_, i) => i !== index));
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const fileToBytes = async (file: File): Promise<Bytes> => {
+    const buffer = await file.arrayBuffer();
+    return Bytes.fromUint8Array(new Uint8Array(buffer));
+  };
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
 
@@ -88,9 +128,28 @@ export default function ComplaintForm() {
       return;
     }
 
+    const user = auth.currentUser;
+    if (!user) {
+      setError("You must be signed in to submit a complaint.");
+      return;
+    }
+
     setSubmitting(true);
 
-    setTimeout(() => {
+    try {
+      const images = await Promise.all(imageFiles.map(fileToBytes));
+
+      await addDoc(collection(db, "complaints"), {
+        userId: user.uid,
+        category,
+        location,
+        priority,
+        description,
+        status: "Pending",
+        images,
+        createdAt: serverTimestamp(),
+      });
+
       const stored = localStorage.getItem("jmms_complaints");
       const list: Complaint[] = stored ? JSON.parse(stored) : [];
 
@@ -113,7 +172,11 @@ export default function ComplaintForm() {
       setTimeout(() => {
         router.push("/admin/view-complaints");
       }, 1500);
-    }, 1500);
+    } catch (err) {
+      console.error("Error submitting complaint:", err);
+      setSubmitting(false);
+      setError("Failed to submit complaint. Please try again.");
+    }
   };
 
   const handleReset = () => {
@@ -121,7 +184,9 @@ export default function ComplaintForm() {
     setLocation("");
     setPriority("Medium");
     setDescription("");
-    removeImage();
+    setImageFiles([]);
+    setImagePreviews([]);
+    if (fileInputRef.current) fileInputRef.current.value = "";
     setError(null);
   };
 
@@ -160,37 +225,26 @@ export default function ComplaintForm() {
             <label htmlFor="category" className="block text-[10px] font-mono uppercase text-[#908fa0]">
               Complaint Category
             </label>
-            <select
+            <Dropdown
               id="category"
+              options={CATEGORY_OPTIONS}
               value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              className="w-full rounded-xl px-4 py-3.5 text-xs bg-[#131b2e] border border-[#464554]/20 text-[#dae2fd] font-bold outline-none focus:border-[#8083ff]"
-            >
-              <option value="" disabled>Choose category</option>
-              <option value="Electrical">Electrical</option>
-              <option value="Plumbing">Plumbing</option>
-              <option value="Civil">Civil</option>
-              <option value="Carpentry">Carpentry</option>
-              <option value="HVAC">HVAC</option>
-              <option value="Telephone">Telephone</option>
-              <option value="Others">Others</option>
-            </select>
+              onChange={setCategory}
+              placeholder="Choose category"
+              scroll={false}
+            />
           </div>
 
           <div className="space-y-2">
             <label htmlFor="priority" className="block text-[10px] font-mono uppercase text-[#908fa0]">
               Priority Urgency
             </label>
-            <select
+            <Dropdown
               id="priority"
+              options={PRIORITY_OPTIONS}
               value={priority}
-              onChange={(e) => setPriority(e.target.value)}
-              className="w-full rounded-xl px-4 py-3.5 text-xs bg-[#131b2e] border border-[#464554]/20 text-[#dae2fd] font-bold outline-none focus:border-[#8083ff]"
-            >
-              <option value="High">High (Immediate resolving)</option>
-              <option value="Medium">Medium (Standard priority)</option>
-              <option value="Low">Low (Scheduled maintenance)</option>
-            </select>
+              onChange={setPriority}
+            />
           </div>
         </div>
 
@@ -224,10 +278,37 @@ export default function ComplaintForm() {
 
         <div className="space-y-2">
           <span className="block text-[10px] font-mono uppercase text-[#908fa0]">
-            Attach Reference Image (Optional)
+            Attach Reference Image (Optional, up to {MAX_IMAGES})
           </span>
 
-          {!imagePreview ? (
+          {imagePreviews.length > 0 && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {imagePreviews.map((preview, index) => (
+                <div
+                  key={index}
+                  className="border border-[#464554]/20 rounded-3xl p-4 flex items-center justify-between gap-4 bg-[#131b2e]"
+                >
+                  <div className="flex items-center gap-4 min-w-0">
+                    <div className="w-14 h-14 rounded-2xl overflow-hidden relative shrink-0 border border-[#464554]/20">
+                      <img src={preview} alt="Preview" className="w-full h-full object-cover" />
+                    </div>
+                    <p className="text-xs font-bold text-[#dae2fd] truncate">
+                      {imageFiles[index]?.name || "attachment.jpg"}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => removeImage(index)}
+                    className="text-red-400 p-2 hover:bg-red-500/10 rounded-xl cursor-pointer shrink-0"
+                  >
+                    <Icon name="delete" className="text-xl" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {imagePreviews.length < MAX_IMAGES && (
             <div
               onDragEnter={handleDrag}
               onDragOver={handleDrag}
@@ -240,26 +321,23 @@ export default function ComplaintForm() {
                   : "border-[#464554]/30 hover:border-[#8083ff]/50 hover:bg-[#131b2e]/40"
               }`}
             >
-              <input ref={fileInputRef} type="file" onChange={handleFileChange} accept="image/*" className="hidden" />
+              <input
+                ref={fileInputRef}
+                type="file"
+                onChange={handleFileChange}
+                accept="image/*"
+                multiple
+                className="hidden"
+              />
               <div className="w-12 h-12 bg-[#131b2e] text-[#908fa0] rounded-2xl flex items-center justify-center">
                 <Icon name="upload" className="text-2xl" />
               </div>
               <div>
                 <p className="font-bold text-xs text-[#dae2fd]">Drag & drop photo or click to upload</p>
-                <p className="text-[10px] text-[#908fa0] mt-1">Supported: JPG, PNG, JPEG</p>
+                <p className="text-[10px] text-[#908fa0] mt-1">
+                  Supported: JPG, PNG, JPEG · {MAX_IMAGES - imagePreviews.length} slot(s) left
+                </p>
               </div>
-            </div>
-          ) : (
-            <div className="border border-[#464554]/20 rounded-3xl p-4 flex items-center justify-between gap-4 bg-[#131b2e]">
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-2xl overflow-hidden relative shrink-0 border border-[#464554]/20">
-                  <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
-                </div>
-                <p className="text-xs font-bold text-[#dae2fd] truncate max-w-[200px]">{imageFile?.name || "attachment.jpg"}</p>
-              </div>
-              <button type="button" onClick={removeImage} className="text-red-400 p-2 hover:bg-red-500/10 rounded-xl cursor-pointer">
-                <Icon name="delete" className="text-xl" />
-              </button>
             </div>
           )}
         </div>
