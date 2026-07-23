@@ -1,11 +1,11 @@
 import Icon from "@/components/ui/Icon";
 
 export default function DeleteUserModal({
-  userId,
+  userName,
   onCancel,
   onConfirm,
 }: {
-  userId: string;
+  userName: string;
   onCancel: () => void;
   onConfirm: () => void;
 }) {
@@ -17,7 +17,7 @@ export default function DeleteUserModal({
         </div>
         <div>
           <h4 className="text-lg font-bold text-[#dae2fd]">Delete Account</h4>
-          <p className="text-xs text-[#908fa0] mt-1">Permanently remove user account **{userId}**?</p>
+          <p className="text-xs text-[#908fa0] mt-1">Permanently remove user account **{userName}**?</p>
         </div>
         <div className="flex gap-3">
           <button onClick={onCancel} className="flex-1 py-3 border border-[#464554]/30 text-[#908fa0] rounded-xl font-bold text-xs">Cancel</button>

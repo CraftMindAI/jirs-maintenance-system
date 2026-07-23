@@ -53,7 +53,7 @@ export default function UsersTable({
                 <td className="py-4 px-6 text-[#c7c4d7]">{user.dept}</td>
                 <td className="py-4 px-6">
                   <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-extrabold ${
-                    user.role === "Admin" ? "bg-red-500/10 text-red-400" :
+                    user.role === "Admin"  ? "bg-red-500/10 text-red-400" :
                     user.role === "Technician" ? "bg-[#8083ff]/10 text-[#c0c1ff]" :
                     "bg-[#908fa0]/15 text-[#908fa0]"
                   }`}>{user.role}</span>

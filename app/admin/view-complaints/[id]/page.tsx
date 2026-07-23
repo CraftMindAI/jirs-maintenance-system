@@ -7,7 +7,7 @@ import ComplaintInfoCard from "@/components/admin/view-complaints/detail/Complai
 import ComplaintTrackDetailsCard from "@/components/admin/view-complaints/detail/ComplaintTrackDetailsCard";
 import ComplaintImagesCard from "@/components/admin/view-complaints/detail/ComplaintImagesCard";
 import ComplaintDetailSkeleton from "@/components/admin/view-complaints/detail/ComplaintDetailSkeleton";
-import Toast from "@/components/admin/view-complaints/Toast";
+import { showToast } from "@/lib/toast";
 import { useComplaintDetail } from "@/hooks/useComplaintDetail";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
@@ -25,7 +25,6 @@ export default function ViewComplaintDetailPage({
 
   const [statusOverride, setStatusOverride] = useState<string | null>(null);
   const [updatingStatus, setUpdatingStatus] = useState<boolean>(false);
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const currentComplaint = complaint
     ? {
@@ -33,11 +32,6 @@ export default function ViewComplaintDetailPage({
         status: (statusOverride || complaint.status) as any,
       }
     : null;
-
-  const triggerToast = (msg: string) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 3000);
-  };
 
   const handleApprove = async () => {
     if (!complaintId) return;
@@ -47,10 +41,10 @@ export default function ViewComplaintDetailPage({
         status: "Approved",
       });
       setStatusOverride("Approved");
-      triggerToast("Complaint ticket approved successfully.");
+      showToast.success("Complaint ticket approved successfully!");
     } catch (err) {
       console.error("Error approving complaint:", err);
-      triggerToast("Failed to approve complaint.");
+      showToast.error("Failed to approve complaint.");
     } finally {
       setUpdatingStatus(false);
     }
@@ -64,10 +58,10 @@ export default function ViewComplaintDetailPage({
         status: "Rejected",
       });
       setStatusOverride("Rejected");
-      triggerToast("Complaint ticket marked as Rejected.");
+      showToast.warning("Complaint ticket marked as Rejected.");
     } catch (err) {
       console.error("Error rejecting complaint:", err);
-      triggerToast("Failed to reject complaint.");
+      showToast.error("Failed to reject complaint.");
     } finally {
       setUpdatingStatus(false);
     }
@@ -76,9 +70,6 @@ export default function ViewComplaintDetailPage({
   return (
     <div className="space-y-6 pb-12">
       <title>{`Complaint #${complaintId} | JMMS Admin`}</title>
-
-      {/* Toast popup */}
-      {toastMessage && <Toast message={toastMessage} />}
 
       {/* Top Header Row with Transparent Back Button */}
       <div className="flex items-center justify-between">

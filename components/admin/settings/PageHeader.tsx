@@ -1,12 +1,22 @@
+import Icon from "@/components/ui/Icon";
+
 export default function PageHeader() {
   return (
-    <div>
-      <h1 className="font-display text-3xl font-extrabold text-[#dae2fd] tracking-tight">
-        System Settings & Profile
-      </h1>
-      <p className="text-xs text-[#c7c4d7] opacity-80 mt-1 font-semibold">
-        Update admin profile parameters, contact credentials, and security settings.
-      </p>
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#464554]/10 pb-6">
+      <div>
+        <div className="flex items-center gap-2 text-xs font-mono text-[#8083ff] mb-1">
+          <Icon name="tune" className="text-sm" />
+          <span>System Administration / Settings</span>
+        </div>
+        <h1 className="font-display text-2xl md:text-3xl font-extrabold text-[#dae2fd] tracking-tight">
+          System Settings & Profile
+        </h1>
+        <p className="text-xs text-[#908fa0] mt-1 font-medium">
+          Manage your account credentials, security preferences, and administrative profile.
+        </p>
+      </div>
+
+     
     </div>
   );
 }

@@ -33,7 +33,6 @@ export default function EditRoleModal({
             className="w-full rounded-xl px-4 py-3 text-xs bg-[#131b2e] border border-[#464554]/30 text-[#dae2fd] font-bold outline-none"
           >
             <option value="Student">Student</option>
-            <option value="Teacher">Teacher</option>
             <option value="Staff">Staff</option>
             <option value="Technician">Technician</option>
             <option value="Admin">Admin</option>

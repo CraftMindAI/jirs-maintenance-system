@@ -2,116 +2,232 @@
 
 import { useEffect, useState, FormEvent } from "react";
 import Icon from "@/components/ui/Icon";
+import { auth, db } from "@/lib/firebase";
+import { showToast } from "@/lib/toast";
+import { onAuthStateChanged } from "firebase/auth";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 
 export default function ProfileSettings() {
-  const [fullName, setFullName] = useState("Admin User");
-  const [email, setEmail] = useState("admin@jirs.ac.in");
-  const [phone, setPhone] = useState("+91 99001 99880");
-  const [department, setDepartment] = useState("Administration");
-  const [role, setRole] = useState("Super Admin");
+  const [uid, setUid] = useState<string | null>(null);
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [department, setDepartment] = useState("");
+  const [role, setRole] = useState("");
+  const [loading, setLoading] = useState(true);
   const [profileSaving, setProfileSaving] = useState(false);
   const [profileSaved, setProfileSaved] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const stored = localStorage.getItem("jmms_admin_profile");
-    if (stored) {
-      const data = JSON.parse(stored);
-      setFullName(data.name || "Admin User");
-      setEmail(data.email || "admin@jirs.ac.in");
-      setPhone(data.phone || "+91 99001 99880");
-      setDepartment(data.department || "Administration");
-      setRole(data.role || "Super Admin");
-    }
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+
+      setUid(user.uid);
+      setEmail(user.email || "");
+
+      try {
+        const docSnap = await getDoc(doc(db, "users", user.uid));
+        const data = docSnap.exists() ? docSnap.data() : null;
+        setFullName(data?.name || user.displayName || "");
+        setPhone(data?.phone || "");
+        setDepartment(data?.department || "General Maintenance");
+        setRole(data?.role || "Administrator");
+      } catch (err) {
+        console.error("Error fetching profile:", err);
+        setError("Failed to load your profile details.");
+      } finally {
+        setLoading(false);
+      }
+    });
+
+    return () => unsubscribe();
   }, []);
 
-  const handleSaveProfile = (e: FormEvent) => {
+  const handleSaveProfile = async (e: FormEvent) => {
     e.preventDefault();
+    if (!uid) return;
+
+    setError(null);
     setProfileSaving(true);
 
-    setTimeout(() => {
-      const updated = { name: fullName, email, phone, department, role };
-      localStorage.setItem("jmms_admin_profile", JSON.stringify(updated));
+    try {
+      await updateDoc(doc(db, "users", uid), {
+        name: fullName,
+        phone,
+        department,
+      });
       setProfileSaving(false);
       setProfileSaved(true);
-      setTimeout(() => setProfileSaved(false), 2000);
-    }, 1200);
+      showToast.success("Admin profile updated successfully!");
+      setTimeout(() => setProfileSaved(false), 3000);
+    } catch (err) {
+      console.error("Error saving profile:", err);
+      setProfileSaving(false);
+      const msg = "Failed to save profile changes. Please try again.";
+      setError(msg);
+      showToast.error(msg);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="w-8 h-8 border-4 border-[#464554]/30 border-t-[#8083ff] rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  const initialLetter = (fullName || email || "A").charAt(0).toUpperCase();
 
   return (
     <div className="space-y-6">
-      {profileSaved && (
-        <div className="p-4 bg-[#00a572]/10 border border-[#00a572]/20 text-[#4edea3] rounded-2xl text-xs font-bold flex items-center gap-3 animate-fade-in">
-          <Icon name="check_circle" /> Admin profile updated successfully!
-        </div>
-      )}
-
-      <div className="flex flex-col sm:flex-row items-center gap-6 pb-6 border-b border-[#464554]/20">
-        <div className="w-20 h-20 rounded-full bg-[#8083ff]/10 border border-[#8083ff]/30 text-[#c0c1ff] text-3xl font-black flex items-center justify-center relative">
-          {fullName.charAt(0).toUpperCase()}
-          <button className="absolute bottom-0 right-0 w-7 h-7 rounded-full vibrant-gradient text-white flex items-center justify-center border border-[#0b1326] cursor-pointer shadow-md">
-            <Icon name="photo_camera" className="text-xs" />
-          </button>
-        </div>
+      <div className="flex items-center justify-between border-b border-[#464554]/20 pb-4">
         <div>
-          <h3 className="font-bold text-[#dae2fd] text-base">{fullName}</h3>
-          <span className="text-xs text-[#908fa0] mt-0.5 block">{role} • {department}</span>
+          <h3 className="font-display text-base font-bold text-[#dae2fd]">
+            Profile Information
+          </h3>
+          <p className="text-xs text-[#908fa0]">
+            Update your personal details, contact number, and department.
+          </p>
+        </div>
+        <Icon name="person" className="text-[#8083ff] text-2xl" />
+      </div>
+
+      {/* Sleek Profile Banner Card - Camera Icon Removed */}
+      <div className="bg-[#131b2e] border border-[#464554]/20 rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-sm">
+        <div className="flex items-center gap-5">
+          {/* Avatar Badge Without Camera Icon Overlay */}
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#8083ff]/30 to-[#00a572]/30 border border-[#8083ff]/40 text-[#dae2fd] text-2xl font-black flex items-center justify-center shadow-lg shrink-0">
+            {initialLetter}
+          </div>
+
+          <div className="space-y-1 text-center sm:text-left">
+            <div className="flex items-center gap-2 justify-center sm:justify-start">
+              <h2 className="font-display text-lg font-bold text-[#dae2fd]">
+                {fullName || "Administrator"}
+              </h2>
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-[#8083ff]/15 text-[#c0c1ff] border border-[#8083ff]/20">
+                {role}
+              </span>
+            </div>
+            <p className="text-xs text-[#908fa0] flex items-center gap-2 justify-center sm:justify-start">
+              <Icon name="mail" className="text-sm text-[#8083ff]" />
+              <span>{email}</span>
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 bg-[#171f33] px-3.5 py-2 rounded-xl border border-[#464554]/20">
+          <Icon name="verified_user" className="text-[#00a572] text-lg" />
+          <span className="text-xs font-mono text-[#dae2fd] font-bold">Verified Account</span>
         </div>
       </div>
 
-      <form onSubmit={handleSaveProfile} className="space-y-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {/* Form Fields Section */}
+      <form onSubmit={handleSaveProfile} className="space-y-5 pt-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          {/* Full Name Field */}
           <div className="space-y-1.5">
-            <label className="block text-[10px] font-mono uppercase text-[#908fa0]">Full Name</label>
-            <input
-              type="text"
-              required
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              className="w-full rounded-xl px-4 py-3 text-xs bg-[#131b2e] border border-[#464554]/20 text-[#dae2fd] font-semibold outline-none focus:border-[#8083ff]"
-            />
+            <label className="block text-[10px] font-mono uppercase text-[#908fa0] tracking-wider">
+              Full Name
+            </label>
+            <div className="relative">
+              <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#908fa0]">
+                <Icon name="person" className="text-base" />
+              </div>
+              <input
+                type="text"
+                required
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                placeholder="Enter full name"
+                className="w-full rounded-xl pl-10 pr-4 py-3 text-xs bg-[#131b2e] border border-[#464554]/20 text-[#dae2fd] font-semibold outline-none focus:border-[#8083ff] focus:ring-2 focus:ring-[#8083ff]/20 transition-all"
+              />
+            </div>
           </div>
+
+          {/* Email Address Field (Read-only) */}
           <div className="space-y-1.5">
-            <label className="block text-[10px] font-mono uppercase text-[#908fa0]">Email Address</label>
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-xl px-4 py-3 text-xs bg-[#131b2e] border border-[#464554]/20 text-[#dae2fd] font-semibold outline-none focus:border-[#8083ff]"
-            />
+            <label className="block text-[10px] font-mono uppercase text-[#908fa0] tracking-wider">
+              Email Address (Primary Login)
+            </label>
+            <div className="relative">
+              <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#908fa0]">
+                <Icon name="mail" className="text-base" />
+              </div>
+              <input
+                type="email"
+                disabled
+                value={email}
+                className="w-full rounded-xl pl-10 pr-4 py-3 text-xs bg-[#131b2e]/40 border border-[#464554]/20 text-[#908fa0] font-semibold outline-none cursor-not-allowed"
+              />
+            </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          {/* Phone Number Field */}
           <div className="space-y-1.5">
-            <label className="block text-[10px] font-mono uppercase text-[#908fa0]">Phone Number</label>
-            <input
-              type="tel"
-              required
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              className="w-full rounded-xl px-4 py-3 text-xs bg-[#131b2e] border border-[#464554]/20 text-[#dae2fd] font-semibold outline-none focus:border-[#8083ff]"
-            />
+            <label className="block text-[10px] font-mono uppercase text-[#908fa0] tracking-wider">
+              Contact Phone
+            </label>
+            <div className="relative">
+              <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#908fa0]">
+                <Icon name="phone" className="text-base" />
+              </div>
+              <input
+                type="tel"
+                required
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="+91 9876543210"
+                className="w-full rounded-xl pl-10 pr-4 py-3 text-xs bg-[#131b2e] border border-[#464554]/20 text-[#dae2fd] font-semibold outline-none focus:border-[#8083ff] focus:ring-2 focus:ring-[#8083ff]/20 transition-all"
+              />
+            </div>
           </div>
+
+          {/* Department Field */}
           <div className="space-y-1.5">
-            <label className="block text-[10px] font-mono uppercase text-[#908fa0]">Department</label>
-            <input
-              type="text"
-              required
-              value={department}
-              onChange={(e) => setDepartment(e.target.value)}
-              className="w-full rounded-xl px-4 py-3 text-xs bg-[#131b2e] border border-[#464554]/20 text-[#dae2fd] font-semibold outline-none focus:border-[#8083ff]"
-            />
+            <label className="block text-[10px] font-mono uppercase text-[#908fa0] tracking-wider">
+              Department / Office
+            </label>
+            <div className="relative">
+              <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#908fa0]">
+                <Icon name="business" className="text-base" />
+              </div>
+              <input
+                type="text"
+                value={department}
+                onChange={(e) => setDepartment(e.target.value)}
+                placeholder="e.g. Facilities & Maintenance"
+                className="w-full rounded-xl pl-10 pr-4 py-3 text-xs bg-[#131b2e] border border-[#464554]/20 text-[#dae2fd] font-semibold outline-none focus:border-[#8083ff] focus:ring-2 focus:ring-[#8083ff]/20 transition-all"
+              />
+            </div>
           </div>
         </div>
 
-        <div className="flex gap-4 pt-4 border-t border-[#464554]/20">
+        {/* Action Button Row */}
+        <div className="pt-4 border-t border-[#464554]/20 flex justify-end">
           <button
             type="submit"
             disabled={profileSaving}
-            className="flex-1 py-3.5 vibrant-gradient text-white rounded-xl font-bold shadow-lg shadow-[#8083ff]/20 text-xs cursor-pointer uppercase tracking-wider"
+            className="px-6 py-3.5 vibrant-gradient text-white rounded-xl font-bold shadow-lg shadow-[#8083ff]/20 text-xs cursor-pointer tracking-wider disabled:opacity-60 flex items-center gap-2 hover:scale-[1.01] transition-transform"
           >
-            {profileSaving ? "Saving..." : "Save Changes"}
+            {profileSaving ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <span>Saving Profile...</span>
+              </>
+            ) : (
+              <>
+                <Icon name="save" className="text-base" />
+                <span>Save Profile Changes</span>
+              </>
+            )}
           </button>
         </div>
       </form>
