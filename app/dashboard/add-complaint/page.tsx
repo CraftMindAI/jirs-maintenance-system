@@ -4,8 +4,8 @@ import { useState, useRef, FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Icon from "@/components/ui/Icon";
-import { Complaint } from "../page";
-import { auth } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase";
+import { addDoc, collection, Bytes, serverTimestamp } from "firebase/firestore";
 
 export default function AddComplaint() {
   const router = useRouter();
@@ -74,7 +74,7 @@ export default function AddComplaint() {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
 
@@ -91,27 +91,35 @@ export default function AddComplaint() {
       return;
     }
 
+    const user = auth.currentUser;
+    if (!user) {
+      setError("You must be signed in to submit a complaint.");
+      return;
+    }
+
     setSubmitting(true);
 
-    // Mock submission delay
-    setTimeout(() => {
-      const stored = localStorage.getItem("jmms_complaints");
-      const list: Complaint[] = stored ? JSON.parse(stored) : [];
+    try {
+      const images = imageFile
+        ? [
+            {
+              data: Bytes.fromUint8Array(new Uint8Array(await imageFile.arrayBuffer())),
+              type: imageFile.type,
+              name: imageFile.name,
+            },
+          ]
+        : [];
 
-      const newId = `TKT-${Math.floor(1000 + Math.random() * 9000)}`;
-      const newComplaint: Complaint = {
-        id: newId,
+      await addDoc(collection(db, "complaints"), {
+        userId: user.uid,
         category,
         location,
-        priority: priority as "High" | "Medium" | "Low",
-        status: "Pending",
-        date: new Date().toISOString().split("T")[0],
+        priority,
         description,
-        submittedBy: auth.currentUser?.email || undefined,
-      };
-
-      // Store in local storage
-      localStorage.setItem("jmms_complaints", JSON.stringify([newComplaint, ...list]));
+        status: "Pending",
+        images,
+        createdAt: serverTimestamp(),
+      });
 
       setSubmitting(false);
       setSuccess(true);
@@ -120,7 +128,11 @@ export default function AddComplaint() {
       setTimeout(() => {
         router.push("/dashboard/my-complaints");
       }, 1500);
-    }, 1800);
+    } catch (err) {
+      console.error("Error submitting complaint:", err);
+      setSubmitting(false);
+      setError("Failed to submit complaint. Please try again.");
+    }
   };
 
   const handleReset = () => {

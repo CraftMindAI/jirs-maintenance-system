@@ -5,19 +5,12 @@ import Icon from "@/components/ui/Icon";
 import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
-import { FEEDBACK_UPDATED_EVENT } from "@/components/feedback/FeedbackFormCard";
-
-type FeedbackItem = {
-  name: string;
-  role: string;
-  date: string;
-  initials: string;
-  message: string;
-  verified: boolean;
-};
+import { useFeedbackFeed } from "@/hooks/useFeedbackFeed";
+import { submitFeedback } from "@/utils/feedback";
 
 export default function DashboardFeedback() {
-  const [feedbackList, setFeedbackList] = useState<FeedbackItem[]>([]);
+  const { feedback: feedbackList } = useFeedbackFeed();
+  const [userId, setUserId] = useState<string | null>(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("Student");
@@ -25,26 +18,11 @@ export default function DashboardFeedback() {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  // Load real feedback (no mock seeding) and stay in sync with submissions made elsewhere
-  useEffect(() => {
-    const load = () => {
-      const stored = localStorage.getItem("jmms_feedback");
-      setFeedbackList(stored ? JSON.parse(stored) : []);
-    };
-    load();
-
-    window.addEventListener(FEEDBACK_UPDATED_EVENT, load);
-    window.addEventListener("storage", load);
-    return () => {
-      window.removeEventListener(FEEDBACK_UPDATED_EVENT, load);
-      window.removeEventListener("storage", load);
-    };
-  }, []);
-
   // Prefill the form with the signed-in user's details
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
+        setUserId(user.uid);
         try {
           const docSnap = await getDoc(doc(db, "users", user.uid));
           const data = docSnap.exists() ? docSnap.data() : null;
@@ -54,46 +32,29 @@ export default function DashboardFeedback() {
         } catch (error) {
           console.error("Error fetching user doc:", error);
         }
+      } else {
+        setUserId(null);
       }
     });
 
     return () => unsubscribe();
   }, []);
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!name || !email || !message) return;
+    if (!userId || !name || !email || !message) return;
 
     setSubmitting(true);
-    setTimeout(() => {
-      const newFeedback: FeedbackItem = {
-        name,
-        role,
-        date: "Just now",
-        initials: name
-          .split(" ")
-          .map((n) => n[0])
-          .join("")
-          .toUpperCase()
-          .slice(0, 2),
-        verified: true,
-        message,
-      };
-
-      // Read fresh from storage rather than the stale closure list, so a
-      // submission made elsewhere in the meantime isn't overwritten.
-      const stored = localStorage.getItem("jmms_feedback");
-      const currentList: FeedbackItem[] = stored ? JSON.parse(stored) : [];
-      const updatedList = [newFeedback, ...currentList];
-      setFeedbackList(updatedList);
-      localStorage.setItem("jmms_feedback", JSON.stringify(updatedList));
-      window.dispatchEvent(new Event(FEEDBACK_UPDATED_EVENT));
+    try {
+      await submitFeedback({ userId, name, role, message });
       setMessage("");
-      setSubmitting(false);
       setSubmitted(true);
-
       setTimeout(() => setSubmitted(false), 2000);
-    }, 1200);
+    } catch (error) {
+      console.error("Error submitting feedback:", error);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleClear = () => {
@@ -233,9 +194,9 @@ export default function DashboardFeedback() {
 
           {feedbackList.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {feedbackList.map((item, idx) => (
+              {feedbackList.map((item) => (
                 <div
-                  key={idx}
+                  key={item.id}
                   className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden card-shine h-full"
                 >
                   <div>
@@ -258,7 +219,7 @@ export default function DashboardFeedback() {
                             )}
                           </div>
                           <span className="text-[10px] text-slate-400 font-semibold">
-                            {item.role} • {item.date}
+                            {item.role} • {item.timeAgo}
                           </span>
                         </div>
                       </div>

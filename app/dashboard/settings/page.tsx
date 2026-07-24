@@ -58,17 +58,14 @@ export default function DashboardSettings() {
         }
       }
 
-      // Guest / offline fallback
-      const stored = localStorage.getItem("jmms_profile");
-      const fallback = stored
-        ? JSON.parse(stored)
-        : {
-            name: "Siddharth Roy",
-            email: "siddharth.r@jirs.ac.in",
-            phone: "+91 99001 12233",
-            department: "Hostel Block B",
-            role: "Student",
-          };
+      // Guest / signed-out fallback (session-only, never persisted)
+      const fallback = {
+        name: "Siddharth Roy",
+        email: "siddharth.r@jirs.ac.in",
+        phone: "+91 99001 12233",
+        department: "Hostel Block B",
+        role: "Student",
+      };
       setFullName(fallback.name);
       setEmail(fallback.email);
       setPhone(fallback.phone);
@@ -89,9 +86,6 @@ export default function DashboardSettings() {
     setProfileSaving(true);
 
     setTimeout(async () => {
-      const updated = { name: fullName, email, phone, department, role };
-      localStorage.setItem("jmms_profile", JSON.stringify(updated));
-
       if (uid) {
         try {
           await setDoc(

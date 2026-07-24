@@ -6,6 +6,7 @@ import Icon from "@/components/ui/Icon";
 import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
+import { useComplaintsFeed } from "@/hooks/useComplaintsFeed";
 
 export type Complaint = {
   id: string;
@@ -76,14 +77,14 @@ function buildNotification(c: Complaint) {
 }
 
 export default function DashboardHome() {
-  const [complaints, setComplaints] = useState<Complaint[]>([]);
+  const [userId, setUserId] = useState<string | null | undefined>(undefined);
   const [userProfile, setUserProfile] = useState<{
     name: string;
     role: string;
     email: string;
   } | null>(null);
 
-  // Sync auth state (role + email decide which complaints this user may see)
+  // Sync auth state (role decides which complaints this user may see)
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
@@ -95,6 +96,7 @@ export default function DashboardHome() {
             role: data?.role || "Student",
             email: user.email || "",
           });
+          setUserId(user.uid);
         } catch (error) {
           console.error("Error fetching user doc:", error);
           setUserProfile({
@@ -102,6 +104,7 @@ export default function DashboardHome() {
             role: "Student",
             email: "siddharth.r@jirs.ac.in",
           });
+          setUserId(user.uid);
         }
       } else {
         // Mock fallback for presentation
@@ -110,25 +113,21 @@ export default function DashboardHome() {
           role: "Student",
           email: "siddharth.r@jirs.ac.in",
         });
+        setUserId(null);
       }
     });
 
     return () => unsubscribe();
   }, []);
 
-  useEffect(() => {
-    // Load local storage complaints (no mock seeding — real submissions only)
-    const stored = localStorage.getItem("jmms_complaints");
-    setComplaints(stored ? JSON.parse(stored) : []);
-  }, []);
-
   const isAdmin =
     !!userProfile && ADMIN_ROLES.includes(userProfile.role.toLowerCase());
 
-  // Admins see every complaint; students/staff only see the ones they raised
-  const visibleComplaints = isAdmin
-    ? complaints
-    : complaints.filter((c) => c.submittedBy === userProfile?.email);
+  // Guests (no real uid) never fetch real data; signed-in admins see every
+  // complaint, signed-in residents see only their own.
+  const { complaints: visibleComplaints } = useComplaintsFeed(
+    userId ? (isAdmin ? null : userId) : undefined,
+  );
 
   const getStats = () => {
     const total = visibleComplaints.length;

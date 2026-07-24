@@ -1,47 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import FeedbackCard, { FeedbackItem } from "@/components/feedback/FeedbackCard";
+import FeedbackCard from "@/components/feedback/FeedbackCard";
 import Icon from "@/components/ui/Icon";
-import { FEEDBACK_UPDATED_EVENT } from "@/components/feedback/FeedbackFormCard";
-
-type StoredFeedback = {
-  name: string;
-  role: string;
-  date: string;
-  initials: string;
-  message: string;
-  verified: boolean;
-};
-
-function loadFeedback(): FeedbackItem[] {
-  const stored = localStorage.getItem("jmms_feedback");
-  const list: StoredFeedback[] = stored ? JSON.parse(stored) : [];
-  return list.map((f) => ({
-    name: f.name,
-    role: f.role,
-    timeAgo: f.date,
-    initials: f.initials,
-    verified: f.verified,
-    message: f.message,
-  }));
-}
+import { useFeedbackFeed } from "@/hooks/useFeedbackFeed";
 
 export default function FeedbackFeed() {
-  const [items, setItems] = useState<FeedbackItem[]>([]);
-
-  // Load real feedback (no mock seeding) and stay in sync with new submissions
-  useEffect(() => {
-    setItems(loadFeedback());
-
-    const refresh = () => setItems(loadFeedback());
-    window.addEventListener(FEEDBACK_UPDATED_EVENT, refresh);
-    window.addEventListener("storage", refresh);
-    return () => {
-      window.removeEventListener(FEEDBACK_UPDATED_EVENT, refresh);
-      window.removeEventListener("storage", refresh);
-    };
-  }, []);
+  const { feedback: items } = useFeedbackFeed();
 
   if (items.length === 0) {
     return (
@@ -58,8 +22,8 @@ export default function FeedbackFeed() {
   return (
     <div className="space-y-12">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {items.map((item, idx) => (
-          <FeedbackCard key={idx} item={item} />
+        {items.map((item) => (
+          <FeedbackCard key={item.id} item={item} />
         ))}
       </div>
     </div>

@@ -1,59 +1,82 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
+import Link from "next/link";
 import Icon from "@/components/ui/Icon";
+import { auth, db } from "@/lib/firebase";
+import { onAuthStateChanged } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
+import { submitFeedback } from "@/utils/feedback";
 
 const MAX_LENGTH = 500;
 
-export const FEEDBACK_UPDATED_EVENT = "jmms-feedback-updated";
-
-type StoredFeedback = {
-  name: string;
-  role: string;
-  date: string;
-  initials: string;
-  message: string;
-  verified: boolean;
-};
-
 export default function FeedbackFormCard() {
+  const [userId, setUserId] = useState<string | null | undefined>(undefined);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [role, setRole] = useState("Student");
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState<"idle" | "submitting" | "submitted">("idle");
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        setUserId(user.uid);
+        try {
+          const docSnap = await getDoc(doc(db, "users", user.uid));
+          const data = docSnap.exists() ? docSnap.data() : null;
+          setName(data?.name || user.displayName || "");
+          setEmail(user.email || "");
+          setRole(data?.role || "Student");
+        } catch (error) {
+          console.error("Error fetching user doc:", error);
+        }
+      } else {
+        setUserId(null);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!name.trim() || !email.trim() || !message.trim()) return;
+    if (!userId || !message.trim()) return;
 
     setStatus("submitting");
-    setTimeout(() => {
-      const newFeedback: StoredFeedback = {
-        name,
-        role: email.includes("staff") || email.includes("faculty") ? "Staff member" : "Student",
-        date: "Just now",
-        initials: name
-          .split(" ")
-          .map((n) => n[0])
-          .join("")
-          .toUpperCase()
-          .slice(0, 2),
-        verified: false,
-        message,
-      };
-
-      const stored = localStorage.getItem("jmms_feedback");
-      const list: StoredFeedback[] = stored ? JSON.parse(stored) : [];
-      localStorage.setItem("jmms_feedback", JSON.stringify([newFeedback, ...list]));
-      window.dispatchEvent(new Event(FEEDBACK_UPDATED_EVENT));
-
+    try {
+      await submitFeedback({ userId, name, role, message });
       setStatus("submitted");
-      setName("");
-      setEmail("");
       setMessage("");
       setTimeout(() => setStatus("idle"), 1500);
-    }, 1200);
+    } catch (error) {
+      console.error("Error submitting feedback:", error);
+      setStatus("idle");
+    }
   };
+
+  if (userId === null) {
+    return (
+      <div
+        id="feedback-form"
+        className="bg-white dark:bg-slate-900/50 rounded-3xl border border-outline-variant/20 dark:border-white/5 p-8 lg:sticky lg:top-24 shadow-xl text-center space-y-4"
+      >
+        <h2 className="font-headline text-xl font-bold text-primary dark:text-slate-100 tracking-tight">
+          Share Your Thoughts
+        </h2>
+        <p className="font-body-md text-on-surface-variant dark:text-slate-400 text-sm">
+          Sign in to your JIRS account to leave feedback on the maintenance portal.
+        </p>
+        <Link
+          href="/login"
+          className="inline-flex items-center justify-center gap-2 bg-primary hover:bg-opacity-95 text-white font-bold py-3.5 px-6 rounded-xl shadow-md hover:shadow-primary/20 transition-all text-sm"
+        >
+          <Icon name="login" className="text-[18px]" />
+          Sign In
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -75,10 +98,9 @@ export default function FeedbackFormCard() {
             id="name"
             type="text"
             required
-            placeholder="John Doe"
+            disabled
             value={name}
-            onChange={(event) => setName(event.target.value)}
-            className="w-full rounded-xl p-3.5 font-body-md premium-input dark:text-slate-100"
+            className="w-full rounded-xl p-3.5 font-body-md text-sm border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-400 outline-none"
           />
         </div>
         <div>
@@ -89,10 +111,9 @@ export default function FeedbackFormCard() {
             id="email"
             type="email"
             required
-            placeholder="john@jirs.ac.in"
+            disabled
             value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            className="w-full rounded-xl p-3.5 font-body-md premium-input dark:text-slate-100"
+            className="w-full rounded-xl p-3.5 font-body-md text-sm border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-400 outline-none"
           />
         </div>
         <div>
@@ -142,9 +163,6 @@ export default function FeedbackFormCard() {
             Clear
           </button>
         </div>
-        <p className="font-label-sm text-outline dark:text-slate-500 italic text-center mt-4 text-xs">
-          * Feedback will be published after admin verification.
-        </p>
       </form>
     </div>
   );

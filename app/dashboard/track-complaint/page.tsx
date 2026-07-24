@@ -4,10 +4,11 @@ import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Icon from "@/components/ui/Icon";
-import { Complaint } from "../page";
 import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
+import { useComplaintsFeed } from "@/hooks/useComplaintsFeed";
+import { useComplaintDetail } from "@/hooks/useComplaintDetail";
 
 const ADMIN_ROLES = ["admin"];
 
@@ -16,7 +17,7 @@ function TrackComplaintContent() {
   const searchParams = useSearchParams();
   const ticketParam = searchParams.get("ticket");
 
-  const [complaints, setComplaints] = useState<Complaint[]>([]);
+  const [userId, setUserId] = useState<string | null | undefined>(undefined);
   const [userProfile, setUserProfile] = useState<{
     name: string;
     role: string;
@@ -25,7 +26,7 @@ function TrackComplaintContent() {
   const [selectedTicketId, setSelectedTicketId] = useState("");
   const [zoomImage, setZoomImage] = useState<string | null>(null);
 
-  // Sync auth state (role + email decide which complaints this user may see)
+  // Sync auth state (role decides which complaints this user may see)
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
@@ -37,6 +38,7 @@ function TrackComplaintContent() {
             role: data?.role || "Student",
             email: user.email || "",
           });
+          setUserId(user.uid);
         } catch (error) {
           console.error("Error fetching user doc:", error);
           setUserProfile({
@@ -44,6 +46,7 @@ function TrackComplaintContent() {
             role: "Student",
             email: "siddharth.r@jirs.ac.in",
           });
+          setUserId(user.uid);
         }
       } else {
         // Mock fallback for presentation
@@ -52,25 +55,21 @@ function TrackComplaintContent() {
           role: "Student",
           email: "siddharth.r@jirs.ac.in",
         });
+        setUserId(null);
       }
     });
 
     return () => unsubscribe();
   }, []);
 
-  // Sync state
-  useEffect(() => {
-    const stored = localStorage.getItem("jmms_complaints");
-    setComplaints(stored ? JSON.parse(stored) : []);
-  }, []);
-
   const isAdmin =
     !!userProfile && ADMIN_ROLES.includes(userProfile.role.toLowerCase());
 
-  // Admins see every complaint; students/staff only see the ones they raised
-  const visibleComplaints = isAdmin
-    ? complaints
-    : complaints.filter((c) => c.submittedBy === userProfile?.email);
+  // Guests (no real uid) never fetch real data; signed-in admins see every
+  // complaint, signed-in residents see only their own.
+  const { complaints: visibleComplaints } = useComplaintsFeed(
+    userId ? (isAdmin ? null : userId) : undefined,
+  );
 
   // Select ticket: parameter priority -> otherwise keep the current selection
   // if it's still visible, else fall back to the first visible item.
@@ -87,10 +86,12 @@ function TrackComplaintContent() {
       setSelectedTicketId(visibleComplaints[0]?.id || "");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ticketParam, complaints, userProfile]);
+  }, [ticketParam, visibleComplaints, userProfile]);
 
   const selectedComplaint =
     visibleComplaints.find((c) => c.id === selectedTicketId) || null;
+
+  const { images: selectedImages } = useComplaintDetail(selectedTicketId);
 
   // Timeline steps config
   const STEPS = [
@@ -348,29 +349,36 @@ function TrackComplaintContent() {
               </div>
             )}
 
-            {/* Mock Complaint Image Preview */}
+            {/* Attached Reference Photo(s) */}
             <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm space-y-4">
               <h3 className="font-display text-sm font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">
                 Reference Photo
               </h3>
 
-              <div
-                onClick={() =>
-                  setZoomImage(
-                    "https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg",
-                  )
-                }
-                className="rounded-2xl overflow-hidden aspect-[4/3] relative border border-slate-100 dark:border-slate-800/50 group cursor-zoom-in"
-              >
-                <img
-                  src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg"
-                  alt="Attachment Mock"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-slate-950/20 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity">
-                  <Icon name="zoom_in" className="text-3xl" />
+              {selectedImages.length > 0 ? (
+                <div className="grid grid-cols-2 gap-3">
+                  {selectedImages.map((src, idx) => (
+                    <div
+                      key={idx}
+                      onClick={() => setZoomImage(src)}
+                      className="rounded-2xl overflow-hidden aspect-square relative border border-slate-100 dark:border-slate-800/50 group cursor-zoom-in"
+                    >
+                      <img
+                        src={src}
+                        alt={`Attachment ${idx + 1}`}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-slate-950/20 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity">
+                        <Icon name="zoom_in" className="text-2xl" />
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              </div>
+              ) : (
+                <p className="text-xs text-slate-400 dark:text-slate-500 text-center py-6">
+                  No attachment provided for this ticket.
+                </p>
+              )}
             </div>
           </div>
         </div>

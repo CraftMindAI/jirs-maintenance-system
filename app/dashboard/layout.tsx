@@ -6,7 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import Icon from "@/components/ui/Icon";
 import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 
 type MenuItem = {
   label: string;
@@ -30,12 +30,19 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
+  const [uid, setUid] = useState<string | null>(null);
   const [userProfile, setUserProfile] = useState<{ name: string; role: string; email: string } | null>(null);
 
-  // Sync auth state
+  const applyTheme = (isDark: boolean) => {
+    setDarkMode(isDark);
+    document.documentElement.classList.toggle("dark", isDark);
+  };
+
+  // Sync auth state + the signed-in user's saved theme preference
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
+        setUid(user.uid);
         try {
           const docRef = doc(db, "users", user.uid);
           const docSnap = await getDoc(docRef);
@@ -46,12 +53,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               role: data.role || "Student",
               email: user.email || "",
             });
+            applyTheme(
+              data.theme === "dark" ||
+                (!data.theme && window.matchMedia("(prefers-color-scheme: dark)").matches),
+            );
           } else {
             setUserProfile({
               name: user.displayName || "User",
               role: "Student",
               email: user.email || "",
             });
+            applyTheme(window.matchMedia("(prefers-color-scheme: dark)").matches);
           }
         } catch (error) {
           console.error("Error fetching user doc:", error);
@@ -60,41 +72,30 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             role: "Student",
             email: "siddharth.r@jirs.ac.in",
           });
+          applyTheme(window.matchMedia("(prefers-color-scheme: dark)").matches);
         }
       } else {
         // Mock fallback for presentation
+        setUid(null);
         setUserProfile({
           name: "Siddharth Roy",
           role: "Student",
           email: "siddharth.r@jirs.ac.in",
         });
+        applyTheme(window.matchMedia("(prefers-color-scheme: dark)").matches);
       }
     });
 
     return () => unsubscribe();
   }, []);
 
-  // Theme Toggler
-  useEffect(() => {
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme === "dark" || (!savedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
-      setDarkMode(true);
-      document.documentElement.classList.add("dark");
-    } else {
-      setDarkMode(false);
-      document.documentElement.classList.remove("dark");
-    }
-  }, []);
-
   const toggleTheme = () => {
-    if (darkMode) {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-      setDarkMode(false);
-    } else {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-      setDarkMode(true);
+    const nextDark = !darkMode;
+    applyTheme(nextDark);
+    if (uid) {
+      setDoc(doc(db, "users", uid), { theme: nextDark ? "dark" : "light" }, { merge: true }).catch(
+        (error) => console.error("Error saving theme preference:", error),
+      );
     }
   };
 
