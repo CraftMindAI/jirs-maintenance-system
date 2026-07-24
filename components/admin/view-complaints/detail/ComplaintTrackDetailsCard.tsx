@@ -54,26 +54,26 @@ export default function ComplaintTrackDetailsCard({ complaint }: { complaint: Co
   const activeIdx = getStepIndex(currentStatus);
 
   return (
-    <div className="bg-[#171f33] border border-[#464554]/10 rounded-3xl p-6 md:p-8 shadow-sm vibrant-shadow space-y-6">
-      <div className="flex items-center justify-between border-b border-[#464554]/10 pb-4">
+    <div className="bg-white dark:bg-[#171f33] border border-slate-200 dark:border-[#464554]/10 rounded-3xl p-6 md:p-8 shadow-sm dark:vibrant-shadow space-y-6">
+      <div className="flex items-center justify-between border-b border-slate-100 dark:border-[#464554]/10 pb-4">
         <div className="flex items-center gap-2">
-          <Icon name="alt_route" className="text-[#00a572] text-xl" />
-          <h3 className="font-display text-sm font-bold text-[#dae2fd]">
+          <Icon name="alt_route" className="text-emerald-600 dark:text-[#00a572] text-xl" />
+          <h3 className="font-display text-sm font-bold text-slate-900 dark:text-[#dae2fd]">
             Live Track & Status Timeline
           </h3>
         </div>
         <span className={`text-[10px] font-mono px-3 py-1 rounded-full border shadow-sm font-bold ${
           currentStatus === "Rejected"
-            ? "text-[#ff516a] bg-[#ff516a]/15 border-[#ff516a]/30"
-            : "text-[#4edea3] bg-[#00a572]/15 border-[#00a572]/30"
+            ? "text-rose-600 dark:text-[#ff516a] bg-rose-500/15 border-rose-500/30"
+            : "text-emerald-600 dark:text-[#4edea3] bg-emerald-500/15 border-emerald-500/30"
         }`}>
           Current: {currentStatus}
         </span>
       </div>
 
       {currentStatus === "Rejected" && (
-        <div className="bg-[#ff516a]/15 border border-[#ff516a]/30 rounded-2xl p-4 flex items-center gap-3 text-xs text-[#ffb2b7] font-bold">
-          <Icon name="cancel" className="text-xl text-[#ff516a]" />
+        <div className="bg-rose-500/15 border border-rose-500/30 rounded-2xl p-4 flex items-center gap-3 text-xs text-rose-700 dark:text-[#ffb2b7] font-bold">
+          <Icon name="cancel" className="text-xl text-rose-600 dark:text-[#ff516a]" />
           <span>This complaint ticket has been rejected by administration.</span>
         </div>
       )}
@@ -94,9 +94,9 @@ export default function ComplaintTrackDetailsCard({ complaint }: { complaint: Co
                   <div
                     className={`w-10 h-10 rounded-full border-2 flex items-center justify-center text-xs font-bold transition-all duration-300 ${
                       isReached
-                        ? "bg-[#00a572] border-[#00a572] text-white shadow-lg shadow-[#00a572]/50 ring-4 ring-[#00a572]/20"
-                        : "bg-[#131b2e] border-[#464554]/30 text-[#908fa0]"
-                    } ${isCurrent ? "scale-110 ring-4 ring-[#00a572]/30" : ""}`}
+                        ? "bg-emerald-600 dark:bg-[#00a572] border-emerald-600 dark:border-[#00a572] text-white shadow-lg shadow-emerald-600/50 ring-4 ring-emerald-600/20"
+                        : "bg-slate-100 dark:bg-[#131b2e] border-slate-200 dark:border-[#464554]/30 text-slate-400 dark:text-[#908fa0]"
+                    } ${isCurrent ? "scale-110 ring-4 ring-emerald-600/30" : ""}`}
                   >
                     {idx < activeIdx ? (
                       <Icon name="check" className="text-sm font-black text-white" />
@@ -108,12 +108,12 @@ export default function ComplaintTrackDetailsCard({ complaint }: { complaint: Co
                   <div className="space-y-0.5">
                     <span
                       className={`text-[11px] font-bold block ${
-                        isReached ? "text-[#4edea3]" : "text-[#908fa0]"
+                        isReached ? "text-emerald-700 dark:text-[#4edea3]" : "text-slate-500 dark:text-[#908fa0]"
                       }`}
                     >
                       {step.label}
                     </span>
-                    <span className="text-[9px] font-mono text-[#908fa0] block">
+                    <span className="text-[9px] font-mono text-slate-400 dark:text-[#908fa0] block">
                       {step.subtitle}
                     </span>
                   </div>
@@ -124,8 +124,8 @@ export default function ComplaintTrackDetailsCard({ complaint }: { complaint: Co
                   <div
                     className={`absolute left-[calc(50%+1.5rem)] right-[calc(-50%+1.5rem)] top-[20px] -translate-y-1/2 h-[3px] transition-all duration-500 rounded-full z-0 ${
                       lineIsGreen
-                        ? "bg-[#00a572] shadow-[0_0_8px_#00a572]"
-                        : "bg-[#131b2e]"
+                        ? "bg-emerald-600 dark:bg-[#00a572] shadow-[0_0_8px_#00a572]"
+                        : "bg-slate-200 dark:bg-[#131b2e]"
                     }`}
                   />
                 )}
@@ -148,7 +148,7 @@ export default function ComplaintTrackDetailsCard({ complaint }: { complaint: Co
               {!isLast && (
                 <div
                   className={`absolute left-4 top-9 bottom-0 w-[2px] ${
-                    idx < activeIdx ? "bg-[#00a572]" : "bg-[#131b2e]"
+                    idx < activeIdx ? "bg-emerald-600 dark:bg-[#00a572]" : "bg-slate-200 dark:bg-[#131b2e]"
                   }`}
                 />
               )}
@@ -157,8 +157,8 @@ export default function ComplaintTrackDetailsCard({ complaint }: { complaint: Co
               <div
                 className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs shrink-0 z-10 transition-all duration-300 ${
                   isReached
-                    ? "bg-[#00a572] border-[#00a572] text-white shadow-lg shadow-[#00a572]/40"
-                    : "bg-[#131b2e] border-[#464554]/30 text-[#908fa0]"
+                    ? "bg-emerald-600 dark:bg-[#00a572] border-emerald-600 dark:border-[#00a572] text-white shadow-lg shadow-emerald-600/40"
+                    : "bg-slate-100 dark:bg-[#131b2e] border-slate-200 dark:border-[#464554]/30 text-slate-400 dark:text-[#908fa0]"
                 }`}
               >
                 <Icon name={idx < activeIdx ? "check" : step.icon} className="text-sm" />
@@ -168,23 +168,23 @@ export default function ComplaintTrackDetailsCard({ complaint }: { complaint: Co
               <div
                 className={`flex-1 p-4 rounded-2xl border transition-all ${
                   isCurrent
-                    ? "bg-[#00a572]/15 border-[#00a572]/40 shadow-md shadow-[#00a572]/10"
+                    ? "bg-emerald-500/10 dark:bg-[#00a572]/15 border-emerald-500/30 dark:border-[#00a572]/40 shadow-md"
                     : isReached
-                    ? "bg-[#131b2e]/80 border-[#00a572]/20"
-                    : "bg-[#131b2e]/30 border-[#464554]/10 opacity-60"
+                    ? "bg-slate-50 dark:bg-[#131b2e]/80 border-emerald-500/20 dark:border-[#00a572]/20"
+                    : "bg-slate-50/50 dark:bg-[#131b2e]/30 border-slate-200 dark:border-[#464554]/10 opacity-60"
                 }`}
               >
                 <div className="flex justify-between items-center">
                   <h4
                     className={`font-bold text-xs ${
-                      isReached ? "text-[#4edea3]" : "text-[#dae2fd]"
+                      isReached ? "text-emerald-700 dark:text-[#4edea3]" : "text-slate-800 dark:text-[#dae2fd]"
                     }`}
                   >
                     {step.label}
                   </h4>
                   <span
                     className={`text-[10px] font-mono ${
-                      isReached ? "text-[#4edea3]" : "text-[#908fa0]"
+                      isReached ? "text-emerald-700 dark:text-[#4edea3]" : "text-slate-400 dark:text-[#908fa0]"
                     }`}
                   >
                     {step.key === "Pending" && (complaint.date || "Date Logged")}
@@ -193,7 +193,7 @@ export default function ComplaintTrackDetailsCard({ complaint }: { complaint: Co
                   </span>
                 </div>
 
-                <p className="text-[11px] text-[#c7c4d7] mt-1 leading-relaxed">
+                <p className="text-[11px] text-slate-600 dark:text-[#c7c4d7] mt-1 leading-relaxed">
                   {step.key === "Assigned" && complaint.technicianName
                     ? `Assigned to ${complaint.technicianName} (${complaint.technicianPhone || "Phone unavailable"}).`
                     : step.description}

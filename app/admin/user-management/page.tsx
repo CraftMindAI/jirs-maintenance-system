@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { collection, deleteDoc, doc, onSnapshot, updateDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import { showToast } from "@/lib/toast";
 import PageHeader from "@/components/admin/user-management/PageHeader";
-import Toast from "@/components/admin/user-management/Toast";
 import SearchBar from "@/components/admin/user-management/SearchBar";
 import UsersTable from "@/components/admin/user-management/UsersTable";
 import EditRoleModal from "@/components/admin/user-management/EditRoleModal";
@@ -14,50 +16,59 @@ export type UserItem = {
   email: string;
   phone: string;
   dept: string;
-  role: "Student" | "Teacher" | "Staff" | "Technician" | "Admin";
+  role: "Student" | "Staff" | "Technician" | "Admin";
   active: boolean;
 };
 
-const INITIAL_USERS: UserItem[] = [
-  { id: "USR-001", name: "Siddharth Roy", email: "siddharth.r@jirs.ac.in", phone: "+91 99001 12233", dept: "Hostel Block B", role: "Student", active: true },
-  { id: "USR-002", name: "Dr. Amit Sharma", email: "amit.sharma@jirs.ac.in", phone: "+91 99001 55667", dept: "Administration", role: "Teacher", active: true },
-  { id: "USR-003", name: "Rajesh Sharma", email: "rajesh.plumbing@jirs.ac.in", phone: "+91 98450 12345", dept: "Plumbing Division", role: "Technician", active: true },
-  { id: "USR-004", name: "Mohit Kumar", email: "mohit.electrical@jirs.ac.in", phone: "+91 98450 54321", dept: "Electrical Division", role: "Technician", active: true },
-  { id: "USR-005", name: "Priya Sharma", email: "priya.s@jirs.ac.in", phone: "+91 99001 88990", dept: "Science Department", role: "Staff", active: false },
-];
-
 export default function AdminUserManagement() {
   const [users, setUsers] = useState<UserItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [editingUserId, setEditingUserId] = useState<string | null>(null);
   const [editingRole, setEditingRole] = useState<UserItem["role"]>("Student");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
-  const [showToast, setShowToast] = useState<string | null>(null);
 
   useEffect(() => {
-    const stored = localStorage.getItem("jmms_users");
-    if (stored) {
-      setUsers(JSON.parse(stored));
-    } else {
-      localStorage.setItem("jmms_users", JSON.stringify(INITIAL_USERS));
-      setUsers(INITIAL_USERS);
-    }
+    const unsubscribe = onSnapshot(
+      collection(db, "users"),
+      (snapshot) => {
+        const list: UserItem[] = snapshot.docs.map((d) => {
+          const data = d.data();
+          return {
+            id: d.id,
+            name: data.name || "Unnamed User",
+            email: data.email || "",
+            phone: data.phone || "",
+            dept: data.department || "-",
+            role: (data.role || "Student") as UserItem["role"],
+            active: data.active !== false,
+          };
+        });
+        list.sort((a, b) => a.role.localeCompare(b.role));
+        setUsers(list);
+        setLoading(false);
+      },
+      (error) => {
+        console.error("Error fetching users:", error);
+        showToast.error("Failed to load users.");
+        setLoading(false);
+      },
+    );
+
+    return () => unsubscribe();
   }, []);
 
-  const saveUsers = (updated: UserItem[]) => {
-    localStorage.setItem("jmms_users", JSON.stringify(updated));
-    setUsers(updated);
-  };
+  const handleToggleStatus = async (id: string) => {
+    const user = users.find((u) => u.id === id);
+    if (!user) return;
 
-  const handleToggleStatus = (id: string) => {
-    const updated = users.map((u) => {
-      if (u.id === id) {
-        return { ...u, active: !u.active };
-      }
-      return u;
-    });
-    saveUsers(updated);
-    triggerToast("User status updated.");
+    try {
+      await updateDoc(doc(db, "users", id), { active: !user.active });
+      showToast.success("User status updated.");
+    } catch (error) {
+      console.error("Error updating user status:", error);
+      showToast.error("Failed to update user status.");
+    }
   };
 
   const handleEditRole = (id: string, role: UserItem["role"]) => {
@@ -65,29 +76,28 @@ export default function AdminUserManagement() {
     setEditingRole(role);
   };
 
-  const saveRoleEdit = () => {
+  const saveRoleEdit = async () => {
     if (!editingUserId) return;
-    const updated = users.map((u) => {
-      if (u.id === editingUserId) {
-        return { ...u, role: editingRole };
-      }
-      return u;
-    });
-    saveUsers(updated);
-    setEditingUserId(null);
-    triggerToast("User role updated successfully.");
+
+    try {
+      await updateDoc(doc(db, "users", editingUserId), { role: editingRole });
+      setEditingUserId(null);
+      showToast.success("User role updated successfully.");
+    } catch (error) {
+      console.error("Error updating user role:", error);
+      showToast.error("Failed to update user role.");
+    }
   };
 
-  const handleDeleteUser = (id: string) => {
-    const updated = users.filter((u) => u.id !== id);
-    saveUsers(updated);
-    setShowDeleteConfirm(null);
-    triggerToast("User account deleted.");
-  };
-
-  const triggerToast = (msg: string) => {
-    setShowToast(msg);
-    setTimeout(() => setShowToast(null), 3000);
+  const handleDeleteUser = async (id: string) => {
+    try {
+      await deleteDoc(doc(db, "users", id));
+      setShowDeleteConfirm(null);
+      showToast.success("User account deleted.");
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      showToast.error("Failed to delete user.");
+    }
   };
 
   const filteredUsers = users.filter((u) => {
@@ -103,18 +113,22 @@ export default function AdminUserManagement() {
     <div className="space-y-8 pb-12">
       <title>User Management | JMMS Admin</title>
 
-      {showToast && <Toast message={showToast} />}
-
       <PageHeader />
 
       <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
 
-      <UsersTable
-        users={filteredUsers}
-        onToggleStatus={handleToggleStatus}
-        onEditRole={handleEditRole}
-        onDeleteRequest={setShowDeleteConfirm}
-      />
+      {loading ? (
+        <div className="flex items-center justify-center py-20">
+          <div className="w-10 h-10 border-4 border-[#464554]/30 border-t-[#8083ff] rounded-full animate-spin" />
+        </div>
+      ) : (
+        <UsersTable
+          users={filteredUsers}
+          onToggleStatus={handleToggleStatus}
+          onEditRole={handleEditRole}
+          onDeleteRequest={setShowDeleteConfirm}
+        />
+      )}
 
       {/* Edit Role Modal */}
       {editingUserId && (
@@ -130,7 +144,7 @@ export default function AdminUserManagement() {
       {/* Delete User Modal */}
       {showDeleteConfirm && (
         <DeleteUserModal
-          userId={showDeleteConfirm}
+          userName={users.find((u) => u.id === showDeleteConfirm)?.name || "Unknown User"}
           onCancel={() => setShowDeleteConfirm(null)}
           onConfirm={() => handleDeleteUser(showDeleteConfirm)}
         />

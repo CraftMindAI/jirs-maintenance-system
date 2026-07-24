@@ -7,10 +7,10 @@ import ComplaintInfoCard from "@/components/admin/view-complaints/detail/Complai
 import ComplaintTrackDetailsCard from "@/components/admin/view-complaints/detail/ComplaintTrackDetailsCard";
 import ComplaintImagesCard from "@/components/admin/view-complaints/detail/ComplaintImagesCard";
 import ComplaintDetailSkeleton from "@/components/admin/view-complaints/detail/ComplaintDetailSkeleton";
-import Toast from "@/components/admin/view-complaints/Toast";
+import { showToast } from "@/lib/toast";
 import { useComplaintDetail } from "@/hooks/useComplaintDetail";
-import { doc, updateDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { useUserRole } from "@/hooks/useUserRole";
+import { approveComplaint, rejectComplaint } from "@/utils/admin/complaints";
 import Icon from "@/components/ui/Icon";
 
 export default function ViewComplaintDetailPage({
@@ -22,10 +22,10 @@ export default function ViewComplaintDetailPage({
   const complaintId = resolvedParams.id;
 
   const { complaint, poster, images, loading, error } = useComplaintDetail(complaintId);
+  const { isAdmin } = useUserRole();
 
   const [statusOverride, setStatusOverride] = useState<string | null>(null);
   const [updatingStatus, setUpdatingStatus] = useState<boolean>(false);
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const currentComplaint = complaint
     ? {
@@ -34,23 +34,16 @@ export default function ViewComplaintDetailPage({
       }
     : null;
 
-  const triggerToast = (msg: string) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 3000);
-  };
-
   const handleApprove = async () => {
     if (!complaintId) return;
     try {
       setUpdatingStatus(true);
-      await updateDoc(doc(db, "complaints", complaintId), {
-        status: "Approved",
-      });
+      await approveComplaint(complaintId);
       setStatusOverride("Approved");
-      triggerToast("Complaint ticket approved successfully.");
+      showToast.success("Complaint ticket approved successfully!");
     } catch (err) {
       console.error("Error approving complaint:", err);
-      triggerToast("Failed to approve complaint.");
+      showToast.error("Failed to approve complaint.");
     } finally {
       setUpdatingStatus(false);
     }
@@ -60,14 +53,12 @@ export default function ViewComplaintDetailPage({
     if (!complaintId) return;
     try {
       setUpdatingStatus(true);
-      await updateDoc(doc(db, "complaints", complaintId), {
-        status: "Rejected",
-      });
+      await rejectComplaint(complaintId);
       setStatusOverride("Rejected");
-      triggerToast("Complaint ticket marked as Rejected.");
+      showToast.warning("Complaint ticket marked as Rejected.");
     } catch (err) {
       console.error("Error rejecting complaint:", err);
-      triggerToast("Failed to reject complaint.");
+      showToast.error("Failed to reject complaint.");
     } finally {
       setUpdatingStatus(false);
     }
@@ -76,9 +67,6 @@ export default function ViewComplaintDetailPage({
   return (
     <div className="space-y-6 pb-12">
       <title>{`Complaint #${complaintId} | JMMS Admin`}</title>
-
-      {/* Toast popup */}
-      {toastMessage && <Toast message={toastMessage} />}
 
       {/* Top Header Row with Transparent Back Button */}
       <div className="flex items-center justify-between">
@@ -91,14 +79,14 @@ export default function ViewComplaintDetailPage({
       {loading ? (
         <ComplaintDetailSkeleton />
       ) : error || !currentComplaint ? (
-        <div className="bg-[#171f33] border border-[#ff516a]/20 rounded-3xl p-12 text-center shadow-sm space-y-4">
-          <div className="w-16 h-16 bg-[#ff516a]/10 rounded-full flex items-center justify-center text-[#ff516a] mx-auto">
+        <div className="bg-white dark:bg-[#171f33] border border-rose-500/20 dark:border-[#ff516a]/20 rounded-3xl p-12 text-center shadow-sm space-y-4">
+          <div className="w-16 h-16 bg-rose-500/10 dark:bg-[#ff516a]/10 rounded-full flex items-center justify-center text-rose-500 dark:text-[#ff516a] mx-auto">
             <Icon name="error_outline" className="text-4xl" />
           </div>
-          <h2 className="font-display text-xl font-bold text-[#dae2fd]">
+          <h2 className="font-display text-xl font-bold text-slate-900 dark:text-[#dae2fd]">
             {error || "Complaint Not Found"}
           </h2>
-          <p className="text-xs text-[#908fa0]">
+          <p className="text-xs text-slate-500 dark:text-[#908fa0]">
             The requested ticket details could not be retrieved from the database.
           </p>
           <div className="pt-2">
@@ -111,6 +99,7 @@ export default function ViewComplaintDetailPage({
           <div className="lg:col-span-2 space-y-6">
             <ComplaintInfoCard
               complaint={currentComplaint}
+              isAdmin={isAdmin}
               onApprove={handleApprove}
               onReject={handleReject}
               updatingStatus={updatingStatus}

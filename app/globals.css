@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #f8f9ff;
   --foreground: #0b1c30;
@@ -264,4 +266,54 @@ body {
 }
 .card-shine:hover::before {
   left: 150%;
+}
+
+/* React Toastify Custom Colors: Success Blue, Warning Yellow, Error Red */
+.Toastify__toast {
+  border-radius: 1rem !important;
+  font-family: var(--font-body), sans-serif !important;
+  font-size: 0.8125rem !important;
+  font-weight: 600 !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
+  color: #ffffff !important;
+}
+
+/* Success Toast -> BLUE */
+.Toastify__toast--success {
+  background-color: #2563eb !important;
+  border: 1px solid rgba(59, 130, 246, 0.5) !important;
+}
+.Toastify__toast--success .Toastify__toast-icon svg {
+  fill: #ffffff !important;
+}
+.Toastify__progress-bar--success {
+  background: #93c5fd !important;
+}
+
+/* Warning Toast -> YELLOW */
+.Toastify__toast--warning {
+  background-color: #eab308 !important;
+  border: 1px solid rgba(250, 204, 21, 0.5) !important;
+  color: #1a1a1a !important;
+}
+.Toastify__toast--warning .Toastify__toast-icon svg {
+  fill: #1a1a1a !important;
+}
+.Toastify__toast--warning .Toastify__toast-body {
+  color: #1a1a1a !important;
+}
+.Toastify__progress-bar--warning {
+  background: #854d0e !important;
+}
+
+/* Error Toast -> RED */
+.Toastify__toast--error {
+  background-color: #dc2626 !important;
+  border: 1px solid rgba(239, 68, 68, 0.5) !important;
+}
+.Toastify__toast--error .Toastify__toast-icon svg {
+  fill: #ffffff !important;
+}
+.Toastify__progress-bar--error {
+  background: #fca5a5 !important;
 }

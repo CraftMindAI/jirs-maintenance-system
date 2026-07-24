@@ -7,7 +7,6 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import Sidebar from "@/components/admin/layout/Sidebar";
 import TopNavbar from "@/components/admin/layout/TopNavbar";
-import Footer from "@/components/admin/layout/Footer";
 import MobileBottomNav from "@/components/admin/layout/MobileBottomNav";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -57,17 +56,26 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return () => unsubscribe();
   }, []);
 
-  // Set dark theme default
+  // Theme Sync on Mount
   useEffect(() => {
-    document.documentElement.classList.add("dark");
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "light") {
+      setDarkMode(false);
+      document.documentElement.classList.remove("dark");
+    } else {
+      setDarkMode(true);
+      document.documentElement.classList.add("dark");
+    }
   }, []);
 
   const toggleTheme = () => {
     if (darkMode) {
       document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
       setDarkMode(false);
     } else {
       document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
       setDarkMode(true);
     }
   };
@@ -83,14 +91,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   };
 
   return (
-    <div className="min-h-screen bg-[#0b1326] text-[#dae2fd] font-body-md selection:bg-[#8083ff]/30">
-
+    <div
+      className={`min-h-screen font-body-md transition-colors duration-300 ${
+        darkMode ? "bg-[#0b1326] text-[#dae2fd] selection:bg-[#8083ff]/30" : "bg-slate-50 text-slate-900 selection:bg-primary/20"
+      }`}
+    >
       {/* 1. DESKTOP SIDEBAR NAVIGATION */}
-      <Sidebar onLogout={handleLogout} />
+      <Sidebar darkMode={darkMode} onLogout={handleLogout} />
 
       {/* 2. MAIN CONTAINER & TOP NAVBAR */}
       <div className="lg:ml-64 min-h-screen flex flex-col">
-
         {/* Sticky Top Header */}
         <TopNavbar
           darkMode={darkMode}
@@ -105,14 +115,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <main className="p-6 lg:p-10 space-y-8 flex-1 max-w-[1440px]">
           {children}
         </main>
-
-       
-
       </div>
 
       {/* 3. BOTTOM NAVIGATION (MOBILE ONLY) */}
       <MobileBottomNav />
-
     </div>
   );
 }

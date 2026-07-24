@@ -1,32 +1,25 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Complaint } from "../dashboard/page";
+import { useComplaintsFeed } from "@/hooks/useComplaintsFeed";
 import WelcomeHeader from "@/components/admin/overview/WelcomeHeader";
 import StatsCards from "@/components/admin/overview/StatsCards";
 import MonthlyInsights from "@/components/admin/overview/MonthlyInsights";
 import ServiceSplit from "@/components/admin/overview/ServiceSplit";
 import RecentRequestsTable from "@/components/admin/overview/RecentRequestsTable";
+import { RESOLVED_STATUSES, ASSIGNED_STATUSES, buildServiceSplit, buildRecentRequests } from "@/utils/admin/overview";
 
 export default function AdminDashboardHome() {
-  const [complaints, setComplaints] = useState<Complaint[]>([]);
+  const { complaints } = useComplaintsFeed(null);
 
-  useEffect(() => {
-    const stored = localStorage.getItem("jmms_complaints");
-    if (stored) {
-      setComplaints(JSON.parse(stored));
-    }
-  }, []);
-
-  const getStats = () => {
-    const total = complaints.length ? 1248 + complaints.length : 1248;
-    const pending = complaints.filter(c => c.status === "Pending").length || 42;
-    const assigned = complaints.filter(c => c.status === "Assigned" || c.status === "In Progress").length || 156;
-    const resolved = complaints.filter(c => c.status === "Completed" || c.status === "Verified").length || 1050;
-    return { total, pending, assigned, resolved };
+  const stats = {
+    total: complaints.length,
+    pending: complaints.filter((c) => c.status === "Pending").length,
+    assigned: complaints.filter((c) => ASSIGNED_STATUSES.includes(c.status)).length,
+    resolved: complaints.filter((c) => RESOLVED_STATUSES.includes(c.status)).length,
   };
 
-  const stats = getStats();
+  const serviceSplit = buildServiceSplit(complaints);
+  const recentRequests = buildRecentRequests(complaints);
 
   return (
     <div className="space-y-8 pb-12">
@@ -41,13 +34,13 @@ export default function AdminDashboardHome() {
       {/* 3. BENTO GRID */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Bento: Monthly Insights (2 Cols) */}
-        <MonthlyInsights />
+        <MonthlyInsights complaintDates={complaints.map((c) => c.date)} />
 
         {/* Right Bento: Service Split Progress Bars (1 Col) */}
-        <ServiceSplit />
+        <ServiceSplit data={serviceSplit} />
 
         {/* 4. RECENT MAINTENANCE REQUESTS TABLE (3 COLS) */}
-        <RecentRequestsTable />
+        <RecentRequestsTable requests={recentRequests} totalCount={complaints.length} />
       </div>
     </div>
   );

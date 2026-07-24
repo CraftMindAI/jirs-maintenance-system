@@ -19,19 +19,29 @@ const MENU_ITEMS: MenuItem[] = [
   { label: "Settings", icon: "settings_applications", href: "/admin/settings" },
 ];
 
-export default function Sidebar({ onLogout }: { onLogout: () => void }) {
+export default function Sidebar({ darkMode = true, onLogout }: { darkMode?: boolean; onLogout: () => void }) {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden lg:flex flex-col h-screen w-64 fixed left-0 top-0 glass border-r border-[#464554]/20 py-6 px-4 z-50">
+    <aside
+      className={`hidden lg:flex flex-col h-screen w-64 fixed left-0 top-0 border-r py-6 px-4 z-50 transition-colors ${
+        darkMode
+          ? "bg-[#171f33]/90 backdrop-blur-md border-[#464554]/20 text-[#dae2fd]"
+          : "bg-white/95 backdrop-blur-md border-slate-200 text-slate-800"
+      }`}
+    >
       {/* Brand Header */}
       <div className="flex items-center gap-3 mb-8 px-2">
         <div className="w-10 h-10 vibrant-gradient rounded-xl flex items-center justify-center text-white shadow-lg shadow-[#8083ff]/20 shrink-0">
           <Icon name="architecture" className="text-2xl" />
         </div>
         <div>
-          <h2 className="font-display text-lg font-extrabold text-[#c0c1ff] tracking-tight">JMMS Admin</h2>
-          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#908fa0]">Facility Management</p>
+          <h2 className={`font-display text-lg font-extrabold tracking-tight ${darkMode ? "text-[#c0c1ff]" : "text-primary"}`}>
+            JMMS Admin
+          </h2>
+          <p className={`font-mono text-[10px] uppercase tracking-[0.2em] ${darkMode ? "text-[#908fa0]" : "text-slate-500"}`}>
+            Facility Management
+          </p>
         </div>
       </div>
 
@@ -54,8 +64,12 @@ export default function Sidebar({ onLogout }: { onLogout: () => void }) {
               href={item.href}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all font-semibold text-sm ${
                 active
-                  ? "bg-[#c0c1ff]/10 text-[#c0c1ff] font-bold border border-[#c0c1ff]/20"
-                  : "text-[#c7c4d7] hover:bg-[#222a3d] hover:text-white"
+                  ? darkMode
+                    ? "bg-[#c0c1ff]/10 text-[#c0c1ff] font-bold border border-[#c0c1ff]/20"
+                    : "bg-primary/10 text-primary font-bold border border-primary/20"
+                  : darkMode
+                  ? "text-[#c7c4d7] hover:bg-[#222a3d] hover:text-white"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
               }`}
             >
               <Icon name={item.icon} className="text-xl" />
@@ -66,11 +80,7 @@ export default function Sidebar({ onLogout }: { onLogout: () => void }) {
       </nav>
 
       {/* Footer Actions */}
-      <div className="mt-auto pt-4 space-y-1 border-t border-[#464554]/10">
-        <Link href="/admin/settings" className="flex items-center gap-3 px-3 py-2.5 text-[#c7c4d7] hover:bg-[#222a3d] hover:text-white rounded-xl transition-all text-sm font-semibold">
-          <Icon name="help_outline" className="text-xl" />
-          <span>Help Center</span>
-        </Link>
+      <div className={`mt-auto pt-4 space-y-1 border-t ${darkMode ? "border-[#464554]/10" : "border-slate-200"}`}>
         <button
           onClick={onLogout}
           className="w-full flex items-center gap-3 px-3 py-2.5 text-red-400 hover:bg-red-500/10 rounded-xl transition-all text-sm font-bold cursor-pointer"
