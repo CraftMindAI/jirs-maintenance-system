@@ -78,7 +78,7 @@ export default function DatePicker({
     setOpen(false);
   };
 
-  const borderClass = open ? "border-[#8083ff]" : "hover:border-[#8083ff]/50";
+  const borderClass = open ? "border-primary dark:border-[#8083ff]" : "hover:border-primary/50 dark:hover:border-[#8083ff]/50";
   const buttonStateClass = disabled ? "opacity-50 cursor-not-allowed" : `cursor-pointer ${borderClass}`;
 
   return (
@@ -88,42 +88,42 @@ export default function DatePicker({
         type="button"
         disabled={disabled}
         onClick={() => !disabled && setOpen((prev) => !prev)}
-        className={`w-full flex items-center justify-between rounded-xl px-4 py-3 text-xs bg-[#131b2e] border border-[#464554]/20 font-bold outline-none transition-colors ${buttonStateClass} ${value ? "text-[#dae2fd]" : "text-[#908fa0]"}`}
+        className={`w-full flex items-center justify-between rounded-xl px-4 py-3 text-xs bg-slate-50 dark:bg-[#131b2e] border border-slate-200 dark:border-[#464554]/20 font-bold outline-none transition-colors ${buttonStateClass} ${value ? "text-slate-800 dark:text-[#dae2fd]" : "text-slate-400 dark:text-[#908fa0]"}`}
       >
         <span className="font-mono text-xs">{value ? formatDateDisplay(value) : placeholder}</span>
         <Icon
           name="calendar_month"
-          className={`text-base ${disabled ? "text-[#908fa0]" : "text-[#8083ff]"}`}
+          className={`text-base ${disabled ? "text-slate-400 dark:text-[#908fa0]" : "text-primary dark:text-[#8083ff]"}`}
         />
       </button>
 
       {open && !disabled && (
-        <div className="absolute z-30 mt-2 w-72 bg-[#171f33] border border-[#464554]/20 rounded-2xl shadow-2xl p-4 space-y-3 animate-fade-in">
+        <div className="absolute z-30 mt-2 w-72 bg-white dark:bg-[#171f33] border border-slate-200 dark:border-[#464554]/20 rounded-2xl shadow-2xl p-4 space-y-3 animate-fade-in">
           {/* Header Month/Year Selector */}
-          <div className="flex items-center justify-between pb-2 border-b border-[#464554]/20">
+          <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-[#464554]/20">
             <button
               type="button"
               onClick={handlePrevMonth}
-              className="p-1 text-[#908fa0] hover:text-[#dae2fd] hover:bg-[#131b2e] rounded-lg transition-colors cursor-pointer"
+              className="p-1 text-slate-500 dark:text-[#908fa0] hover:text-slate-800 dark:hover:text-[#dae2fd] hover:bg-slate-100 dark:hover:bg-[#131b2e] rounded-lg transition-colors cursor-pointer"
             >
               <Icon name="chevron_left" className="text-lg" />
             </button>
 
-            <span className="text-xs font-bold text-[#dae2fd]">
+            <span className="text-xs font-bold text-slate-800 dark:text-[#dae2fd]">
               {MONTH_NAMES[viewMonth]} {viewYear}
             </span>
 
             <button
               type="button"
               onClick={handleNextMonth}
-              className="p-1 text-[#908fa0] hover:text-[#dae2fd] hover:bg-[#131b2e] rounded-lg transition-colors cursor-pointer"
+              className="p-1 text-slate-500 dark:text-[#908fa0] hover:text-slate-800 dark:hover:text-[#dae2fd] hover:bg-slate-100 dark:hover:bg-[#131b2e] rounded-lg transition-colors cursor-pointer"
             >
               <Icon name="chevron_right" className="text-lg" />
             </button>
           </div>
 
           {/* Days Header */}
-          <div className="grid grid-cols-7 gap-1 text-center font-mono text-[10px] text-[#908fa0] font-bold">
+          <div className="grid grid-cols-7 gap-1 text-center font-mono text-[10px] text-slate-400 dark:text-[#908fa0] font-bold">
             {DAYS_OF_WEEK.map((d) => (
               <div key={d} className="py-1">{d}</div>
             ))}
@@ -152,10 +152,10 @@ export default function DatePicker({
                   onClick={() => handleSelectDay(day)}
                   className={`h-8 w-8 rounded-xl flex items-center justify-center text-xs transition-all cursor-pointer mx-auto ${
                     isSelected
-                      ? "bg-[#8083ff] text-white font-extrabold shadow-md shadow-[#8083ff]/30"
+                      ? "bg-primary dark:bg-[#8083ff] text-white font-extrabold shadow-md"
                       : isToday
-                      ? "border border-[#00a572] text-[#4edea3] font-bold"
-                      : "text-[#dae2fd] hover:bg-[#131b2e]"
+                      ? "border border-emerald-600 dark:border-[#00a572] text-emerald-600 dark:text-[#4edea3] font-bold"
+                      : "text-slate-800 dark:text-[#dae2fd] hover:bg-slate-100 dark:hover:bg-[#131b2e]"
                   }`}
                 >
                   {day}

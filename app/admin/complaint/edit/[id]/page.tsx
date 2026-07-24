@@ -72,7 +72,7 @@ export default function EditComplaintPage() {
   if (loading) {
     return (
       <div className="flex h-96 items-center justify-center">
-        <div className="w-10 h-10 border-4 border-[#464554]/30 border-t-[#8083ff] rounded-full animate-spin" />
+        <div className="w-10 h-10 border-4 border-slate-300 dark:border-[#464554]/30 border-t-primary dark:border-t-[#8083ff] rounded-full animate-spin" />
       </div>
     );
   }
@@ -81,10 +81,10 @@ export default function EditComplaintPage() {
     return (
       <div className="space-y-8 pb-12 max-w-4xl mx-auto">
         <title>Edit Complaint | JMMS Admin</title>
-        <div className="bg-[#171f33] border border-[#464554]/10 rounded-3xl p-16 text-center shadow-sm">
-          <Icon name="search_off" className="text-4xl text-[#908fa0] mb-3 block mx-auto" />
-          <h3 className="font-display text-xl font-bold text-[#dae2fd]">Ticket Not Found</h3>
-          <p className="text-xs text-[#908fa0] mt-1">This complaint may have been removed.</p>
+        <div className="bg-white dark:bg-[#171f33] border border-[#ff516a]/20 rounded-3xl p-16 text-center shadow-sm">
+          <Icon name="search_off" className="text-4xl text-slate-400 dark:text-[#908fa0] mb-3 block mx-auto" />
+          <h3 className="font-display text-xl font-bold text-slate-900 dark:text-[#dae2fd]">Ticket Not Found</h3>
+          <p className="text-xs text-slate-500 dark:text-[#908fa0] mt-1">This complaint may have been removed.</p>
           <button
             onClick={() => router.push("/admin/view-complaints")}
             className="mt-6 px-6 py-3 vibrant-gradient text-white rounded-xl font-bold text-xs cursor-pointer"
@@ -103,16 +103,16 @@ export default function EditComplaintPage() {
       <div>
         <Link
           href="/admin/view-complaints"
-          className="inline-flex items-center gap-2 text-[#908fa0] font-bold hover:text-[#c0c1ff] transition-colors text-xs uppercase tracking-wider"
+          className="inline-flex items-center gap-2 text-slate-500 dark:text-[#908fa0] font-bold hover:text-primary dark:hover:text-[#c0c1ff] transition-colors text-xs uppercase tracking-wider"
         >
           <Icon name="arrow_back" className="text-lg" />
           Back to overview
         </Link>
-        <h1 className="font-display text-3xl font-extrabold text-[#dae2fd] tracking-tight mt-2">
+        <h1 className="font-display text-3xl font-extrabold text-slate-900 dark:text-[#dae2fd] tracking-tight mt-2">
           Edit Maintenance Incident
         </h1>
-        <p className="text-xs text-[#c7c4d7] opacity-80 mt-1 font-semibold">
-          Update the details of ticket <span className="font-bold text-[#c0c1ff]">{id}</span>.
+        <p className="text-xs text-slate-600 dark:text-[#c7c4d7] opacity-80 mt-1 font-semibold">
+          Update the details of ticket <span className="font-bold text-primary dark:text-[#c0c1ff]">{id}</span>.
         </p>
       </div>
 

@@ -44,19 +44,19 @@ export default function Dropdown({
         id={id}
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className={`w-full flex items-center justify-between rounded-xl px-4 py-3.5 text-xs bg-[#131b2e] border border-[#464554]/20 font-bold outline-none transition-colors cursor-pointer ${
-          open ? "border-[#8083ff]" : "hover:border-[#8083ff]/50"
-        } ${selected ? "text-[#dae2fd]" : "text-[#908fa0]"}`}
+        className={`w-full flex items-center justify-between rounded-xl px-4 py-3.5 text-xs bg-slate-50 dark:bg-[#131b2e] border border-slate-200 dark:border-[#464554]/20 font-bold outline-none transition-colors cursor-pointer ${
+          open ? "border-primary dark:border-[#8083ff]" : "hover:border-primary/50 dark:hover:border-[#8083ff]/50"
+        } ${selected ? "text-slate-800 dark:text-[#dae2fd]" : "text-slate-400 dark:text-[#908fa0]"}`}
       >
         <span>{selected ? selected.label : placeholder}</span>
         <Icon
           name="expand_more"
-          className={`text-base text-[#908fa0] transition-transform ${open ? "rotate-180" : ""}`}
+          className={`text-base text-slate-400 dark:text-[#908fa0] transition-transform ${open ? "rotate-180" : ""}`}
         />
       </button>
 
       {open && (
-        <div className="absolute z-20 mt-2 w-full bg-[#171f33] border border-[#464554]/20 rounded-xl shadow-lg overflow-hidden">
+        <div className="absolute z-20 mt-2 w-full bg-white dark:bg-[#171f33] border border-slate-200 dark:border-[#464554]/20 rounded-xl shadow-lg overflow-hidden">
           <ul className={`p-1.5 ${scroll ? "max-h-60 overflow-y-auto" : ""}`}>
             {options.map((option) => (
               <li key={option.value}>
@@ -68,8 +68,8 @@ export default function Dropdown({
                   }}
                   className={`w-full text-left px-3 py-2.5 rounded-lg text-xs font-bold cursor-pointer transition-colors ${
                     option.value === value
-                      ? "bg-[#8083ff]/10 text-[#8083ff]"
-                      : "text-[#dae2fd] hover:bg-[#131b2e]"
+                      ? "bg-primary/10 dark:bg-[#8083ff]/10 text-primary dark:text-[#8083ff]"
+                      : "text-slate-700 dark:text-[#dae2fd] hover:bg-slate-100 dark:hover:bg-[#131b2e]"
                   }`}
                 >
                   {option.label}

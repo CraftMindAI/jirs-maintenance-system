@@ -243,17 +243,17 @@ export default function ComplaintForm({
   };
 
   return (
-    <div className="bg-[#171f33] border border-[#464554]/10 rounded-3xl p-6 md:p-10 shadow-sm relative overflow-hidden vibrant-shadow">
+    <div className="bg-white dark:bg-[#171f33] border border-slate-200 dark:border-[#464554]/10 rounded-3xl p-6 md:p-10 shadow-sm relative overflow-hidden dark:vibrant-shadow">
 
       {success && (
-        <div className="absolute inset-0 z-40 bg-[#171f33]/95 flex flex-col items-center justify-center space-y-4 animate-fade-in text-center p-6">
-          <div className="w-16 h-16 bg-[#4edea3]/10 rounded-full flex items-center justify-center text-[#4edea3]">
+        <div className="absolute inset-0 z-40 bg-white/95 dark:bg-[#171f33]/95 flex flex-col items-center justify-center space-y-4 animate-fade-in text-center p-6">
+          <div className="w-16 h-16 bg-emerald-500/10 dark:bg-[#4edea3]/10 rounded-full flex items-center justify-center text-emerald-600 dark:text-[#4edea3]">
             <Icon name="check_circle" className="text-5xl animate-bounce" />
           </div>
-          <h3 className="font-display text-2xl font-bold text-[#dae2fd]">
+          <h3 className="font-display text-2xl font-bold text-slate-900 dark:text-[#dae2fd]">
             {mode === "edit" ? "Ticket Updated!" : "Ticket Published!"}
           </h3>
-          <p className="text-xs text-[#908fa0] max-w-sm">
+          <p className="text-xs text-slate-500 dark:text-[#908fa0] max-w-sm">
             {mode === "edit"
               ? "Complaint updated successfully. Redirecting you to incidents view..."
               : "Complaint logged successfully. Redirecting you to incidents view..."}
@@ -262,9 +262,9 @@ export default function ComplaintForm({
       )}
 
       {submitting && (
-        <div className="absolute inset-0 z-40 bg-[#171f33]/80 flex flex-col items-center justify-center space-y-4 animate-fade-in">
-          <div className="w-10 h-10 border-4 border-[#464554]/30 border-t-[#8083ff] rounded-full animate-spin" />
-          <p className="text-xs font-bold text-[#dae2fd]">
+        <div className="absolute inset-0 z-40 bg-white/80 dark:bg-[#171f33]/80 flex flex-col items-center justify-center space-y-4 animate-fade-in">
+          <div className="w-10 h-10 border-4 border-slate-300 dark:border-[#464554]/30 border-t-primary dark:border-t-[#8083ff] rounded-full animate-spin" />
+          <p className="text-xs font-bold text-slate-900 dark:text-[#dae2fd]">
             {mode === "edit" ? "Updating incident details..." : "Publishing incident details..."}
           </p>
         </div>
@@ -272,7 +272,7 @@ export default function ComplaintForm({
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {error && (
-          <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded-2xl text-xs font-bold flex items-center gap-3">
+          <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-500 rounded-2xl text-xs font-bold flex items-center gap-3">
             <Icon name="error" />
             {error}
           </div>
@@ -280,7 +280,7 @@ export default function ComplaintForm({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
-            <label htmlFor="category" className="block text-[10px] font-mono uppercase text-[#908fa0]">
+            <label htmlFor="category" className="block text-[10px] font-mono uppercase text-slate-500 dark:text-[#908fa0]">
               Complaint Category
             </label>
             <Dropdown
@@ -294,7 +294,7 @@ export default function ComplaintForm({
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="priority" className="block text-[10px] font-mono uppercase text-[#908fa0]">
+            <label htmlFor="priority" className="block text-[10px] font-mono uppercase text-slate-500 dark:text-[#908fa0]">
               Priority Urgency
             </label>
             <Dropdown
@@ -307,7 +307,7 @@ export default function ComplaintForm({
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="location" className="block text-[10px] font-mono uppercase text-[#908fa0]">
+          <label htmlFor="location" className="block text-[10px] font-mono uppercase text-slate-500 dark:text-[#908fa0]">
             Campus Location
           </label>
           <input
@@ -316,12 +316,12 @@ export default function ComplaintForm({
             placeholder="e.g. Block B, Room 302 or Physics Lab 3"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
-            className="w-full rounded-xl px-4 py-3.5 text-xs bg-[#131b2e] border border-[#464554]/20 text-[#dae2fd] font-semibold outline-none focus:border-[#8083ff]"
+            className="w-full rounded-xl px-4 py-3.5 text-xs bg-slate-50 dark:bg-[#131b2e] border border-slate-200 dark:border-[#464554]/20 text-slate-800 dark:text-[#dae2fd] font-semibold outline-none focus:border-primary dark:focus:border-[#8083ff]"
           />
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="description" className="block text-[10px] font-mono uppercase text-[#908fa0]">
+          <label htmlFor="description" className="block text-[10px] font-mono uppercase text-slate-500 dark:text-[#908fa0]">
             Issue Description
           </label>
           <textarea
@@ -330,12 +330,12 @@ export default function ComplaintForm({
             placeholder="Provide a detailed description of the maintenance issue..."
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full rounded-xl p-4 text-xs bg-[#131b2e] border border-[#464554]/20 text-[#dae2fd] font-semibold outline-none focus:border-[#8083ff] resize-none"
+            className="w-full rounded-xl p-4 text-xs bg-slate-50 dark:bg-[#131b2e] border border-slate-200 dark:border-[#464554]/20 text-slate-800 dark:text-[#dae2fd] font-semibold outline-none focus:border-primary dark:focus:border-[#8083ff] resize-none"
           />
         </div>
 
         <div className="space-y-2">
-          <span className="block text-[10px] font-mono uppercase text-[#908fa0]">
+          <span className="block text-[10px] font-mono uppercase text-slate-500 dark:text-[#908fa0]">
             Attach Reference Image (Optional, up to {MAX_IMAGES})
           </span>
 
@@ -344,18 +344,18 @@ export default function ComplaintForm({
               {existingImages.map((image, index) => (
                 <div
                   key={`existing-${index}`}
-                  className="border border-[#464554]/20 rounded-3xl p-4 flex items-center justify-between gap-4 bg-[#131b2e]"
+                  className="border border-slate-200 dark:border-[#464554]/20 rounded-3xl p-4 flex items-center justify-between gap-4 bg-slate-50 dark:bg-[#131b2e]"
                 >
                   <div className="flex items-center gap-4 min-w-0">
-                    <div className="w-14 h-14 rounded-2xl overflow-hidden relative shrink-0 border border-[#464554]/20">
+                    <div className="w-14 h-14 rounded-2xl overflow-hidden relative shrink-0 border border-slate-200 dark:border-[#464554]/20">
                       <img src={image.preview} alt="Preview" className="w-full h-full object-cover" />
                     </div>
-                    <p className="text-xs font-bold text-[#dae2fd] truncate">{image.name}</p>
+                    <p className="text-xs font-bold text-slate-900 dark:text-[#dae2fd] truncate">{image.name}</p>
                   </div>
                   <button
                     type="button"
                     onClick={() => removeExistingImage(index)}
-                    className="text-red-400 p-2 hover:bg-red-500/10 rounded-xl cursor-pointer shrink-0"
+                    className="text-red-500 p-2 hover:bg-red-500/10 rounded-xl cursor-pointer shrink-0"
                   >
                     <Icon name="delete" className="text-xl" />
                   </button>
@@ -364,20 +364,20 @@ export default function ComplaintForm({
               {imagePreviews.map((preview, index) => (
                 <div
                   key={`new-${index}`}
-                  className="border border-[#464554]/20 rounded-3xl p-4 flex items-center justify-between gap-4 bg-[#131b2e]"
+                  className="border border-slate-200 dark:border-[#464554]/20 rounded-3xl p-4 flex items-center justify-between gap-4 bg-slate-50 dark:bg-[#131b2e]"
                 >
                   <div className="flex items-center gap-4 min-w-0">
-                    <div className="w-14 h-14 rounded-2xl overflow-hidden relative shrink-0 border border-[#464554]/20">
+                    <div className="w-14 h-14 rounded-2xl overflow-hidden relative shrink-0 border border-slate-200 dark:border-[#464554]/20">
                       <img src={preview} alt="Preview" className="w-full h-full object-cover" />
                     </div>
-                    <p className="text-xs font-bold text-[#dae2fd] truncate">
+                    <p className="text-xs font-bold text-slate-900 dark:text-[#dae2fd] truncate">
                       {imageFiles[index]?.name || "attachment.jpg"}
                     </p>
                   </div>
                   <button
                     type="button"
                     onClick={() => removeImage(index)}
-                    className="text-red-400 p-2 hover:bg-red-500/10 rounded-xl cursor-pointer shrink-0"
+                    className="text-red-500 p-2 hover:bg-red-500/10 rounded-xl cursor-pointer shrink-0"
                   >
                     <Icon name="delete" className="text-xl" />
                   </button>
@@ -395,8 +395,8 @@ export default function ComplaintForm({
               onClick={() => fileInputRef.current?.click()}
               className={`border-2 border-dashed rounded-3xl p-8 text-center flex flex-col items-center justify-center gap-3 cursor-pointer transition-all ${
                 dragActive
-                  ? "border-[#8083ff] bg-[#8083ff]/5"
-                  : "border-[#464554]/30 hover:border-[#8083ff]/50 hover:bg-[#131b2e]/40"
+                  ? "border-primary dark:border-[#8083ff] bg-primary/5 dark:bg-[#8083ff]/5"
+                  : "border-slate-300 dark:border-[#464554]/30 hover:border-primary/50 dark:hover:border-[#8083ff]/50 hover:bg-slate-50 dark:hover:bg-[#131b2e]/40"
               }`}
             >
               <input
@@ -407,12 +407,12 @@ export default function ComplaintForm({
                 multiple
                 className="hidden"
               />
-              <div className="w-12 h-12 bg-[#131b2e] text-[#908fa0] rounded-2xl flex items-center justify-center">
+              <div className="w-12 h-12 bg-slate-100 dark:bg-[#131b2e] text-slate-400 dark:text-[#908fa0] rounded-2xl flex items-center justify-center">
                 <Icon name="upload" className="text-2xl" />
               </div>
               <div>
-                <p className="font-bold text-xs text-[#dae2fd]">Drag & drop photo or click to upload</p>
-                <p className="text-[10px] text-[#908fa0] mt-1">
+                <p className="font-bold text-xs text-slate-900 dark:text-[#dae2fd]">Drag & drop photo or click to upload</p>
+                <p className="text-[10px] text-slate-500 dark:text-[#908fa0] mt-1">
                   Supported: JPG, PNG, JPEG · {MAX_IMAGES - existingImages.length - imagePreviews.length} slot(s) left
                 </p>
               </div>
@@ -420,17 +420,17 @@ export default function ComplaintForm({
           )}
         </div>
 
-        <div className="flex gap-4 pt-4 border-t border-[#464554]/10">
+        <div className="flex gap-4 pt-4 border-t border-slate-100 dark:border-[#464554]/10">
           <button
             type="submit"
-            className="flex-1 py-4 vibrant-gradient text-white rounded-xl font-bold shadow-lg shadow-[#8083ff]/20 text-xs cursor-pointer flex items-center justify-center gap-2 uppercase tracking-wider"
+            className="flex-1 py-4 vibrant-gradient text-white rounded-xl font-bold shadow-lg shadow-primary/20 dark:shadow-[#8083ff]/20 text-xs cursor-pointer flex items-center justify-center gap-2 uppercase tracking-wider"
           >
             <Icon name={mode === "edit" ? "save" : "send"} /> {mode === "edit" ? "Update Ticket" : "Submit Incident"}
           </button>
           <button
             type="button"
             onClick={handleReset}
-            className="px-6 py-4 border border-[#464554]/30 text-[#908fa0] font-bold rounded-xl hover:bg-[#222a3d] text-xs cursor-pointer"
+            className="px-6 py-4 border border-slate-200 dark:border-[#464554]/30 text-slate-600 dark:text-[#908fa0] font-bold rounded-xl hover:bg-slate-100 dark:hover:bg-[#222a3d] text-xs cursor-pointer"
           >
             Reset
           </button>

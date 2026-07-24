@@ -79,14 +79,14 @@ export default function ViewComplaintDetailPage({
       {loading ? (
         <ComplaintDetailSkeleton />
       ) : error || !currentComplaint ? (
-        <div className="bg-[#171f33] border border-[#ff516a]/20 rounded-3xl p-12 text-center shadow-sm space-y-4">
-          <div className="w-16 h-16 bg-[#ff516a]/10 rounded-full flex items-center justify-center text-[#ff516a] mx-auto">
+        <div className="bg-white dark:bg-[#171f33] border border-rose-500/20 dark:border-[#ff516a]/20 rounded-3xl p-12 text-center shadow-sm space-y-4">
+          <div className="w-16 h-16 bg-rose-500/10 dark:bg-[#ff516a]/10 rounded-full flex items-center justify-center text-rose-500 dark:text-[#ff516a] mx-auto">
             <Icon name="error_outline" className="text-4xl" />
           </div>
-          <h2 className="font-display text-xl font-bold text-[#dae2fd]">
+          <h2 className="font-display text-xl font-bold text-slate-900 dark:text-[#dae2fd]">
             {error || "Complaint Not Found"}
           </h2>
-          <p className="text-xs text-[#908fa0]">
+          <p className="text-xs text-slate-500 dark:text-[#908fa0]">
             The requested ticket details could not be retrieved from the database.
           </p>
           <div className="pt-2">

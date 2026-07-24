@@ -14,12 +14,12 @@ export default function AdminSettings() {
       {/* Unified Single View for Profile Information & Password Security */}
       <div className="space-y-8">
         {/* Section 1: Profile Information */}
-        <div className="bg-[#171f33] border border-[#464554]/10 rounded-3xl p-6 md:p-8 shadow-sm relative overflow-hidden vibrant-shadow">
+        <div className="bg-white dark:bg-[#171f33] border border-slate-200 dark:border-[#464554]/10 rounded-3xl p-6 md:p-8 shadow-sm relative overflow-hidden dark:vibrant-shadow">
           <ProfileSettings />
         </div>
 
         {/* Section 2: Security & Password Update */}
-        <div className="bg-[#171f33] border border-[#464554]/10 rounded-3xl p-6 md:p-8 shadow-sm relative overflow-hidden vibrant-shadow">
+        <div className="bg-white dark:bg-[#171f33] border border-slate-200 dark:border-[#464554]/10 rounded-3xl p-6 md:p-8 shadow-sm relative overflow-hidden dark:vibrant-shadow">
           <SecuritySettings />
         </div>
       </div>

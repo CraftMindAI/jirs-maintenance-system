@@ -49,9 +49,9 @@ export default function FilterParameters({
   const datesLocked = reportType !== "Custom Report";
 
   return (
-    <div className="bg-[#171f33] border border-[#464554]/10 rounded-3xl p-6 shadow-sm print:hidden vibrant-shadow">
-      <h3 className="font-display text-sm font-bold text-[#dae2fd] mb-4 flex items-center gap-2">
-        <Icon name="filter_list" className="text-[#c0c1ff]" />
+    <div className="bg-white dark:bg-[#171f33] border border-slate-200 dark:border-[#464554]/10 rounded-3xl p-6 shadow-sm print:hidden dark:vibrant-shadow">
+      <h3 className="font-display text-sm font-bold text-slate-900 dark:text-[#dae2fd] mb-4 flex items-center gap-2">
+        <Icon name="filter_list" className="text-primary dark:text-[#c0c1ff]" />
         Filter Parameters
       </h3>
 
@@ -59,7 +59,7 @@ export default function FilterParameters({
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Start Date Custom Picker */}
           <div className="space-y-1.5">
-            <label className="block text-[10px] font-mono uppercase text-[#908fa0] tracking-wider">
+            <label className="block text-[10px] font-mono uppercase text-slate-500 dark:text-[#908fa0] tracking-wider">
               Start Date
             </label>
             <DatePicker
@@ -72,7 +72,7 @@ export default function FilterParameters({
 
           {/* End Date Custom Picker */}
           <div className="space-y-1.5">
-            <label className="block text-[10px] font-mono uppercase text-[#908fa0] tracking-wider">
+            <label className="block text-[10px] font-mono uppercase text-slate-500 dark:text-[#908fa0] tracking-wider">
               End Date
             </label>
             <DatePicker
@@ -85,7 +85,7 @@ export default function FilterParameters({
 
           {/* Report Type Dropdown */}
           <div className="space-y-1.5">
-            <label className="block text-[10px] font-mono uppercase text-[#908fa0] tracking-wider">
+            <label className="block text-[10px] font-mono uppercase text-slate-500 dark:text-[#908fa0] tracking-wider">
               Report Type
             </label>
             <Dropdown
@@ -98,7 +98,7 @@ export default function FilterParameters({
 
           {/* Status Filter Dropdown */}
           <div className="space-y-1.5">
-            <label className="block text-[10px] font-mono uppercase text-[#908fa0] tracking-wider">
+            <label className="block text-[10px] font-mono uppercase text-slate-500 dark:text-[#908fa0] tracking-wider">
               Status Filter
             </label>
             <Dropdown
@@ -111,10 +111,10 @@ export default function FilterParameters({
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-4 border-t border-[#464554]/10 pt-4">
+        <div className="flex gap-4 border-t border-slate-100 dark:border-[#464554]/10 pt-4">
           <button
             type="submit"
-            className="px-6 py-3 bg-[#222a3d] border border-[#c0c1ff]/20 text-[#c0c1ff] hover:bg-[#8083ff]/15 hover:border-[#8083ff]/40 rounded-xl font-bold transition-all text-xs cursor-pointer flex items-center gap-1.5"
+            className="px-6 py-3 bg-slate-100 dark:bg-[#222a3d] border border-primary/20 dark:border-[#c0c1ff]/20 text-primary dark:text-[#c0c1ff] hover:bg-primary/10 dark:hover:bg-[#8083ff]/15 rounded-xl font-bold transition-all text-xs cursor-pointer flex items-center gap-1.5"
           >
             <Icon name="refresh" className="text-sm" /> Generate Summary
           </button>
@@ -122,7 +122,7 @@ export default function FilterParameters({
             <button
               type="button"
               onClick={onDownloadPDF}
-              className="px-6 py-3 vibrant-gradient text-white rounded-xl font-bold transition-all text-xs cursor-pointer flex items-center gap-1.5 shadow-lg shadow-[#8083ff]/20 uppercase tracking-wider hover:scale-[1.01]"
+              className="px-6 py-3 vibrant-gradient text-white rounded-xl font-bold transition-all text-xs cursor-pointer flex items-center gap-1.5 shadow-lg shadow-primary/20 dark:shadow-[#8083ff]/20 uppercase tracking-wider hover:scale-[1.01]"
             >
               <Icon name="download" className="text-sm" /> Export PDF
             </button>

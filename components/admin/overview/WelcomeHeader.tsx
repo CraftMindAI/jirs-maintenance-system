@@ -5,10 +5,10 @@ export default function WelcomeHeader() {
   return (
     <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
       <div>
-        <h1 className="font-display text-3xl md:text-4xl font-extrabold text-[#dae2fd] tracking-tight mb-1">
+        <h1 className="font-display text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-[#dae2fd] tracking-tight mb-1">
           Operational Overview
         </h1>
-        <p className="text-[#c7c4d7] text-sm opacity-80 font-semibold">
+        <p className="text-slate-600 dark:text-[#c7c4d7] text-sm opacity-80 font-semibold">
           Real-time facility status and maintenance intelligence
         </p>
       </div>

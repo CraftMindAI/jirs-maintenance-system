@@ -207,18 +207,18 @@ export default function MonthlyInsights({ complaintDates }: Readonly<{ complaint
   }, [level, activeItems, maxCount]);
 
   return (
-    <div className="lg:col-span-2 bg-[#171f33] p-6 sm:p-8 rounded-3xl border border-[#464554]/10 flex flex-col min-h-[460px] vibrant-shadow relative overflow-hidden">
+    <div className="lg:col-span-2 bg-white dark:bg-[#171f33] p-6 sm:p-8 rounded-3xl border border-slate-200 dark:border-[#464554]/10 flex flex-col min-h-[460px] shadow-md dark:vibrant-shadow relative overflow-hidden">
       {/* Header with Title & Breadcrumbs */}
       <div className="flex flex-wrap justify-between items-center gap-4 mb-6 z-10">
         <div>
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#8083ff] bg-[#8083ff]/10 px-2.5 py-0.5 rounded-full border border-[#8083ff]/20">
+            <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-primary dark:text-[#8083ff] bg-primary/10 dark:bg-[#8083ff]/10 px-2.5 py-0.5 rounded-full border border-primary/20 dark:border-[#8083ff]/20">
               {level === "day" ? "Linear Graph View" : "Bar Chart View"}
             </span>
-            <span className="text-xs text-[#908fa0] font-mono">• {breadcrumbText}</span>
+            <span className="text-xs text-slate-500 dark:text-[#908fa0] font-mono">• {breadcrumbText}</span>
           </div>
 
-          <h3 className="font-display text-xl sm:text-2xl font-extrabold text-[#dae2fd] mt-1.5 flex items-center gap-2">
+          <h3 className="font-display text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-[#dae2fd] mt-1.5 flex items-center gap-2">
             Monthly Insights
           </h3>
         </div>
@@ -232,7 +232,7 @@ export default function MonthlyInsights({ complaintDates }: Readonly<{ complaint
               exit={{ opacity: 0, x: -10 }}
               whileTap={{ scale: 0.92 }}
               onClick={handleBack}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-[#8083ff]/30 bg-[#131b2e] hover:bg-[#8083ff]/20 text-xs font-bold text-[#c0c1ff] transition-all cursor-pointer shadow-md group"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-primary/30 dark:border-[#8083ff]/30 bg-slate-100 dark:bg-[#131b2e] hover:bg-primary/10 dark:hover:bg-[#8083ff]/20 text-xs font-bold text-primary dark:text-[#c0c1ff] transition-all cursor-pointer shadow-md group"
             >
               <Icon
                 name="arrow_back"
@@ -242,7 +242,7 @@ export default function MonthlyInsights({ complaintDates }: Readonly<{ complaint
             </motion.button>
           )}
 
-          <div className="flex items-center gap-1.5 bg-[#131b2e] px-3 py-1.5 rounded-xl border border-[#464554]/20 text-[11px] text-[#908fa0] font-semibold">
+          <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-[#131b2e] px-3 py-1.5 rounded-xl border border-slate-200 dark:border-[#464554]/20 text-[11px] text-slate-600 dark:text-[#908fa0] font-semibold">
             <span className="w-2 h-2 rounded-full bg-[#00a572] animate-pulse" />
             <span className="capitalize">{level} View</span>
           </div>
@@ -250,19 +250,19 @@ export default function MonthlyInsights({ complaintDates }: Readonly<{ complaint
       </div>
 
       {/* Chart Canvas Area */}
-      <div className="flex-1 relative bg-[#131b2e]/60 rounded-2xl p-6 flex flex-col justify-between overflow-hidden border border-[#464554]/10 min-h-[310px]">
+      <div className="flex-1 relative bg-slate-50/80 dark:bg-[#131b2e]/60 rounded-2xl p-6 flex flex-col justify-between overflow-hidden border border-slate-200 dark:border-[#464554]/10 min-h-[310px]">
         {/* Horizontal Background Grid Lines */}
         <div className="absolute inset-0 px-6 py-8 flex flex-col justify-between pointer-events-none opacity-20">
-          <div className="border-b border-[#464554]/40 w-full" />
-          <div className="border-b border-[#464554]/40 w-full" />
-          <div className="border-b border-[#464554]/40 w-full" />
-          <div className="border-b border-[#464554]/40 w-full" />
+          <div className="border-b border-slate-300 dark:border-[#464554]/40 w-full" />
+          <div className="border-b border-slate-300 dark:border-[#464554]/40 w-full" />
+          <div className="border-b border-slate-300 dark:border-[#464554]/40 w-full" />
+          <div className="border-b border-slate-300 dark:border-[#464554]/40 w-full" />
         </div>
 
         {/* Hint Text */}
-        <div className="z-10 flex justify-end items-center text-[11px] text-[#908fa0] font-medium mb-2">
-          <span className="font-mono text-[#c0c1ff]">
-            Total Volume: <strong className="text-white font-bold">{activeItems.reduce((s, i) => s + i.count, 0)}</strong>
+        <div className="z-10 flex justify-end items-center text-[11px] text-slate-500 dark:text-[#908fa0] font-medium mb-2">
+          <span className="font-mono text-primary dark:text-[#c0c1ff]">
+            Total Volume: <strong className="text-slate-900 dark:text-white font-bold">{activeItems.reduce((s, i) => s + i.count, 0)}</strong>
           </span>
         </div>
 
@@ -287,13 +287,13 @@ export default function MonthlyInsights({ complaintDates }: Readonly<{ complaint
                   >
                     <defs>
                       <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#8083ff" stopOpacity="0.4" />
-                        <stop offset="100%" stopColor="#8083ff" stopOpacity="0.0" />
+                        <stop offset="0%" stopColor="#0f4c81" stopOpacity="0.4" />
+                        <stop offset="100%" stopColor="#0f4c81" stopOpacity="0.0" />
                       </linearGradient>
                       <linearGradient id="strokeGrad" x1="0" y1="0" x2="1" y2="0">
-                        <stop offset="0%" stopColor="#8083ff" />
+                        <stop offset="0%" stopColor="#0f4c81" />
                         <stop offset="50%" stopColor="#00a572" />
-                        <stop offset="100%" stopColor="#8083ff" />
+                        <stop offset="100%" stopColor="#0f4c81" />
                       </linearGradient>
                     </defs>
 
@@ -332,8 +332,8 @@ export default function MonthlyInsights({ complaintDates }: Readonly<{ complaint
                             cx={pt.x}
                             cy={pt.y}
                             r={isHovered ? "7" : "5"}
-                            fill={isHovered ? "#00a572" : "#8083ff"}
-                            stroke="#131b2e"
+                            fill={isHovered ? "#00a572" : "#0f4c81"}
+                            stroke="#ffffff"
                             strokeWidth="2.5"
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
@@ -360,13 +360,13 @@ export default function MonthlyInsights({ complaintDates }: Readonly<{ complaint
                     <motion.div
                       initial={{ opacity: 0, y: 5, scale: 0.9 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
-                      className="absolute bg-[#1e293b] border border-[#8083ff]/40 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold shadow-xl whitespace-nowrap z-30 pointer-events-none -translate-x-1/2 -translate-y-12"
+                      className="absolute bg-slate-900 dark:bg-[#1e293b] border border-slate-700 dark:border-[#8083ff]/40 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold shadow-xl whitespace-nowrap z-30 pointer-events-none -translate-x-1/2 -translate-y-12"
                       style={{
                         left: `${(linePoints.points[hoveredIndex].x / 500) * 100}%`,
                         top: `${(linePoints.points[hoveredIndex].y / 160) * 100}%`,
                       }}
                     >
-                      <span className="text-[#c0c1ff] block text-center">
+                      <span className="text-slate-300 dark:text-[#c0c1ff] block text-center">
                         {linePoints.points[hoveredIndex].label}
                       </span>
                       <span className="text-white font-extrabold block text-center">
@@ -377,20 +377,20 @@ export default function MonthlyInsights({ complaintDates }: Readonly<{ complaint
                 </div>
 
                 {/* X-Axis Day Labels */}
-                <div className="flex justify-between items-center px-4 pt-2 border-t border-[#464554]/10">
+                <div className="flex justify-between items-center px-4 pt-2 border-t border-slate-200 dark:border-[#464554]/10">
                   {activeItems.map((item, idx) => (
                     <div
                       key={idx}
                       onMouseEnter={() => setHoveredIndex(idx)}
                       onMouseLeave={() => setHoveredIndex(null)}
                       className={`text-center cursor-pointer transition-colors ${
-                        hoveredIndex === idx ? "text-[#4edea3] font-extrabold" : "text-[#908fa0]"
+                        hoveredIndex === idx ? "text-[#00a572] font-extrabold" : "text-slate-500 dark:text-[#908fa0]"
                       }`}
                     >
                       <span className="text-[10px] sm:text-xs font-mono font-bold uppercase block">
                         {item.label}
                       </span>
-                      <span className="text-[9px] font-mono text-[#c0c1ff] block">
+                      <span className="text-[9px] font-mono text-primary dark:text-[#c0c1ff] block">
                         {item.count}
                       </span>
                     </div>
@@ -423,21 +423,21 @@ export default function MonthlyInsights({ complaintDates }: Readonly<{ complaint
                             initial={{ opacity: 0, y: 6, scale: 0.9 }}
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={{ opacity: 0, y: 6, scale: 0.9 }}
-                            className="absolute -top-12 left-1/2 -translate-x-1/2 bg-[#1e293b] border border-[#8083ff]/40 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold shadow-xl whitespace-nowrap z-30 flex flex-col items-center gap-0.5"
+                            className="absolute -top-12 left-1/2 -translate-x-1/2 bg-slate-900 dark:bg-[#1e293b] border border-slate-700 dark:border-[#8083ff]/40 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold shadow-xl whitespace-nowrap z-30 flex flex-col items-center gap-0.5"
                           >
-                            <span className="text-[#c0c1ff]">{item.label}</span>
+                            <span className="text-slate-300 dark:text-[#c0c1ff]">{item.label}</span>
                             <span className="text-white font-extrabold">{item.count} Complaints</span>
                           </motion.div>
                         )}
                       </AnimatePresence>
 
                       {/* Value Pill Above Bar */}
-                      <span className="text-[10px] font-mono font-bold text-[#c0c1ff] mb-2 transition-transform group-hover:scale-110">
+                      <span className="text-[10px] font-mono font-bold text-primary dark:text-[#c0c1ff] mb-2 transition-transform group-hover:scale-110">
                         {item.count}
                       </span>
 
                       {/* Animated Solid Bar */}
-                      <div className="w-full max-w-[52px] bg-[#131b2e] rounded-t-2xl overflow-hidden h-[75%] flex items-end p-0.5 border border-[#464554]/20">
+                      <div className="w-full max-w-[52px] bg-slate-200 dark:bg-[#131b2e] rounded-t-2xl overflow-hidden h-[75%] flex items-end p-0.5 border border-slate-300 dark:border-[#464554]/20">
                         <motion.div
                           initial={{ height: "0%" }}
                           animate={{ height: `${heightPercent}%` }}
@@ -448,14 +448,14 @@ export default function MonthlyInsights({ complaintDates }: Readonly<{ complaint
                           }}
                           className={`w-full rounded-t-xl transition-colors duration-300 ${
                             isHovered
-                              ? "vibrant-gradient shadow-[0_0_20px_rgba(128,131,255,0.6)] brightness-125"
-                              : "bg-[#8083ff]/40 group-hover:bg-[#8083ff]/60"
+                              ? "bg-primary dark:vibrant-gradient shadow-[0_0_20px_rgba(15,76,129,0.4)] dark:shadow-[0_0_20px_rgba(128,131,255,0.6)] brightness-110"
+                              : "bg-primary/40 dark:bg-[#8083ff]/40 group-hover:bg-primary/60 dark:group-hover:bg-[#8083ff]/60"
                           }`}
                         />
                       </div>
 
                       {/* Column X-Axis Label */}
-                      <span className="text-[10px] sm:text-xs font-mono font-bold uppercase text-[#908fa0] group-hover:text-[#dae2fd] mt-3 transition-colors">
+                      <span className="text-[10px] sm:text-xs font-mono font-bold uppercase text-slate-500 dark:text-[#908fa0] group-hover:text-slate-800 dark:group-hover:text-[#dae2fd] mt-3 transition-colors">
                         {item.label}
                       </span>
                     </motion.div>

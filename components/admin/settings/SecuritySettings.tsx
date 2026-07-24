@@ -80,26 +80,26 @@ export default function SecuritySettings() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between border-b border-[#464554]/20 pb-4">
+      <div className="flex items-center justify-between border-b border-slate-200 dark:border-[#464554]/20 pb-4">
         <div>
-          <h3 className="font-display text-base font-bold text-[#dae2fd]">
+          <h3 className="font-display text-base font-bold text-slate-900 dark:text-[#dae2fd]">
             Security & Authentication
           </h3>
-          <p className="text-xs text-[#908fa0]">
+          <p className="text-xs text-slate-500 dark:text-[#908fa0]">
             Update your login password and review active account security settings.
           </p>
         </div>
-        <Icon name="lock" className="text-[#8083ff] text-2xl" />
+        <Icon name="lock" className="text-primary dark:text-[#8083ff] text-2xl" />
       </div>
 
       <form onSubmit={handleUpdatePassword} className="space-y-5">
         {/* Current Password Field */}
         <div className="space-y-1.5">
-          <label className="block text-[10px] font-mono uppercase text-[#908fa0] tracking-wider">
+          <label className="block text-[10px] font-mono uppercase text-slate-500 dark:text-[#908fa0] tracking-wider">
             Current Password
           </label>
           <div className="relative">
-            <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#908fa0]">
+            <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#908fa0]">
               <Icon name="lock" className="text-base" />
             </div>
             <input
@@ -108,12 +108,12 @@ export default function SecuritySettings() {
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
               placeholder="Enter current password"
-              className="w-full rounded-xl pl-10 pr-12 py-3 text-xs bg-[#131b2e] border border-[#464554]/20 text-[#dae2fd] font-semibold outline-none focus:border-[#8083ff] focus:ring-2 focus:ring-[#8083ff]/20 transition-all"
+              className="w-full rounded-xl pl-10 pr-12 py-3 text-xs bg-slate-50 dark:bg-[#131b2e] border border-slate-200 dark:border-[#464554]/20 text-slate-800 dark:text-[#dae2fd] font-semibold outline-none focus:border-primary dark:focus:border-[#8083ff] focus:ring-2 focus:ring-primary/20 dark:focus:ring-[#8083ff]/20 transition-all"
             />
             <button
               type="button"
               onClick={() => setShowCurrent(!showCurrent)}
-              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#908fa0] hover:text-[#dae2fd] p-1 cursor-pointer"
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#908fa0] hover:text-slate-800 dark:hover:text-[#dae2fd] p-1 cursor-pointer"
             >
               <Icon name={showCurrent ? "visibility_off" : "visibility"} className="text-base" />
             </button>
@@ -122,11 +122,11 @@ export default function SecuritySettings() {
 
         {/* New Password Field */}
         <div className="space-y-1.5">
-          <label className="block text-[10px] font-mono uppercase text-[#908fa0] tracking-wider">
+          <label className="block text-[10px] font-mono uppercase text-slate-500 dark:text-[#908fa0] tracking-wider">
             New Password
           </label>
           <div className="relative">
-            <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#908fa0]">
+            <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#908fa0]">
               <Icon name="key" className="text-base" />
             </div>
             <input
@@ -135,12 +135,12 @@ export default function SecuritySettings() {
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               placeholder="Enter new password (min. 6 chars)"
-              className="w-full rounded-xl pl-10 pr-12 py-3 text-xs bg-[#131b2e] border border-[#464554]/20 text-[#dae2fd] font-semibold outline-none focus:border-[#8083ff] focus:ring-2 focus:ring-[#8083ff]/20 transition-all"
+              className="w-full rounded-xl pl-10 pr-12 py-3 text-xs bg-slate-50 dark:bg-[#131b2e] border border-slate-200 dark:border-[#464554]/20 text-slate-800 dark:text-[#dae2fd] font-semibold outline-none focus:border-primary dark:focus:border-[#8083ff] focus:ring-2 focus:ring-primary/20 dark:focus:ring-[#8083ff]/20 transition-all"
             />
             <button
               type="button"
               onClick={() => setShowNew(!showNew)}
-              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#908fa0] hover:text-[#dae2fd] p-1 cursor-pointer"
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#908fa0] hover:text-slate-800 dark:hover:text-[#dae2fd] p-1 cursor-pointer"
             >
               <Icon name={showNew ? "visibility_off" : "visibility"} className="text-base" />
             </button>
@@ -149,11 +149,11 @@ export default function SecuritySettings() {
 
         {/* Confirm Password Field */}
         <div className="space-y-1.5">
-          <label className="block text-[10px] font-mono uppercase text-[#908fa0] tracking-wider">
+          <label className="block text-[10px] font-mono uppercase text-slate-500 dark:text-[#908fa0] tracking-wider">
             Confirm New Password
           </label>
           <div className="relative">
-            <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#908fa0]">
+            <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#908fa0]">
               <Icon name="lock_reset" className="text-base" />
             </div>
             <input
@@ -162,12 +162,12 @@ export default function SecuritySettings() {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Confirm new password"
-              className="w-full rounded-xl pl-10 pr-12 py-3 text-xs bg-[#131b2e] border border-[#464554]/20 text-[#dae2fd] font-semibold outline-none focus:border-[#8083ff] focus:ring-2 focus:ring-[#8083ff]/20 transition-all"
+              className="w-full rounded-xl pl-10 pr-12 py-3 text-xs bg-slate-50 dark:bg-[#131b2e] border border-slate-200 dark:border-[#464554]/20 text-slate-800 dark:text-[#dae2fd] font-semibold outline-none focus:border-primary dark:focus:border-[#8083ff] focus:ring-2 focus:ring-primary/20 dark:focus:ring-[#8083ff]/20 transition-all"
             />
             <button
               type="button"
               onClick={() => setShowConfirm(!showConfirm)}
-              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#908fa0] hover:text-[#dae2fd] p-1 cursor-pointer"
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#908fa0] hover:text-slate-800 dark:hover:text-[#dae2fd] p-1 cursor-pointer"
             >
               <Icon name={showConfirm ? "visibility_off" : "visibility"} className="text-base" />
             </button>
@@ -175,11 +175,11 @@ export default function SecuritySettings() {
         </div>
 
         {/* Submit Button */}
-        <div className="pt-4 border-t border-[#464554]/20 flex justify-end">
+        <div className="pt-4 border-t border-slate-200 dark:border-[#464554]/20 flex justify-end">
           <button
             type="submit"
             disabled={securityUpdating}
-            className="px-6 py-3.5 vibrant-gradient text-white rounded-xl font-bold shadow-lg shadow-[#8083ff]/20 text-xs cursor-pointer tracking-wider disabled:opacity-60 flex items-center gap-2 hover:scale-[1.01] transition-transform"
+            className="px-6 py-3.5 vibrant-gradient text-white rounded-xl font-bold shadow-lg shadow-primary/20 dark:shadow-[#8083ff]/20 text-xs cursor-pointer tracking-wider disabled:opacity-60 flex items-center gap-2 hover:scale-[1.01] transition-transform"
           >
             {securityUpdating ? (
               <>
