@@ -9,8 +9,8 @@ import ComplaintImagesCard from "@/components/admin/view-complaints/detail/Compl
 import ComplaintDetailSkeleton from "@/components/admin/view-complaints/detail/ComplaintDetailSkeleton";
 import { showToast } from "@/lib/toast";
 import { useComplaintDetail } from "@/hooks/useComplaintDetail";
-import { doc, updateDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { useUserRole } from "@/hooks/useUserRole";
+import { approveComplaint, rejectComplaint } from "@/utils/admin/complaints";
 import Icon from "@/components/ui/Icon";
 
 export default function ViewComplaintDetailPage({
@@ -22,6 +22,7 @@ export default function ViewComplaintDetailPage({
   const complaintId = resolvedParams.id;
 
   const { complaint, poster, images, loading, error } = useComplaintDetail(complaintId);
+  const { isAdmin } = useUserRole();
 
   const [statusOverride, setStatusOverride] = useState<string | null>(null);
   const [updatingStatus, setUpdatingStatus] = useState<boolean>(false);
@@ -37,9 +38,7 @@ export default function ViewComplaintDetailPage({
     if (!complaintId) return;
     try {
       setUpdatingStatus(true);
-      await updateDoc(doc(db, "complaints", complaintId), {
-        status: "Approved",
-      });
+      await approveComplaint(complaintId);
       setStatusOverride("Approved");
       showToast.success("Complaint ticket approved successfully!");
     } catch (err) {
@@ -54,9 +53,7 @@ export default function ViewComplaintDetailPage({
     if (!complaintId) return;
     try {
       setUpdatingStatus(true);
-      await updateDoc(doc(db, "complaints", complaintId), {
-        status: "Rejected",
-      });
+      await rejectComplaint(complaintId);
       setStatusOverride("Rejected");
       showToast.warning("Complaint ticket marked as Rejected.");
     } catch (err) {
@@ -102,6 +99,7 @@ export default function ViewComplaintDetailPage({
           <div className="lg:col-span-2 space-y-6">
             <ComplaintInfoCard
               complaint={currentComplaint}
+              isAdmin={isAdmin}
               onApprove={handleApprove}
               onReject={handleReject}
               updatingStatus={updatingStatus}

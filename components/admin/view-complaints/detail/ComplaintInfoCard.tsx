@@ -1,15 +1,19 @@
 "use client";
 
 import Icon from "@/components/ui/Icon";
+import StatusBadge from "@/components/ui/StatusBadge";
+import PriorityBadge from "@/components/ui/PriorityBadge";
 import { Complaint } from "@/app/dashboard/page";
 
 export default function ComplaintInfoCard({
   complaint,
+  isAdmin,
   onApprove,
   onReject,
   updatingStatus,
 }: {
   complaint: Complaint;
+  isAdmin?: boolean;
   onApprove?: () => void;
   onReject?: () => void;
   updatingStatus?: boolean;
@@ -23,23 +27,7 @@ export default function ComplaintInfoCard({
             <h1 className="font-display text-xl md:text-2xl font-bold text-[#dae2fd]">
               Ticket #{complaint.id}
             </h1>
-            <span
-              className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider ${
-                complaint.status === "Pending"
-                  ? "bg-[#ff516a]/10 text-[#ffb2b7] border border-[#ff516a]/20"
-                  : complaint.status === "Approved"
-                  ? "bg-amber-500/10 text-amber-300 border border-amber-500/20"
-                  : complaint.status === "Assigned"
-                  ? "bg-[#8083ff]/10 text-[#c0c1ff] border border-[#8083ff]/20"
-                  : complaint.status === "In Progress"
-                  ? "bg-[#00a572]/10 text-[#4edea3] border border-[#00a572]/20"
-                  : complaint.status === "Rejected"
-                  ? "bg-[#ff516a]/20 text-[#ff516a] border border-[#ff516a]/40"
-                  : "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-              }`}
-            >
-              {complaint.status}
-            </span>
+            <StatusBadge status={complaint.status} className="px-3 py-1 text-xs" />
           </div>
           <p className="text-xs text-[#908fa0] mt-1 flex items-center gap-2">
             <Icon name="calendar_today" className="text-sm" />
@@ -49,17 +37,7 @@ export default function ComplaintInfoCard({
 
         <div className="flex items-center gap-2">
           <span className="text-xs font-mono uppercase text-[#908fa0]">Priority:</span>
-          <span
-            className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${
-              complaint.priority === "High"
-                ? "bg-[#ff516a]/15 text-[#ffb2b7] border border-[#ff516a]/20"
-                : complaint.priority === "Medium"
-                ? "bg-amber-500/15 text-amber-300 border border-amber-500/20"
-                : "bg-[#908fa0]/15 text-[#908fa0] border border-[#908fa0]/20"
-            }`}
-          >
-            {complaint.priority}
-          </span>
+          <PriorityBadge priority={complaint.priority} className="px-3 py-1 text-xs" />
         </div>
       </div>
 
@@ -96,35 +74,37 @@ export default function ComplaintInfoCard({
         </div>
       </div>
 
-      {/* Admin Quick Action Toolbar: Approve / Reject */}
-      <div className="pt-3 border-t border-[#464554]/10 flex items-center justify-between flex-wrap gap-3">
-        <span className="text-xs font-semibold text-[#908fa0]">
-          Admin Actions:
-        </span>
-        <div className="flex items-center gap-3">
-          {complaint.status !== "Rejected" && (
-            <button
-              onClick={onApprove}
-              disabled={updatingStatus || complaint.status === "Approved"}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#00a572] hover:bg-[#00a572]/80 disabled:opacity-50 text-white font-bold text-xs shadow-lg shadow-[#00a572]/20 transition-all cursor-pointer"
-            >
-              <Icon name="check_circle" className="text-base" />
-              <span>{complaint.status === "Approved" ? "Approved" : "Approve"}</span>
-            </button>
-          )}
+      {/* Admin Quick Action Toolbar: Approve / Reject (admin-only) */}
+      {isAdmin && (
+        <div className="pt-3 border-t border-[#464554]/10 flex items-center justify-between flex-wrap gap-3">
+          <span className="text-xs font-semibold text-[#908fa0]">
+            Admin Actions:
+          </span>
+          <div className="flex items-center gap-3">
+            {complaint.status !== "Rejected" && (
+              <button
+                onClick={onApprove}
+                disabled={updatingStatus || complaint.status === "Approved"}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#00a572] hover:bg-[#00a572]/80 disabled:opacity-50 text-white font-bold text-xs shadow-lg shadow-[#00a572]/20 transition-all cursor-pointer"
+              >
+                <Icon name="check_circle" className="text-base" />
+                <span>{complaint.status === "Approved" ? "Approved" : "Approve"}</span>
+              </button>
+            )}
 
-          {complaint.status === "Pending" && (
-            <button
-              onClick={onReject}
-              disabled={updatingStatus || complaint.status === "Rejected"}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#ff516a]/15 hover:bg-[#ff516a]/25 disabled:opacity-50 text-[#ff516a] border border-[#ff516a]/30 font-bold text-xs transition-all cursor-pointer"
-            >
-              <Icon name="cancel" className="text-base" />
-              <span>{complaint.status === "Rejected" ? "Rejected" : "Reject"}</span>
-            </button>
-          )}
+            {complaint.status === "Pending" && (
+              <button
+                onClick={onReject}
+                disabled={updatingStatus}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#ff516a]/15 hover:bg-[#ff516a]/25 disabled:opacity-50 text-[#ff516a] border border-[#ff516a]/30 font-bold text-xs transition-all cursor-pointer"
+              >
+                <Icon name="cancel" className="text-base" />
+                <span>Reject</span>
+              </button>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Technician Assignment Details if any */}
       {(complaint.technicianName || complaint.remarks) && (

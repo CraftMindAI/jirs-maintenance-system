@@ -12,9 +12,10 @@ export type Complaint = {
   category: string;
   location: string;
   priority: "High" | "Medium" | "Low";
-  status: "Pending" | "Approved" | "Assigned" | "In Progress" | "Completed" | "Verified";
+  status: "Pending" | "Approved" | "Assigned" | "In Progress" | "Completed" | "Verified" | "Rejected";
   date: string;
   description: string;
+  technicianId?: string;
   technicianName?: string;
   technicianPhone?: string;
   assignedDate?: string;

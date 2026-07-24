@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Icon from "@/components/ui/Icon";
+import StatusBadge from "@/components/ui/StatusBadge";
 
 export type RecentRequest = {
   id: string;
@@ -7,15 +8,6 @@ export type RecentRequest = {
   date: string;
   technicianName?: string;
   status: string;
-};
-
-const STATUS_STYLES: Record<string, string> = {
-  Pending: "bg-[#ff516a]/10 text-[#ffb2b7] border border-[#ff516a]/20",
-  Approved: "bg-amber-500/10 text-amber-300 border border-amber-500/20",
-  Assigned: "bg-[#8083ff]/10 text-[#c0c1ff] border border-[#8083ff]/20",
-  "In Progress": "bg-[#00a572]/10 text-[#4edea3] border border-[#00a572]/20",
-  Completed: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20",
-  Verified: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20",
 };
 
 function initials(name: string) {
@@ -115,9 +107,7 @@ export default function RecentRequestsTable({
                     )}
                   </td>
                   <td className="px-8 py-5">
-                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-extrabold ${STATUS_STYLES[request.status] || "bg-[#908fa0]/15 text-[#908fa0] border border-[#908fa0]/20"}`}>
-                      {request.status}
-                    </span>
+                    <StatusBadge status={request.status} className="px-3 py-1 text-[11px]" />
                   </td>
                   <td className="px-8 py-5 text-right">{actionFor(request)}</td>
                 </tr>

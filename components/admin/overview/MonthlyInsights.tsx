@@ -4,12 +4,6 @@ import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Icon from "@/components/ui/Icon";
 
-export type MonthlyBar = {
-  label: string;
-  count: number;
-  heightPercent: number;
-};
-
 type ViewLevel = "month" | "week" | "day";
 
 type DayItem = {
@@ -31,70 +25,83 @@ type MonthItem = {
   weeks: WeekItem[];
 };
 
-function generateDrilldownData(incomingBars?: MonthlyBar[]): MonthItem[] {
-  const months = incomingBars && incomingBars.length >= 5
-    ? incomingBars.map((b) => b.label.toUpperCase())
-    : ["MAR", "APR", "MAY", "JUN", "JUL"];
+const DAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
-  const counts = incomingBars && incomingBars.length >= 5
-    ? incomingBars.map((b) => Math.max(b.count, 4))
-    : [18, 24, 38, 29, 45];
+function isSameDay(a: Date, b: Date) {
+  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+}
 
-  const daysOfWeek = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+/** Monday of the calendar week containing `d`. */
+function startOfWeek(d: Date) {
+  const start = new Date(d);
+  const daysSinceMonday = (d.getDay() + 6) % 7;
+  start.setDate(d.getDate() - daysSinceMonday);
+  start.setHours(0, 0, 0, 0);
+  return start;
+}
 
-  return months.map((mLabel, mIdx) => {
-    const totalMonthCount = counts[mIdx] || 20;
+/**
+ * Builds real month → week → day complaint counts for the last 5 months from
+ * actual complaint dates — no fabricated/random distribution.
+ */
+function buildDataset(complaintDates: string[]): MonthItem[] {
+  const dates = complaintDates
+    .filter(Boolean)
+    .map((d) => new Date(`${d}T00:00:00`));
 
-    const wCounts = [
-      Math.round(totalMonthCount * 0.22),
-      Math.round(totalMonthCount * 0.32),
-      Math.round(totalMonthCount * 0.28),
-      Math.max(1, totalMonthCount - Math.round(totalMonthCount * 0.82)),
-    ];
+  const now = new Date();
+  const months: MonthItem[] = [];
 
-    const weeks: WeekItem[] = wCounts.map((wCount, wIdx) => {
-      let remaining = wCount;
-      const days: DayItem[] = daysOfWeek.map((dayName, dIdx) => {
-        const isLast = dIdx === daysOfWeek.length - 1;
-        const dVal = isLast
-          ? Math.max(0, remaining)
-          : Math.floor(Math.random() * Math.min(remaining + 1, Math.ceil(wCount * 0.35)));
-        remaining -= dVal;
+  for (let i = 4; i >= 0; i--) {
+    const monthAnchor = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const monthStart = new Date(monthAnchor.getFullYear(), monthAnchor.getMonth(), 1);
+    const monthEnd = new Date(monthAnchor.getFullYear(), monthAnchor.getMonth() + 1, 0);
+    const monthLabel = monthAnchor.toLocaleString("default", { month: "short" }).toUpperCase();
+
+    const monthTotal = dates.filter((d) => d >= monthStart && d <= monthEnd).length;
+
+    const weeks: WeekItem[] = [];
+    const cursor = startOfWeek(monthStart);
+    let weekIdx = 0;
+    while (cursor <= monthEnd) {
+      const weekStart = new Date(cursor);
+
+      const days: DayItem[] = DAY_NAMES.map((dayName, dIdx) => {
+        const dayDate = new Date(weekStart);
+        dayDate.setDate(weekStart.getDate() + dIdx);
+        const inMonth = dayDate >= monthStart && dayDate <= monthEnd;
+        const count = inMonth ? dates.filter((d) => isSameDay(d, dayDate)).length : 0;
 
         return {
           label: dayName,
-          fullLabel: `${dayName} (${mLabel} Week ${wIdx + 1})`,
-          count: Math.max(dVal, dIdx === 2 || dIdx === 4 ? 2 : 1),
+          fullLabel: `${dayName}, ${dayDate.toLocaleDateString("default", { month: "short", day: "numeric" })}`,
+          count,
         };
       });
 
-      const actualWeekTotal = days.reduce((sum, d) => sum + d.count, 0);
-
-      return {
-        label: `Week ${wIdx + 1}`,
-        totalCount: actualWeekTotal,
+      weeks.push({
+        label: `Week ${weekIdx + 1}`,
+        totalCount: days.reduce((sum, d) => sum + d.count, 0),
         days,
-      };
-    });
+      });
 
-    const calculatedMonthTotal = weeks.reduce((sum, w) => sum + w.totalCount, 0);
+      cursor.setDate(cursor.getDate() + 7);
+      weekIdx += 1;
+    }
 
-    return {
-      label: mLabel,
-      monthName: mLabel,
-      totalCount: calculatedMonthTotal,
-      weeks,
-    };
-  });
+    months.push({ label: monthLabel, monthName: monthLabel, totalCount: monthTotal, weeks });
+  }
+
+  return months;
 }
 
-export default function MonthlyInsights({ data }: Readonly<{ data: MonthlyBar[] }>) {
+export default function MonthlyInsights({ complaintDates }: Readonly<{ complaintDates: string[] }>) {
   const [level, setLevel] = useState<ViewLevel>("month");
   const [selectedMonthIndex, setSelectedMonthIndex] = useState<number | null>(null);
   const [selectedWeekIndex, setSelectedWeekIndex] = useState<number | null>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
-  const dataset = useMemo(() => generateDrilldownData(data), [data]);
+  const dataset = useMemo(() => buildDataset(complaintDates), [complaintDates]);
 
   const handleBarClick = (index: number) => {
     if (level === "month") {
@@ -253,12 +260,7 @@ export default function MonthlyInsights({ data }: Readonly<{ data: MonthlyBar[] 
         </div>
 
         {/* Hint Text */}
-        <div className="z-10 flex justify-between items-center text-[11px] text-[#908fa0] font-medium mb-2">
-          <span>
-            {level === "month" && "💡 Click any month bar to drill down into weeks"}
-            {level === "week" && "💡 Click any week bar to drill down into days"}
-            {level === "day" && "📈 Showing daily linear graph"}
-          </span>
+        <div className="z-10 flex justify-end items-center text-[11px] text-[#908fa0] font-medium mb-2">
           <span className="font-mono text-[#c0c1ff]">
             Total Volume: <strong className="text-white font-bold">{activeItems.reduce((s, i) => s + i.count, 0)}</strong>
           </span>

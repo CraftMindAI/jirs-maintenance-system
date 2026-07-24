@@ -1,5 +1,7 @@
 import Link from "next/link";
 import Icon from "@/components/ui/Icon";
+import StatusBadge from "@/components/ui/StatusBadge";
+import PriorityBadge from "@/components/ui/PriorityBadge";
 import { Complaint } from "@/app/dashboard/page";
 
 export default function ComplaintsTable({
@@ -68,11 +70,7 @@ export default function ComplaintsTable({
                 </td>
                 <td className="py-4 px-6 text-[#c7c4d7]">{item.category}</td>
                 <td className="py-4 px-6">
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
-                    item.priority === "High" ? "bg-[#ff516a]/15 text-[#ffb2b7] border border-[#ff516a]/20" :
-                    item.priority === "Medium" ? "bg-amber-500/15 text-amber-300 border border-amber-500/20" :
-                    "bg-[#908fa0]/15 text-[#908fa0] border border-[#908fa0]/20"
-                  }`}>{item.priority}</span>
+                  <PriorityBadge priority={item.priority} />
                 </td>
                 <td className="py-4 px-6 text-[#dae2fd]">
                   {item.technicianName ? (
@@ -85,13 +83,7 @@ export default function ComplaintsTable({
                   )}
                 </td>
                 <td className="py-4 px-6">
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider ${
-                    item.status === "Pending" ? "bg-[#ff516a]/10 text-[#ffb2b7] border border-[#ff516a]/20" :
-                    item.status === "Approved" ? "bg-amber-500/10 text-amber-300 border border-amber-500/20" :
-                    item.status === "Assigned" ? "bg-[#8083ff]/10 text-[#c0c1ff] border border-[#8083ff]/20" :
-                    item.status === "In Progress" ? "bg-[#00a572]/10 text-[#4edea3] border border-[#00a572]/20" :
-                    "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                  }`}>{item.status}</span>
+                  <StatusBadge status={item.status} />
                 </td>
                 <td className="py-4 px-6 text-right">
                   <div className="flex justify-end gap-3 text-[#908fa0]">
