@@ -4,13 +4,19 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Icon from "@/components/ui/Icon";
 
-type MenuItem = {
+export type MenuItem = {
   label: string;
   icon: string;
   href: string;
 };
 
-const MENU_ITEMS: MenuItem[] = [
+export type QuickAction = {
+  label: string;
+  icon: string;
+  href: string;
+};
+
+const ADMIN_MENU_ITEMS: MenuItem[] = [
   { label: "Dashboard", icon: "dashboard", href: "/admin" },
   { label: "All Complaints", icon: "assignment_late", href: "/admin/view-complaints" },
   { label: "Technicians", icon: "engineering", href: "/admin/track-complaints" },
@@ -19,7 +25,23 @@ const MENU_ITEMS: MenuItem[] = [
   { label: "Settings", icon: "settings_applications", href: "/admin/settings" },
 ];
 
-export default function Sidebar({ darkMode = true, onLogout }: { darkMode?: boolean; onLogout: () => void }) {
+const ADMIN_QUICK_ACTION: QuickAction = { label: "Raise Complaint", icon: "add_circle", href: "/admin/raise-complaint" };
+
+export default function Sidebar({
+  darkMode = true,
+  onLogout,
+  menuItems = ADMIN_MENU_ITEMS,
+  brandTitle = "JMMS Admin",
+  brandSubtitle = "Facility Management",
+  quickAction = ADMIN_QUICK_ACTION,
+}: {
+  darkMode?: boolean;
+  onLogout: () => void;
+  menuItems?: MenuItem[];
+  brandTitle?: string;
+  brandSubtitle?: string;
+  quickAction?: QuickAction | null;
+}) {
   const pathname = usePathname();
 
   return (
@@ -37,26 +59,28 @@ export default function Sidebar({ darkMode = true, onLogout }: { darkMode?: bool
         </div>
         <div>
           <h2 className={`font-display text-lg font-extrabold tracking-tight ${darkMode ? "text-[#c0c1ff]" : "text-primary"}`}>
-            JMMS Admin
+            {brandTitle}
           </h2>
           <p className={`font-mono text-[10px] uppercase tracking-[0.2em] ${darkMode ? "text-[#908fa0]" : "text-slate-500"}`}>
-            Facility Management
+            {brandSubtitle}
           </p>
         </div>
       </div>
 
-      {/* Action Button: Raise Complaint */}
-      <Link
-        href="/admin/raise-complaint"
-        className="flex items-center gap-3 px-4 py-3 mb-6 vibrant-gradient text-white font-bold rounded-xl transition-all hover:brightness-110 active:scale-95 shadow-lg shadow-[#8083ff]/20 text-xs uppercase tracking-wider"
-      >
-        <Icon name="add_circle" className="text-xl" />
-        <span>Raise Complaint</span>
-      </Link>
+      {/* Action Button: Quick Action */}
+      {quickAction && (
+        <Link
+          href={quickAction.href}
+          className="flex items-center gap-3 px-4 py-3 mb-6 vibrant-gradient text-white font-bold rounded-xl transition-all hover:brightness-110 active:scale-95 shadow-lg shadow-[#8083ff]/20 text-xs uppercase tracking-wider"
+        >
+          <Icon name={quickAction.icon} className="text-xl" />
+          <span>{quickAction.label}</span>
+        </Link>
+      )}
 
       {/* Navigation Items */}
       <nav className="flex-1 space-y-1.5 custom-scrollbar overflow-y-auto pr-1">
-        {MENU_ITEMS.map((item) => {
+        {menuItems.map((item) => {
           const active = pathname === item.href;
           return (
             <Link

@@ -12,6 +12,8 @@ export default function TopNavbar({
   setProfileOpen,
   userProfile,
   onLogout,
+  profileHref = "/admin/settings",
+  brandLabel = "JMMS",
 }: {
   darkMode: boolean;
   toggleTheme: () => void;
@@ -19,6 +21,8 @@ export default function TopNavbar({
   setProfileOpen: (open: boolean) => void;
   userProfile: UserProfile | null;
   onLogout: () => void;
+  profileHref?: string;
+  brandLabel?: string;
 }) {
   return (
     <header
@@ -34,7 +38,7 @@ export default function TopNavbar({
             darkMode ? "text-[#c0c1ff]" : "text-primary"
           }`}
         >
-          JMMS
+          {brandLabel}
         </span>
       </div>
 
@@ -50,11 +54,16 @@ export default function TopNavbar({
             aria-label="Toggle theme"
             title={darkMode ? "Switch to light mode" : "Switch to dark mode"}
           >
-            <Icon name={darkMode ? "light_mode" : "dark_mode"} className="text-xl" />
+            <Icon
+              name={darkMode ? "light_mode" : "dark_mode"}
+              className="text-xl"
+            />
           </button>
         </div>
 
-        <div className={`h-8 w-[1px] ${darkMode ? "bg-[#464554]/20" : "bg-slate-200"}`} />
+        <div
+          className={`h-8 w-[1px] ${darkMode ? "bg-[#464554]/20" : "bg-slate-200"}`}
+        />
 
         {/* Profile Avatar & Dropdown */}
         {userProfile && (
@@ -70,37 +79,57 @@ export default function TopNavbar({
                 <span className="absolute bottom-0 right-0 w-3 h-3 bg-[#4edea3] rounded-full border-2 border-[#0b1326]" />
               </div>
               <div className="hidden md:block text-left">
-                <p className={`font-bold text-xs leading-tight ${darkMode ? "text-[#dae2fd]" : "text-slate-800"}`}>
+                <p
+                  className={`font-bold text-xs leading-tight ${darkMode ? "text-[#dae2fd]" : "text-slate-800"}`}
+                >
                   {userProfile.name}
                 </p>
-                <p className={`text-[10px] uppercase font-mono tracking-wider ${darkMode ? "text-[#908fa0]" : "text-slate-500"}`}>
+                <p
+                  className={`text-[10px] uppercase font-mono tracking-wider ${darkMode ? "text-[#908fa0]" : "text-slate-500"}`}
+                >
                   {userProfile.role}
                 </p>
               </div>
-              <Icon name="expand_more" className={darkMode ? "text-[#908fa0]" : "text-slate-400"} />
+              <Icon
+                name="expand_more"
+                className={darkMode ? "text-[#908fa0]" : "text-slate-400"}
+              />
             </button>
 
             {profileOpen && (
               <>
-                <div className="fixed inset-0 z-40" onClick={() => setProfileOpen(false)} />
+                <div
+                  className="fixed inset-0 z-40"
+                  onClick={() => setProfileOpen(false)}
+                />
                 <div
                   className={`absolute right-0 mt-3 w-56 border rounded-2xl shadow-2xl z-50 p-2 space-y-1 animate-fade-in ${
-                    darkMode ? "bg-[#171f33] border-[#464554]/30" : "bg-white border-slate-200"
+                    darkMode
+                      ? "bg-[#171f33] border-[#464554]/30"
+                      : "bg-white border-slate-200"
                   }`}
                 >
-                  <div className={`px-4 py-3 border-b ${darkMode ? "border-[#464554]/20" : "border-slate-100"}`}>
-                    <div className={`font-bold text-xs ${darkMode ? "text-[#dae2fd]" : "text-slate-800"}`}>
+                  <div
+                    className={`px-4 py-3 border-b ${darkMode ? "border-[#464554]/20" : "border-slate-100"}`}
+                  >
+                    <div
+                      className={`font-bold text-xs ${darkMode ? "text-[#dae2fd]" : "text-slate-800"}`}
+                    >
                       {userProfile.name}
                     </div>
-                    <div className={`text-[10px] truncate ${darkMode ? "text-[#908fa0]" : "text-slate-500"}`}>
+                    <div
+                      className={`text-[10px] truncate ${darkMode ? "text-[#908fa0]" : "text-slate-500"}`}
+                    >
                       {userProfile.email}
                     </div>
                   </div>
                   <Link
-                    href="/admin/settings"
+                    href={profileHref}
                     onClick={() => setProfileOpen(false)}
                     className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-semibold transition-colors ${
-                      darkMode ? "text-[#c7c4d7] hover:bg-[#222a3d]" : "text-slate-600 hover:bg-slate-50"
+                      darkMode
+                        ? "text-[#c7c4d7] hover:bg-[#222a3d]"
+                        : "text-slate-600 hover:bg-slate-50"
                     }`}
                   >
                     <Icon name="person" className="text-base" /> My Profile
