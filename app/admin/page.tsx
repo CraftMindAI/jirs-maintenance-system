@@ -13,7 +13,7 @@ export default function AdminDashboardHome() {
 
   const stats = {
     total: complaints.length,
-    pending: complaints.filter((c) => c.status === "Pending").length,
+    pending: complaints.filter((c) => ["Pending", "Approved"].includes(c.status)).length,
     assigned: complaints.filter((c) => ASSIGNED_STATUSES.includes(c.status)).length,
     resolved: complaints.filter((c) => RESOLVED_STATUSES.includes(c.status)).length,
   };

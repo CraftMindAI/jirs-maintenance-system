@@ -23,6 +23,7 @@ export type Complaint = {
   remarks?: string;
   submittedBy?: string;
   userId?: string;
+  completionPhotoUrl?: string;
 };
 
 const ADMIN_ROLES = ["admin"];
@@ -132,13 +133,13 @@ export default function DashboardHome() {
   const getStats = () => {
     const total = visibleComplaints.length;
     const pending = visibleComplaints.filter(
-      (c) => c.status === "Pending",
+      (c) => c.status === "Pending" || c.status === "Approved",
     ).length;
     const progress = visibleComplaints.filter(
       (c) => c.status === "In Progress" || c.status === "Assigned",
     ).length;
     const completed = visibleComplaints.filter(
-      (c) => c.status === "Completed" || c.status === "Verified",
+      (c) => c.status === "Completed" || c.status === "Verified" || c.status === "Rejected" || c.status === "Closed",
     ).length;
     return { total, pending, progress, completed };
   };

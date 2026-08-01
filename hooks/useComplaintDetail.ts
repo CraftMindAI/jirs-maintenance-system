@@ -64,6 +64,7 @@ export function useComplaintDetail(complaintId: string) {
           assignedDate: data.assignedDate,
           remarks: data.remarks,
           userId: data.userId,
+          completionPhotoUrl: data.completionPhotoUrl,
         };
 
         if (isMounted) {

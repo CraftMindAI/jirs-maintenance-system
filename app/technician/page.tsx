@@ -52,7 +52,8 @@ export default function TechnicianDashboardHome() {
             const data = docSnap.data() as Complaint;
             if (
               data.technicianEmail === currentUser.email || 
-              data.technicianName === techName
+              data.technicianName === techName ||
+              !data.technicianName
             ) {
               fetchedComplaints.push({ ...data, id: docSnap.id });
             }
@@ -78,9 +79,9 @@ export default function TechnicianDashboardHome() {
 
   const getStats = () => {
     const total = complaints.length;
-    const pending = complaints.filter((c) => c.status === "Assigned").length; // Assigned to tech but not started
+    const pending = complaints.filter((c) => c.status === "Assigned" || c.status === "Pending" || c.status === "Approved").length; // Assigned to tech but not started or unassigned
     const progress = complaints.filter((c) => c.status === "In Progress").length;
-    const completed = complaints.filter((c) => c.status === "Completed" || c.status === "Closed").length;
+    const completed = complaints.filter((c) => c.status === "Completed" || c.status === "Closed" || c.status === "Verified" || c.status === "Rejected").length;
     return { total, pending, progress, completed };
   };
 
