@@ -29,6 +29,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      data-scroll-behavior="smooth"
       className={`${poppins.variable} ${inter.variable} scroll-smooth h-full antialiased`}
     >
       <head>
@@ -37,7 +38,10 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-full flex flex-col bg-background-surface font-body text-on-background">
+      <body
+        className="min-h-full flex flex-col bg-background-surface font-body text-on-background"
+        suppressHydrationWarning
+      >
         <ToastProvider />
         {children}
       </body>
