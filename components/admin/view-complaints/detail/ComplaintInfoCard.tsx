@@ -10,12 +10,14 @@ export default function ComplaintInfoCard({
   isAdmin,
   onApprove,
   onReject,
+  onVerify,
   updatingStatus,
 }: {
   complaint: Complaint;
   isAdmin?: boolean;
   onApprove?: () => void;
   onReject?: () => void;
+  onVerify?: () => void;
   updatingStatus?: boolean;
 }) {
   return (
@@ -81,7 +83,7 @@ export default function ComplaintInfoCard({
             Admin Actions:
           </span>
           <div className="flex items-center gap-3">
-            {complaint.status !== "Rejected" && (
+            {(complaint.status === "Pending" || complaint.status === "Approved") && (
               <button
                 onClick={onApprove}
                 disabled={updatingStatus || complaint.status === "Approved"}
@@ -101,6 +103,24 @@ export default function ComplaintInfoCard({
                 <Icon name="cancel" className="text-base" />
                 <span>Reject</span>
               </button>
+            )}
+
+            {complaint.status === "Completed" && onVerify && (
+              <button
+                onClick={onVerify}
+                disabled={updatingStatus}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 dark:bg-blue-500 hover:opacity-90 disabled:opacity-50 text-white font-bold text-xs shadow-lg shadow-blue-600/20 dark:shadow-blue-500/20 transition-all cursor-pointer"
+              >
+                <Icon name="verified" className="text-base" />
+                <span>Verify Ticket</span>
+              </button>
+            )}
+
+            {complaint.status === "Verified" && (
+              <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-bold text-xs">
+                <Icon name="task_alt" className="text-base text-blue-500" />
+                <span>Verified by Admin</span>
+              </div>
             )}
           </div>
         </div>

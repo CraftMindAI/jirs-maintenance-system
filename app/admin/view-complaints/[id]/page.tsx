@@ -10,7 +10,7 @@ import ComplaintDetailSkeleton from "@/components/admin/view-complaints/detail/C
 import { showToast } from "@/lib/toast";
 import { useComplaintDetail } from "@/hooks/useComplaintDetail";
 import { useUserRole } from "@/hooks/useUserRole";
-import { approveComplaint, rejectComplaint } from "@/utils/admin/complaints";
+import { approveComplaint, rejectComplaint, verifyComplaint } from "@/utils/admin/complaints";
 import Icon from "@/components/ui/Icon";
 
 export default function ViewComplaintDetailPage({
@@ -64,6 +64,21 @@ export default function ViewComplaintDetailPage({
     }
   };
 
+  const handleVerify = async () => {
+    if (!complaintId) return;
+    try {
+      setUpdatingStatus(true);
+      await verifyComplaint(complaintId);
+      setStatusOverride("Verified");
+      showToast.success("Complaint ticket marked as Verified.");
+    } catch (err) {
+      console.error("Error verifying complaint:", err);
+      showToast.error("Failed to verify complaint.");
+    } finally {
+      setUpdatingStatus(false);
+    }
+  };
+
   return (
     <div className="space-y-6 pb-12">
       <title>{`Complaint #${complaintId} | JMMS Admin`}</title>
@@ -102,6 +117,7 @@ export default function ViewComplaintDetailPage({
               isAdmin={isAdmin}
               onApprove={handleApprove}
               onReject={handleReject}
+              onVerify={handleVerify}
               updatingStatus={updatingStatus}
             />
             <ComplaintTrackDetailsCard complaint={currentComplaint} />

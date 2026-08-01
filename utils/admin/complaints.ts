@@ -15,6 +15,10 @@ export async function deleteComplaint(id: string) {
   await deleteDoc(doc(db, "complaints", id));
 }
 
+export async function verifyComplaint(id: string) {
+  await updateDoc(doc(db, "complaints", id), { status: "Verified" });
+}
+
 export type AssignedTechnician = {
   id: string;
   name: string;
