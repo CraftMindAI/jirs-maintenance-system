@@ -36,6 +36,7 @@ export default function TechnicianViewComplaints() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [viewPhotoUrl, setViewPhotoUrl] = useState<string | null>(null);
+  const [completionRemarks, setCompletionRemarks] = useState("");
 
   const STATUS_OPTIONS = ["Assigned", "In Progress", "Completed"];
 
@@ -133,6 +134,7 @@ export default function TechnicianViewComplaints() {
       await updateDoc(complaintRef, { 
         status: "Completed",
         completionPhotoUrl: base64Photo,
+        remarks: completionRemarks,
         completedAt: new Date()
       });
 
@@ -140,6 +142,7 @@ export default function TechnicianViewComplaints() {
       setShowUploadModal(false);
       setSelectedComplaintId(null);
       setPhotoFile(null);
+      setCompletionRemarks("");
     } catch (error) {
       console.error("Error completing complaint:", error);
       alert("Failed to upload photo or update status.");
@@ -152,6 +155,7 @@ export default function TechnicianViewComplaints() {
     setShowUploadModal(false);
     setSelectedComplaintId(null);
     setPhotoFile(null);
+    setCompletionRemarks("");
   };
 
   const getPriorityColor = (priority: string) => {
@@ -296,6 +300,17 @@ export default function TechnicianViewComplaints() {
             </div>
             
             <div className="p-8 flex flex-col items-center">
+              <div className="w-full mb-6 text-left">
+                <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Completion Remarks / Issue Details</label>
+                <textarea 
+                  value={completionRemarks} 
+                  onChange={(e) => setCompletionRemarks(e.target.value)}
+                  placeholder="Explain what was fixed, the root cause, or any additional notes..."
+                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#0f4c81]/50 resize-none dark:text-slate-100"
+                  rows={3}
+                />
+              </div>
+
               <input 
                 type="file" 
                 accept="image/*" 

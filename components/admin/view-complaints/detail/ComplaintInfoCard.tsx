@@ -10,12 +10,14 @@ export default function ComplaintInfoCard({
   isAdmin,
   onApprove,
   onReject,
+  onVerify,
   updatingStatus,
 }: {
   complaint: Complaint;
   isAdmin?: boolean;
   onApprove?: () => void;
   onReject?: () => void;
+  onVerify?: () => void;
   updatingStatus?: boolean;
 }) {
   return (
@@ -81,7 +83,7 @@ export default function ComplaintInfoCard({
             Admin Actions:
           </span>
           <div className="flex items-center gap-3">
-            {complaint.status !== "Rejected" && (
+            {(complaint.status === "Pending" || complaint.status === "Approved") && (
               <button
                 onClick={onApprove}
                 disabled={updatingStatus || complaint.status === "Approved"}
@@ -101,6 +103,24 @@ export default function ComplaintInfoCard({
                 <Icon name="cancel" className="text-base" />
                 <span>Reject</span>
               </button>
+            )}
+
+            {complaint.status === "Completed" && onVerify && (
+              <button
+                onClick={onVerify}
+                disabled={updatingStatus}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 dark:bg-blue-500 hover:opacity-90 disabled:opacity-50 text-white font-bold text-xs shadow-lg shadow-blue-600/20 dark:shadow-blue-500/20 transition-all cursor-pointer"
+              >
+                <Icon name="verified" className="text-base" />
+                <span>Verify Ticket</span>
+              </button>
+            )}
+
+            {complaint.status === "Verified" && (
+              <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-bold text-xs">
+                <Icon name="task_alt" className="text-base text-blue-500" />
+                <span>Verified by Admin</span>
+              </div>
             )}
           </div>
         </div>
@@ -133,6 +153,30 @@ export default function ComplaintInfoCard({
             <div className="text-xs text-slate-700 dark:text-[#c7c4d7] pt-1">
               <span className="text-[10px] font-mono text-slate-500 dark:text-[#908fa0] block">Remarks</span>
               <p className="mt-0.5 italic">{complaint.remarks}</p>
+            </div>
+          )}
+          
+          {complaint.completionPhotoUrl && (
+            <div className="text-xs text-slate-700 dark:text-[#c7c4d7] pt-3 mt-3 border-t border-primary/10 dark:border-[#8083ff]/10">
+              <span className="text-[10px] font-mono text-slate-500 dark:text-[#908fa0] block mb-2">Completion Photo</span>
+              <div className="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 w-full max-w-xs relative group">
+                <img 
+                  src={complaint.completionPhotoUrl} 
+                  alt="Completion Photo" 
+                  className="w-full h-auto object-contain bg-slate-100 dark:bg-[#171f33]" 
+                />
+                <a 
+                  href={complaint.completionPhotoUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <span className="text-white font-bold text-xs bg-slate-900/80 px-4 py-2 rounded-lg backdrop-blur-sm flex items-center gap-2">
+                    <Icon name="open_in_new" className="text-sm" />
+                    Open Image
+                  </span>
+                </a>
+              </div>
             </div>
           )}
         </div>

@@ -32,6 +32,13 @@ export function useComplaintDetail(complaintId: string) {
       try {
         setLoading(true);
         setError(null);
+        
+        // Clear previous state to prevent cross-ticket data pollution
+        if (isMounted) {
+          setComplaint(null);
+          setPoster(null);
+          setImages([]);
+        }
 
         // Fetch complaint document
         const complaintRef = doc(db, "complaints", complaintId);
@@ -64,6 +71,7 @@ export function useComplaintDetail(complaintId: string) {
           assignedDate: data.assignedDate,
           remarks: data.remarks,
           userId: data.userId,
+          completionPhotoUrl: data.completionPhotoUrl,
         };
 
         if (isMounted) {
@@ -74,17 +82,31 @@ export function useComplaintDetail(complaintId: string) {
         // { data: Bytes, type, name } shape and legacy raw-Bytes entries)
         if (data.images && Array.isArray(data.images)) {
           const processedImages = data.images
-            .map((img: unknown) => {
-              if (typeof img === "string") return img;
+            .map((img: any) => {
+              if (typeof img === "string") {
+                return img.startsWith("data:") || img.startsWith("http") ? img : `data:image/jpeg;base64,${img}`;
+              }
 
-              const isLegacy = img instanceof Bytes;
-              const bytes: Bytes | undefined = isLegacy
-                ? img
-                : (img as { data?: Bytes })?.data;
-              if (!bytes || typeof bytes.toBase64 !== "function") return "";
+              const isLegacy = img && typeof img.toBase64 === "function";
+              const bytes = isLegacy ? img : (img && img.data ? img.data : undefined);
+              const type = isLegacy ? "image/jpeg" : img?.type || "image/jpeg";
 
-              const type = isLegacy ? "image/jpeg" : (img as { type?: string })?.type || "image/jpeg";
-              return `data:${type};base64,${bytes.toBase64()}`;
+              if (bytes) {
+                 if (typeof bytes.toBase64 === "function") {
+                    return `data:${type};base64,${bytes.toBase64()}`;
+                 } else if (typeof bytes === "string") {
+                    return `data:${type};base64,${bytes}`;
+                 } else if (bytes.toUint8Array && typeof bytes.toUint8Array === "function") {
+                    try {
+                      const uint8 = bytes.toUint8Array();
+                      const base64 = Buffer.from(uint8).toString("base64");
+                      return `data:${type};base64,${base64}`;
+                    } catch (e) {
+                      return "";
+                    }
+                 }
+              }
+              return "";
             })
             .filter(Boolean);
 
