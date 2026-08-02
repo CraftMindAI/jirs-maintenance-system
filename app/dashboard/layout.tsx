@@ -12,20 +12,20 @@ import TopNavbar from "@/components/admin/layout/TopNavbar";
 import MobileBottomNav, { type BottomNavItem, type BottomNavQuickAction } from "@/components/admin/layout/MobileBottomNav";
 
 const MENU_ITEMS: MenuItem[] = [
-  { label: "Dashboard", icon: "home", href: "/dashboard" },
-  { label: "My Complaints", icon: "assignment", href: "/dashboard/my-complaints" },
+  { label: "Dashboard", icon: "dashboard", href: "/dashboard" },
+  { label: "My Complaints", icon: "assignment_late", href: "/dashboard/my-complaints" },
   { label: "Track Complaint", icon: "my_location", href: "/dashboard/track-complaint" },
   { label: "Feedback", icon: "comment", href: "/dashboard/feedback" },
-  { label: "Settings", icon: "settings", href: "/dashboard/settings" },
+  { label: "Settings", icon: "settings_applications", href: "/dashboard/settings" },
 ];
 
 const QUICK_ACTION: QuickAction = { label: "Add Complaint", icon: "add_circle", href: "/dashboard/add-complaint" };
 
 const BOTTOM_NAV_ITEMS: BottomNavItem[] = [
-  { label: "Home", icon: "home", href: "/dashboard" },
-  { label: "Complaints", icon: "assignment", href: "/dashboard/my-complaints" },
+  { label: "Home", icon: "dashboard", href: "/dashboard" },
+  { label: "Complaints", icon: "assignment_late", href: "/dashboard/my-complaints" },
   { label: "Track", icon: "my_location", href: "/dashboard/track-complaint" },
-  { label: "Profile", icon: "settings", href: "/dashboard/settings" },
+  { label: "Profile", icon: "settings_applications", href: "/dashboard/settings" },
 ];
 
 const BOTTOM_QUICK_ACTION: BottomNavQuickAction = { icon: "add", href: "/dashboard/add-complaint" };

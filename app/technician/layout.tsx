@@ -12,17 +12,17 @@ import TopNavbar from "@/components/admin/layout/TopNavbar";
 import MobileBottomNav, { type BottomNavItem } from "@/components/admin/layout/MobileBottomNav";
 
 const MENU_ITEMS: MenuItem[] = [
-  { label: "Dashboard", icon: "dashboard", href: "/technician" },
-  { label: "View Complaints", icon: "assignment_late", href: "/technician/view-complaints" },
-  { label: "Reports", icon: "inventory_2", href: "/technician/reports" },
-  { label: "Settings", icon: "settings_applications", href: "/technician/settings" },
+  { label: "Dashboard", icon: "home", href: "/technician" },
+  { label: "View Complaints", icon: "assignment", href: "/technician/view-complaints" },
+  { label: "Reports", icon: "assessment", href: "/technician/reports" },
+  { label: "Settings", icon: "settings", href: "/technician/settings" },
 ];
 
 const BOTTOM_NAV_ITEMS: BottomNavItem[] = [
-  { label: "Home", icon: "dashboard", href: "/technician" },
-  { label: "Complaints", icon: "assignment_late", href: "/technician/view-complaints" },
-  { label: "Reports", icon: "inventory_2", href: "/technician/reports" },
-  { label: "Profile", icon: "settings_applications", href: "/technician/settings" },
+  { label: "Home", icon: "home", href: "/technician" },
+  { label: "Complaints", icon: "assignment", href: "/technician/view-complaints" },
+  { label: "Reports", icon: "assessment", href: "/technician/reports" },
+  { label: "Profile", icon: "settings", href: "/technician/settings" },
 ];
 
 export default function TechnicianLayout({ children }: { children: React.ReactNode }) {
