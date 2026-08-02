@@ -55,8 +55,7 @@ export default function ComplaintsTable({
             {complaints.map((item, index) => {
               const isOwner = !!currentUserId && item.userId === currentUserId;
               const canManage = isOwner && item.status === "Pending";
-              const canApprove = item.status === "Pending" && !isAdmin;
-              const canAssign = isAdmin && (item.status === "Approved" || item.status === "Assigned");
+              const canAssign = isAdmin && (item.status === "Pending" || item.status === "Approved" || item.status === "Assigned" || item.status === "In Progress");
               const canUpdateProgress = isTechnician && (item.status === "Assigned" || item.status === "In Progress");
               const deadline = getDeadlineInfo(item.assignedAt, item.assignedDate, item.status);
               const displayStatus =
@@ -104,11 +103,6 @@ export default function ComplaintsTable({
                           <Icon name="delete" className="text-lg" />
                         </button>
                       </>
-                    )}
-                    {canApprove && (
-                      <button onClick={() => onApprove(item.id)} title="Approve Complaint" className="hover:text-emerald-500 transition-colors cursor-pointer">
-                        <Icon name="check_circle" className="text-lg" />
-                      </button>
                     )}
                     {canAssign && (
                       <button
