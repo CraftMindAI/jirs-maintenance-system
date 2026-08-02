@@ -9,11 +9,12 @@ import { doc, getDoc } from "firebase/firestore";
 import { useComplaintsFeed } from "@/hooks/useComplaintsFeed";
 
 export type Complaint = {
+  imageUrls: any;
   id: string;
   category: string;
   location: string;
   priority: "High" | "Medium" | "Low";
-  status: "Pending" | "Approved" | "Assigned" | "In Progress" | "Completed" | "Verified" | "Rejected";
+  status: "Pending" | "Approved" | "Assigned" | "In Progress" | "Completed" | "Verified" | "Rejected" | "Closed";
   date: string;
   description: string;
   technicianId?: string;
@@ -143,7 +144,7 @@ export default function DashboardHome() {
       (c) => c.status === "In Progress" || c.status === "Assigned",
     ).length;
     const completed = visibleComplaints.filter(
-      (c) => c.status === "Completed" || c.status === "Verified" || c.status === "Rejected" || c.status === "Closed",
+      (c) => c.status === "Completed" || c.status === "Verified" || c.status === "Rejected",
     ).length;
     return { total, pending, progress, completed };
   };
@@ -267,7 +268,6 @@ export default function DashboardHome() {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="border-b border-slate-100 dark:border-slate-800 text-xs font-black uppercase text-slate-400 bg-slate-50/50 dark:bg-slate-900/50">
-                    <th className="py-4 px-6">Ticket ID</th>
                     <th className="py-4 px-6">Type</th>
                     <th className="py-4 px-6">Priority</th>
                     <th className="py-4 px-6">Status</th>
@@ -281,36 +281,31 @@ export default function DashboardHome() {
                       key={item.id}
                       className="hover:bg-slate-50/40 dark:hover:bg-slate-800/30 transition-colors"
                     >
-                      <td className="py-4 px-6 text-slate-800 dark:text-slate-100 font-bold">
-                        {item.id}
-                      </td>
-                      <td className="py-4 px-6 text-slate-500 dark:text-slate-400">
+                      <td className="py-4 px-6 text-slate-500 dark:text-slate-400 font-bold">
                         {item.category}
                       </td>
                       <td className="py-4 px-6">
                         <span
-                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${
-                            item.priority === "High"
-                              ? "bg-red-500/10 text-red-500 border border-red-500/20"
-                              : item.priority === "Medium"
-                                ? "bg-amber-500/10 text-amber-500 border border-amber-500/20"
-                                : "bg-slate-500/10 text-slate-500 border border-slate-500/20"
-                          }`}
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${item.priority === "High"
+                            ? "bg-red-500/10 text-red-500 border border-red-500/20"
+                            : item.priority === "Medium"
+                              ? "bg-amber-500/10 text-amber-500 border border-amber-500/20"
+                              : "bg-slate-500/10 text-slate-500 border border-slate-500/20"
+                            }`}
                         >
                           {item.priority}
                         </span>
                       </td>
                       <td className="py-4 px-6">
                         <span
-                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider ${
-                            item.status === "Pending"
-                              ? "bg-amber-500/15 text-amber-500 border border-amber-500/30"
-                              : item.status === "Assigned"
-                                ? "bg-indigo-500/15 text-indigo-500 border border-indigo-500/30"
-                                : item.status === "In Progress"
-                                  ? "bg-sky-500/15 text-sky-500 border border-sky-500/30"
-                                  : "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
-                          }`}
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider ${item.status === "Pending"
+                            ? "bg-amber-500/15 text-amber-500 border border-amber-500/30"
+                            : item.status === "Assigned"
+                              ? "bg-indigo-500/15 text-indigo-500 border border-indigo-500/30"
+                              : item.status === "In Progress"
+                                ? "bg-sky-500/15 text-sky-500 border border-sky-500/30"
+                                : "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+                            }`}
                         >
                           {item.status}
                         </span>
@@ -336,20 +331,16 @@ export default function DashboardHome() {
             <div className="md:hidden divide-y divide-slate-100 dark:divide-slate-800">
               {visibleComplaints.slice(0, 3).map((item) => (
                 <div key={item.id} className="p-5 space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-bold text-slate-800 dark:text-slate-100">
-                      {item.id}
-                    </span>
+                  <div className="flex justify-end items-center">
                     <span
-                      className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${
-                        item.status === "Pending"
-                          ? "bg-amber-500/15 text-amber-500"
-                          : item.status === "Assigned"
-                            ? "bg-indigo-500/15 text-indigo-500"
-                            : item.status === "In Progress"
-                              ? "bg-sky-500/15 text-sky-500"
-                              : "bg-emerald-500/15 text-emerald-400"
-                      }`}
+                      className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${item.status === "Pending"
+                        ? "bg-amber-500/15 text-amber-500"
+                        : item.status === "Assigned"
+                          ? "bg-indigo-500/15 text-indigo-500"
+                          : item.status === "In Progress"
+                            ? "bg-sky-500/15 text-sky-500"
+                            : "bg-emerald-500/15 text-emerald-400"
+                        }`}
                     >
                       {item.status}
                     </span>
@@ -440,11 +431,10 @@ export default function DashboardHome() {
                         className="relative flex flex-col items-start gap-1 group"
                       >
                         <span
-                          className={`absolute left-[-27px] top-[2px] w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold border-2 transition-all ${
-                            isPassed
-                              ? "bg-primary border-primary text-white scale-110 shadow-lg shadow-primary/20"
-                              : "bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-700 text-slate-400"
-                          }`}
+                          className={`absolute left-[-27px] top-[2px] w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold border-2 transition-all ${isPassed
+                            ? "bg-primary border-primary text-white scale-110 shadow-lg shadow-primary/20"
+                            : "bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-700 text-slate-400"
+                            }`}
                         >
                           {isPassed ? (
                             <Icon

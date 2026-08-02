@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import Icon from "@/components/ui/Icon";
 import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged, User } from "firebase/auth";
-import { collection, onSnapshot, doc, updateDoc, getDoc } from "firebase/firestore";
+import { collection, onSnapshot, doc, getDoc } from "firebase/firestore";
+import Link from "next/link";
 
 interface Complaint {
   id: string;
@@ -26,19 +27,6 @@ export default function TechnicianViewComplaints() {
   const [userProfileName, setUserProfileName] = useState("");
   const [complaints, setComplaints] = useState<Complaint[]>([]);
   const [loading, setLoading] = useState(true);
-  const [updatingId, setUpdatingId] = useState<string | null>(null);
-
-  // Photo Upload & View State
-  const [showUploadModal, setShowUploadModal] = useState(false);
-  const [selectedComplaintId, setSelectedComplaintId] = useState<string | null>(null);
-  const [photoFile, setPhotoFile] = useState<File | null>(null);
-  const [uploadingPhoto, setUploadingPhoto] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const [viewPhotoUrl, setViewPhotoUrl] = useState<string | null>(null);
-  const [completionRemarks, setCompletionRemarks] = useState("");
-
-  const STATUS_OPTIONS = ["Assigned", "In Progress", "Completed"];
 
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, async (currentUser) => {
@@ -91,72 +79,6 @@ export default function TechnicianViewComplaints() {
 
     return () => unsubscribeAuth();
   }, []);
-
-  const handleUpdateStatus = async (complaintId: string, newStatus: string) => {
-    if (newStatus === "Completed") {
-      setSelectedComplaintId(complaintId);
-      setShowUploadModal(true);
-      return;
-    }
-
-    setUpdatingId(complaintId);
-    try {
-      const complaintRef = doc(db, "complaints", complaintId);
-      await updateDoc(complaintRef, { status: newStatus });
-    } catch (error) {
-      console.error("Error updating status:", error);
-      alert("Failed to update status. Please check your permissions.");
-    } finally {
-      setUpdatingId(null);
-    }
-  };
-
-  const handleConfirmCompletion = async () => {
-    if (!selectedComplaintId) return;
-    if (!photoFile) {
-      alert("Please select a photo to upload before completing the task.");
-      return;
-    }
-
-    setUploadingPhoto(true);
-    try {
-      // Convert photo to Base64
-      const reader = new FileReader();
-      const base64Promise = new Promise<string>((resolve, reject) => {
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = error => reject(error);
-      });
-      reader.readAsDataURL(photoFile);
-      const base64Photo = await base64Promise;
-
-      // Update Document
-      const complaintRef = doc(db, "complaints", selectedComplaintId);
-      await updateDoc(complaintRef, { 
-        status: "Completed",
-        completionPhotoUrl: base64Photo,
-        remarks: completionRemarks,
-        completedAt: new Date()
-      });
-
-      // Cleanup
-      setShowUploadModal(false);
-      setSelectedComplaintId(null);
-      setPhotoFile(null);
-      setCompletionRemarks("");
-    } catch (error) {
-      console.error("Error completing complaint:", error);
-      alert("Failed to upload photo or update status.");
-    } finally {
-      setUploadingPhoto(false);
-    }
-  };
-
-  const closeModal = () => {
-    setShowUploadModal(false);
-    setSelectedComplaintId(null);
-    setPhotoFile(null);
-    setCompletionRemarks("");
-  };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -238,7 +160,7 @@ export default function TechnicianViewComplaints() {
               </div>
 
               {/* Footer Controls */}
-              <div className="pt-4 mt-auto space-y-5">
+              <div className="pt-4 mt-auto space-y-5 border-t border-slate-100 dark:border-slate-800">
                 <div className="flex justify-between items-center text-xs px-1">
                   <span className="text-slate-400 font-bold flex items-center gap-1.5">
                     <Icon name="calendar_today" className="text-[12px]" />
@@ -249,147 +171,14 @@ export default function TechnicianViewComplaints() {
                   </span>
                 </div>
 
-                {/* Status Updater */}
-                {complaint.status !== "Completed" && complaint.status !== "Closed" && (
-                  <div className="flex items-center gap-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-1.5 focus-within:ring-2 ring-[#0f4c81]/20 dark:ring-blue-500/20 transition-all">
-                    <div className="flex-1 relative">
-                      <select
-                        disabled={updatingId === complaint.id}
-                        value={complaint.status}
-                        onChange={(e) => handleUpdateStatus(complaint.id, e.target.value)}
-                        className="w-full bg-transparent appearance-none px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-300 outline-none disabled:opacity-50 cursor-pointer z-10 relative"
-                      >
-                        <option value={complaint.status} disabled>{complaint.status} (Current)</option>
-                        {STATUS_OPTIONS.filter(s => s !== complaint.status).map(opt => (
-                          <option key={opt} value={opt}>Update to: {opt}</option>
-                        ))}
-                      </select>
-                      <Icon name="expand_more" className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-                    </div>
-                    {updatingId === complaint.id && (
-                      <div className="w-8 h-8 rounded-full border-2 border-[#0f4c81] dark:border-blue-500 border-t-transparent animate-spin shrink-0 mx-2" />
-                    )}
-                  </div>
-                )}
-                
-                {(complaint.status === "Completed" || complaint.status === "Closed") && complaint.completionPhotoUrl && (
-                  <div className="flex items-center justify-between bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800/30 rounded-2xl p-3">
-                    <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 flex items-center gap-2">
-                      <Icon name="image" className="text-lg" />
-                      Photo Uploaded
-                    </span>
-                    <button onClick={() => setViewPhotoUrl(complaint.completionPhotoUrl)} className="text-[10px] font-black uppercase tracking-wider bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 px-3 py-1.5 rounded-xl border border-emerald-200 dark:border-emerald-800/50 hover:bg-emerald-600 hover:text-white transition-colors cursor-pointer">
-                      View
-                    </button>
-                  </div>
-                )}
+                <Link href={`/technician/view-complaints/${complaint.id}`}>
+                  <button className="w-full flex justify-center items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold bg-[#0f4c81] text-white shadow-lg shadow-blue-900/20 dark:bg-blue-600 hover:brightness-110 transition-all cursor-pointer">
+                    View & Update Task <Icon name="arrow_forward" className="text-base" />
+                  </button>
+                </Link>
               </div>
             </div>
           ))}
-        </div>
-      )}
-
-      {/* Upload Photo Modal */}
-      {showUploadModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={closeModal} />
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2rem] w-full max-w-md shadow-2xl relative z-10 animate-fade-in flex flex-col overflow-hidden">
-            <div className="px-8 py-6 border-b border-slate-100 dark:border-slate-800">
-              <h2 className="font-display text-xl font-bold text-slate-800 dark:text-slate-100">Task Completion</h2>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Upload a photo to verify completion.</p>
-            </div>
-            
-            <div className="p-8 flex flex-col items-center">
-              <div className="w-full mb-6 text-left">
-                <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Completion Remarks / Issue Details</label>
-                <textarea 
-                  value={completionRemarks} 
-                  onChange={(e) => setCompletionRemarks(e.target.value)}
-                  placeholder="Explain what was fixed, the root cause, or any additional notes..."
-                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#0f4c81]/50 resize-none dark:text-slate-100"
-                  rows={3}
-                />
-              </div>
-
-              <input 
-                type="file" 
-                accept="image/*" 
-                ref={fileInputRef} 
-                className="hidden" 
-                onChange={(e) => setPhotoFile(e.target.files ? e.target.files[0] : null)}
-              />
-              
-              {!photoFile ? (
-                <button 
-                  onClick={() => fileInputRef.current?.click()}
-                  className="w-full h-40 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-2xl flex flex-col items-center justify-center gap-3 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:border-[#0f4c81] dark:hover:border-blue-500 hover:text-[#0f4c81] dark:hover:text-blue-400 transition-all cursor-pointer"
-                >
-                  <Icon name="add_a_photo" className="text-4xl" />
-                  <span className="font-bold text-sm">Click to select photo</span>
-                </button>
-              ) : (
-                <div className="w-full relative group">
-                  <img src={URL.createObjectURL(photoFile)} alt="Preview" className="w-full h-48 object-cover rounded-2xl border border-slate-200 dark:border-slate-700" />
-                  <div className="absolute inset-0 bg-black/50 rounded-2xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button 
-                      onClick={() => setPhotoFile(null)}
-                      className="bg-red-500 text-white px-4 py-2 rounded-xl font-bold text-sm hover:bg-red-600 transition-colors"
-                    >
-                      Remove
-                    </button>
-                  </div>
-                  <p className="text-xs text-center text-slate-500 mt-2 font-mono truncate px-4">{photoFile.name}</p>
-                </div>
-              )}
-            </div>
-            
-            <div className="px-8 py-5 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-100 dark:border-slate-800 flex justify-end gap-3">
-              <button 
-                onClick={closeModal}
-                disabled={uploadingPhoto}
-                className="px-5 py-2.5 rounded-xl text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors cursor-pointer"
-              >
-                Cancel
-              </button>
-              <button 
-                onClick={handleConfirmCompletion}
-                disabled={!photoFile || uploadingPhoto}
-                className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold bg-[#0f4c81] dark:bg-blue-600 text-white shadow-lg shadow-blue-900/20 disabled:opacity-50 disabled:cursor-not-allowed hover:brightness-110 transition-all cursor-pointer"
-              >
-                {uploadingPhoto ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    Uploading...
-                  </>
-                ) : (
-                  <>
-                    <Icon name="check_circle" className="text-lg" />
-                    Confirm Completion
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      {/* View Photo Modal */}
-      {viewPhotoUrl && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-slate-900/80 backdrop-blur-sm" onClick={() => setViewPhotoUrl(null)} />
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2rem] w-full max-w-2xl shadow-2xl relative z-10 animate-fade-in flex flex-col overflow-hidden">
-            <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
-              <h2 className="font-display text-lg font-bold text-slate-800 dark:text-slate-100">Completion Photo</h2>
-              <button 
-                onClick={() => setViewPhotoUrl(null)}
-                className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
-              >
-                <Icon name="close" className="text-xl" />
-              </button>
-            </div>
-            <div className="p-4 flex justify-center bg-slate-50 dark:bg-slate-950 max-h-[70vh] overflow-auto custom-scrollbar">
-              <img src={viewPhotoUrl} alt="Completion" className="max-w-full rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 object-contain" />
-            </div>
-          </div>
         </div>
       )}
     </div>
