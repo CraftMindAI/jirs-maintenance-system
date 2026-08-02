@@ -1,4 +1,4 @@
-import { doc, updateDoc, deleteDoc } from "firebase/firestore";
+import { doc, updateDoc, deleteDoc, Bytes } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
 /** Shared complaint-mutation helpers used by both the complaints list page and the ticket detail page. */
@@ -20,6 +20,8 @@ export type ComplaintEditFields = {
   location: string;
   priority: string;
   description: string;
+  /** Omit to leave the existing attachment untouched; pass [] to remove it, or a new image to replace it. */
+  images?: { data: Bytes; type: string; name: string }[];
 };
 
 /** Only allowed while a complaint is still "Pending" — enforced by callers before showing the edit UI. */

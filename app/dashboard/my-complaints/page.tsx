@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Icon from "@/components/ui/Icon";
 import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, Bytes } from "firebase/firestore";
 import { useComplaintsFeed } from "@/hooks/useComplaintsFeed";
+import { useComplaintDetail } from "@/hooks/useComplaintDetail";
 import { deleteComplaint, editComplaint } from "@/utils/admin/complaints";
 import { Complaint } from "@/app/dashboard/page";
 
@@ -39,6 +40,32 @@ export default function MyComplaints() {
   const [edError, setEdError] = useState<string | null>(null);
   const [edSerial, setEdSerial] = useState(0);
 
+  // Edit modal: image attachment state
+  const [edImageFile, setEdImageFile] = useState<File | null>(null);
+  const [edImagePreview, setEdImagePreview] = useState<string | null>(null);
+  const [edImageRemoved, setEdImageRemoved] = useState(false);
+  const [edDragActive, setEdDragActive] = useState(false);
+  const edFileInputRef = useRef<HTMLInputElement>(null);
+
+  // Fetches the existing attachment (if any) for whichever ticket is open in the edit modal
+  const { images: edExistingImages } = useComplaintDetail(editingComplaint?.id ?? "");
+
+  useEffect(() => {
+    if (!editingComplaint) return;
+    setEdImageFile(null);
+    setEdImageRemoved(false);
+    setEdImagePreview(edExistingImages[0] || null);
+    // Only re-run when the open ticket changes — edExistingImages arrives asynchronously
+    // after openEdit() and shouldn't retrigger this on every fetch.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editingComplaint?.id]);
+
+  useEffect(() => {
+    if (!editingComplaint || edImageFile || edImageRemoved) return;
+    setEdImagePreview(edExistingImages[0] || null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [edExistingImages]);
+
   const openEdit = (item: Complaint, serial: number) => {
     setEditingComplaint(item);
     setEdSerial(serial);
@@ -52,6 +79,55 @@ export default function MyComplaints() {
   const closeEdit = () => {
     setEditingComplaint(null);
     setEdError(null);
+  };
+
+  const processEdImageFile = (file: File) => {
+    const validTypes = ["image/jpeg", "image/png", "image/jpg"];
+    if (!validTypes.includes(file.type)) {
+      setEdError("Please upload an image file (JPG, PNG, or JPEG).");
+      return;
+    }
+    setEdError(null);
+    setEdImageFile(file);
+    setEdImageRemoved(false);
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setEdImagePreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleEdDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setEdDragActive(true);
+    } else if (e.type === "dragleave") {
+      setEdDragActive(false);
+    }
+  };
+
+  const handleEdDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setEdDragActive(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      processEdImageFile(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleEdFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      processEdImageFile(e.target.files[0]);
+    }
+  };
+
+  const removeEdImage = () => {
+    setEdImageFile(null);
+    setEdImagePreview(null);
+    setEdImageRemoved(true);
+    if (edFileInputRef.current) edFileInputRef.current.value = "";
   };
 
   const handleEditSave = async () => {
@@ -72,11 +148,27 @@ export default function MyComplaints() {
     setEdSaving(true);
     setEdError(null);
     try {
+      let images:
+        | { data: Bytes; type: string; name: string }[]
+        | undefined;
+      if (edImageFile) {
+        images = [
+          {
+            data: Bytes.fromUint8Array(new Uint8Array(await edImageFile.arrayBuffer())),
+            type: edImageFile.type,
+            name: edImageFile.name,
+          },
+        ];
+      } else if (edImageRemoved) {
+        images = [];
+      }
+
       await editComplaint(editingComplaint.id, {
         category: edCategory,
         location: edLocation.trim(),
         priority: edPriority,
         description: edDescription.trim(),
+        ...(images !== undefined ? { images } : {}),
       });
       setEditingComplaint(null);
     } catch (error) {
@@ -482,7 +574,8 @@ export default function MyComplaints() {
       {/* Edit Complaint Modal Overlay — only ever opened for Pending tickets */}
       {editingComplaint && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-sm p-6">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 md:p-8 max-w-lg w-full shadow-2xl space-y-6 animate-scale-in max-h-[90vh] overflow-y-auto">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-lg w-full shadow-2xl animate-scale-in max-h-[90vh] overflow-hidden flex flex-col">
+          <div className="p-6 md:p-8 space-y-6 overflow-y-auto custom-scrollbar">
             <div>
               <h4 className="text-xl font-bold text-slate-800 dark:text-slate-100">
                 Edit Ticket #{edSerial}
@@ -577,6 +670,63 @@ export default function MyComplaints() {
               />
             </div>
 
+            {/* Reference Image */}
+            <div className="space-y-2">
+              <span className="block font-bold text-xs uppercase tracking-widest text-slate-500 dark:text-slate-400">
+                Reference Image (Optional)
+              </span>
+
+              {!edImagePreview ? (
+                <div
+                  onDragEnter={handleEdDrag}
+                  onDragOver={handleEdDrag}
+                  onDragLeave={handleEdDrag}
+                  onDrop={handleEdDrop}
+                  onClick={() => edFileInputRef.current?.click()}
+                  className={`border-2 border-dashed rounded-2xl p-6 text-center flex flex-col items-center justify-center gap-2 cursor-pointer transition-all ${
+                    edDragActive
+                      ? "border-primary bg-primary/5"
+                      : "border-slate-200 dark:border-slate-800 hover:border-primary/50 hover:bg-slate-50 dark:hover:bg-slate-800/40"
+                  }`}
+                >
+                  <input
+                    ref={edFileInputRef}
+                    type="file"
+                    onChange={handleEdFileChange}
+                    accept="image/jpeg,image/png,image/jpg"
+                    className="hidden"
+                  />
+                  <div className="w-10 h-10 bg-slate-100 dark:bg-slate-800 text-slate-400 rounded-xl flex items-center justify-center">
+                    <Icon name="upload" className="text-xl" />
+                  </div>
+                  <p className="font-bold text-xs text-slate-700 dark:text-slate-300">
+                    Drag & drop an image or click to upload
+                  </p>
+                  <p className="text-[10px] text-slate-400 dark:text-slate-500">
+                    Supported: JPG, PNG, JPEG. Max file size: 5MB.
+                  </p>
+                </div>
+              ) : (
+                <div className="border border-slate-200 dark:border-slate-800 rounded-2xl p-3 flex items-center justify-between gap-4 bg-slate-50/50 dark:bg-slate-900/50">
+                  <div className="flex items-center gap-3 overflow-hidden">
+                    <div className="w-14 h-14 rounded-xl overflow-hidden relative shrink-0 border border-slate-200 dark:border-slate-800">
+                      <img src={edImagePreview} alt="Preview" className="w-full h-full object-cover" />
+                    </div>
+                    <p className="text-xs font-bold text-slate-700 dark:text-slate-300 truncate">
+                      {edImageFile?.name || "Current attachment"}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={removeEdImage}
+                    className="text-red-500 p-2 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-xl transition-all cursor-pointer shrink-0"
+                  >
+                    <Icon name="delete" className="text-lg" />
+                  </button>
+                </div>
+              )}
+            </div>
+
             <div className="flex gap-4 pt-2">
               <button
                 onClick={closeEdit}
@@ -593,6 +743,7 @@ export default function MyComplaints() {
                 {edSaving ? "Saving..." : "Save Changes"}
               </button>
             </div>
+          </div>
           </div>
         </div>
       )}
