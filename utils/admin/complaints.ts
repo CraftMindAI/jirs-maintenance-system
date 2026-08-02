@@ -15,6 +15,18 @@ export async function deleteComplaint(id: string) {
   await deleteDoc(doc(db, "complaints", id));
 }
 
+export type ComplaintEditFields = {
+  category: string;
+  location: string;
+  priority: string;
+  description: string;
+};
+
+/** Only allowed while a complaint is still "Pending" — enforced by callers before showing the edit UI. */
+export async function editComplaint(id: string, fields: ComplaintEditFields) {
+  await updateDoc(doc(db, "complaints", id), fields);
+}
+
 export async function verifyComplaint(id: string) {
   await updateDoc(doc(db, "complaints", id), { status: "Verified" });
 }

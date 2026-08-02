@@ -35,7 +35,14 @@ service cloud.firestore {
       allow create: if isSignedIn() &&
         request.resource.data.userId == request.auth.uid &&
         request.resource.data.status == 'Pending';
-      allow update: if isSignedIn() && (isAdmin() || isTechnician());
+      allow update: if isSignedIn() && (
+        isAdmin() ||
+        isTechnician() ||
+        (resource.data.userId == request.auth.uid &&
+          resource.data.status == 'Pending' &&
+          request.resource.data.userId == resource.data.userId &&
+          request.resource.data.status == 'Pending')
+      );
       allow delete: if isSignedIn() &&
         (isAdmin() ||
           (resource.data.userId == request.auth.uid && resource.data.status == 'Pending'));
