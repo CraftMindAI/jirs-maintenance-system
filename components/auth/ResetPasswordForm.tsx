@@ -73,6 +73,7 @@ export default function ResetPasswordForm() {
     try {
       await confirmPasswordReset(auth, oobCode, password);
       setStatus("done");
+      setTimeout(() => router.push("/login"), 2500);
     } catch (err) {
       setError(friendlyError(err));
       setSubmitting(false);
@@ -103,7 +104,7 @@ export default function ResetPasswordForm() {
       <div className="space-y-4">
         <h2 className="font-headline text-2xl font-semibold text-primary">Password Reset</h2>
         <p className="font-body-md text-on-surface-variant">
-          Your password has been reset successfully.
+          Your password has been reset successfully. Redirecting you to login...
         </p>
         <button
           onClick={() => router.push("/login")}

@@ -92,7 +92,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <div
-      className={`min-h-screen font-body-md transition-colors duration-300 ${
+      className={`h-screen overflow-y-auto hide-scrollbar font-body-md transition-colors duration-300 ${
         darkMode ? "bg-[#0b1326] text-[#dae2fd] selection:bg-[#8083ff]/30" : "bg-slate-50 text-slate-900 selection:bg-primary/20"
       }`}
     >

@@ -2,13 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { collection, deleteDoc, doc, onSnapshot, updateDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth, db } from "@/lib/firebase";
 import { showToast } from "@/lib/toast";
 import PageHeader from "@/components/admin/user-management/PageHeader";
 import SearchBar from "@/components/admin/user-management/SearchBar";
 import UsersTable from "@/components/admin/user-management/UsersTable";
-import EditRoleModal from "@/components/admin/user-management/EditRoleModal";
 import DeleteUserModal from "@/components/admin/user-management/DeleteUserModal";
+import ResetPasswordModal from "@/components/admin/user-management/ResetPasswordModal";
+import AddTechnicianModal from "@/components/admin/user-management/AddTechnicianModal";
 
 export type UserItem = {
   id: string;
@@ -18,18 +20,61 @@ export type UserItem = {
   dept: string;
   role: "Student" | "Staff" | "Technician" | "Admin";
   active: boolean;
+  ticketCounts?: {
+    assigned: number;
+    inProgress: number;
+    completed: number;
+    total: number;
+  };
 };
 
 export default function AdminUserManagement() {
   const [users, setUsers] = useState<UserItem[]>([]);
+  const [ticketCountsMap, setTicketCountsMap] = useState<
+    Record<string, { assigned: number; inProgress: number; completed: number; total: number }>
+  >({});
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [editingUserId, setEditingUserId] = useState<string | null>(null);
-  const [editingRole, setEditingRole] = useState<UserItem["role"]>("Student");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
+  const [resetPasswordUser, setResetPasswordUser] = useState<UserItem | null>(null);
+  const [showAddTechnician, setShowAddTechnician] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUserId(user?.uid || null);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    const unsubComplaints = onSnapshot(collection(db, "complaints"), (snapshot) => {
+      const map: Record<string, { assigned: number; inProgress: number; completed: number; total: number }> = {};
+
+      snapshot.docs.forEach((docSnap) => {
+        const data = docSnap.data();
+        const techId = data.technicianId || data.technicianEmail || data.technicianName;
+        if (!techId) return;
+
+        if (!map[techId]) {
+          map[techId] = { assigned: 0, inProgress: 0, completed: 0, total: 0 };
+        }
+
+        map[techId].total += 1;
+
+        if (data.status === "Assigned") {
+          map[techId].assigned += 1;
+        } else if (data.status === "In Progress") {
+          map[techId].inProgress += 1;
+        } else if (data.status === "Completed") {
+          map[techId].completed += 1;
+        }
+      });
+
+      setTicketCountsMap(map);
+    });
+
+    const unsubUsers = onSnapshot(
       collection(db, "users"),
       (snapshot) => {
         const list: UserItem[] = snapshot.docs.map((d) => {
@@ -55,7 +100,10 @@ export default function AdminUserManagement() {
       },
     );
 
-    return () => unsubscribe();
+    return () => {
+      unsubComplaints();
+      unsubUsers();
+    };
   }, []);
 
   const handleToggleStatus = async (id: string) => {
@@ -71,24 +119,6 @@ export default function AdminUserManagement() {
     }
   };
 
-  const handleEditRole = (id: string, role: UserItem["role"]) => {
-    setEditingUserId(id);
-    setEditingRole(role);
-  };
-
-  const saveRoleEdit = async () => {
-    if (!editingUserId) return;
-
-    try {
-      await updateDoc(doc(db, "users", editingUserId), { role: editingRole });
-      setEditingUserId(null);
-      showToast.success("User role updated successfully.");
-    } catch (error) {
-      console.error("Error updating user role:", error);
-      showToast.error("Failed to update user role.");
-    }
-  };
-
   const handleDeleteUser = async (id: string) => {
     try {
       await deleteDoc(doc(db, "users", id));
@@ -100,20 +130,60 @@ export default function AdminUserManagement() {
     }
   };
 
-  const filteredUsers = users.filter((u) => {
-    return (
-      u.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      u.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      u.dept.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      u.role.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  });
+  const handleConfirmResetEmail = async (targetUser: UserItem) => {
+    const res = await fetch("/api/admin/send-reset-email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: targetUser.email,
+        name: targetUser.name,
+        phone: targetUser.phone,
+      }),
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Failed to send reset email");
+
+    showToast.success(`Password reset to "${data.newPassword}" & emailed to ${targetUser.email}.`);
+    return data.newPassword as string;
+  };
+
+  const handleCreateTechnician = async (form: { name: string; email: string; phone: string }) => {
+    const res = await fetch("/api/admin/create-technician", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form),
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Failed to create technician account");
+
+    showToast.success(`Technician account created & credentials emailed to ${form.email}.`);
+    setShowAddTechnician(false);
+  };
+
+  const filteredUsers = users
+    .filter((u) => {
+      return (
+        u.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        u.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        u.dept.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        u.role.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    })
+    .map((u) => ({
+      ...u,
+      ticketCounts:
+        ticketCountsMap[u.id] ||
+        ticketCountsMap[u.email] ||
+        ticketCountsMap[u.name] || { assigned: 0, inProgress: 0, completed: 0, total: 0 },
+    }));
 
   return (
     <div className="space-y-8 pb-12">
       <title>User Management | JMMS Admin</title>
 
-      <PageHeader />
+      <PageHeader onAddTechnician={() => setShowAddTechnician(true)} />
 
       <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
 
@@ -124,20 +194,19 @@ export default function AdminUserManagement() {
       ) : (
         <UsersTable
           users={filteredUsers}
+          currentUserId={currentUserId}
           onToggleStatus={handleToggleStatus}
-          onEditRole={handleEditRole}
           onDeleteRequest={setShowDeleteConfirm}
+          onResetPasswordRequest={(u) => setResetPasswordUser(u)}
         />
       )}
 
-      {/* Edit Role Modal */}
-      {editingUserId && (
-        <EditRoleModal
-          userId={editingUserId}
-          editingRole={editingRole}
-          setEditingRole={setEditingRole}
-          onCancel={() => setEditingUserId(null)}
-          onSave={saveRoleEdit}
+      {/* Reset Password Email Confirmation Modal */}
+      {resetPasswordUser && (
+        <ResetPasswordModal
+          user={resetPasswordUser}
+          onCancel={() => setResetPasswordUser(null)}
+          onConfirm={handleConfirmResetEmail}
         />
       )}
 
@@ -147,6 +216,14 @@ export default function AdminUserManagement() {
           userName={users.find((u) => u.id === showDeleteConfirm)?.name || "Unknown User"}
           onCancel={() => setShowDeleteConfirm(null)}
           onConfirm={() => handleDeleteUser(showDeleteConfirm)}
+        />
+      )}
+
+      {/* Add Technician Modal */}
+      {showAddTechnician && (
+        <AddTechnicianModal
+          onCancel={() => setShowAddTechnician(false)}
+          onConfirm={handleCreateTechnician}
         />
       )}
     </div>

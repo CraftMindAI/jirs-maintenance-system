@@ -12,7 +12,6 @@ export default function ProfileSettings() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [department, setDepartment] = useState("");
   const [role, setRole] = useState("");
   const [loading, setLoading] = useState(true);
   const [profileSaving, setProfileSaving] = useState(false);
@@ -34,7 +33,6 @@ export default function ProfileSettings() {
         const data = docSnap.exists() ? docSnap.data() : null;
         setFullName(data?.name || user.displayName || "");
         setPhone(data?.phone || "");
-        setDepartment(data?.department || "General Maintenance");
         setRole(data?.role || "Administrator");
       } catch (err) {
         console.error("Error fetching profile:", err);
@@ -58,7 +56,6 @@ export default function ProfileSettings() {
       await updateDoc(doc(db, "users", uid), {
         name: fullName,
         phone,
-        department,
       });
       setProfileSaving(false);
       setProfileSaved(true);
@@ -91,7 +88,7 @@ export default function ProfileSettings() {
             Profile Information
           </h3>
           <p className="text-xs text-slate-500 dark:text-[#908fa0]">
-            Update your personal details, contact number, and department.
+            Update your personal details and contact number.
           </p>
         </div>
         <Icon name="person" className="text-primary dark:text-[#8083ff] text-2xl" />
@@ -185,25 +182,6 @@ export default function ProfileSettings() {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="+91 9876543210"
-                className="w-full rounded-xl pl-10 pr-4 py-3 text-xs bg-slate-50 dark:bg-[#131b2e] border border-slate-200 dark:border-[#464554]/20 text-slate-800 dark:text-[#dae2fd] font-semibold outline-none focus:border-primary dark:focus:border-[#8083ff] focus:ring-2 focus:ring-primary/20 dark:focus:ring-[#8083ff]/20 transition-all"
-              />
-            </div>
-          </div>
-
-          {/* Department Field */}
-          <div className="space-y-1.5">
-            <label className="block text-[10px] font-mono uppercase text-slate-500 dark:text-[#908fa0] tracking-wider">
-              Department / Office
-            </label>
-            <div className="relative">
-              <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#908fa0]">
-                <Icon name="business" className="text-base" />
-              </div>
-              <input
-                type="text"
-                value={department}
-                onChange={(e) => setDepartment(e.target.value)}
-                placeholder="e.g. Facilities & Maintenance"
                 className="w-full rounded-xl pl-10 pr-4 py-3 text-xs bg-slate-50 dark:bg-[#131b2e] border border-slate-200 dark:border-[#464554]/20 text-slate-800 dark:text-[#dae2fd] font-semibold outline-none focus:border-primary dark:focus:border-[#8083ff] focus:ring-2 focus:ring-primary/20 dark:focus:ring-[#8083ff]/20 transition-all"
               />
             </div>

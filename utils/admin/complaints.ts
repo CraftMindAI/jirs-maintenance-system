@@ -22,12 +22,17 @@ export type AssignedTechnician = {
 };
 
 export async function assignTechnician(ticketId: string, technician: AssignedTechnician) {
+  const now = new Date();
+  const deadline = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
+
   await updateDoc(doc(db, "complaints", ticketId), {
     status: "Assigned",
     technicianId: technician.id,
     technicianName: technician.name,
     technicianPhone: technician.phone || "",
-    assignedDate: new Date().toISOString().split("T")[0],
+    assignedDate: now.toISOString().split("T")[0],
+    assignedAt: now.toISOString(),
+    deadlineAt: deadline.toISOString(),
     remarks: `Assigned to ${technician.name}.`,
   });
 }
@@ -37,8 +42,10 @@ export async function updateComplaintProgress(
   nextStatus: "In Progress" | "Completed",
   remarks: string,
 ) {
+  const now = new Date().toISOString();
   await updateDoc(doc(db, "complaints", id), {
     status: nextStatus,
+    ...(nextStatus === "Completed" ? { completedAt: now } : {}),
     ...(remarks.trim() ? { remarks: remarks.trim() } : {}),
   });
 }

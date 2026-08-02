@@ -18,8 +18,12 @@ export type Complaint = {
   description: string;
   technicianId?: string;
   technicianName?: string;
+  technicianEmail?: string;
   technicianPhone?: string;
   assignedDate?: string;
+  assignedAt?: string;
+  deadlineAt?: string;
+  completedAt?: string;
   remarks?: string;
   submittedBy?: string;
   userId?: string;

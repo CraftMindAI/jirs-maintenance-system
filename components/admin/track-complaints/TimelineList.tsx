@@ -1,94 +1,260 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
 import Icon from "@/components/ui/Icon";
+import StatusBadge from "@/components/ui/StatusBadge";
+import PriorityBadge from "@/components/ui/PriorityBadge";
 import { Complaint } from "@/app/dashboard/page";
+import { getDeadlineInfo } from "@/utils/deadline";
+
+export interface TechnicianGroup {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  dept?: string;
+  tickets: Complaint[];
+}
 
 const TIMELINE_STEPS = [
   { key: "Pending", label: "Submitted" },
-  { key: "Verified", label: "Approved" },
+  { key: "Approved", label: "Approved" },
   { key: "Assigned", label: "Assigned" },
-  { key: "In Progress", label: "Started" },
+  { key: "In Progress", label: "In Progress" },
   { key: "Completed", label: "Completed" },
-  { key: "Closed", label: "Closed" },
 ];
 
 const getStepStatus = (stepKey: string, currentStatus: string) => {
-  const order = ["Pending", "Verified", "Assigned", "In Progress", "Completed", "Closed"];
-  const normCurrent = currentStatus;
-  const currentIdx = order.indexOf(normCurrent);
+  const order = ["Pending", "Approved", "Assigned", "In Progress", "Completed"];
+  const currentIdx = order.indexOf(currentStatus);
   const stepIdx = order.indexOf(stepKey);
 
-  if (currentIdx >= stepIdx) return "completed";
-  if (currentIdx + 1 === stepIdx) return "active";
+  if (currentIdx > stepIdx) return "completed";
+  if (currentIdx === stepIdx) return "active";
   return "pending";
 };
 
-export default function TimelineList({ complaints }: { complaints: Complaint[] }) {
-  if (complaints.length === 0) {
+export default function TimelineList({
+  technicianGroups,
+}: {
+  technicianGroups: TechnicianGroup[];
+}) {
+  const [expandedTechIds, setExpandedTechIds] = useState<Set<string>>(new Set());
+
+  const toggleExpanded = (techId: string) => {
+    setExpandedTechIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(techId)) {
+        next.delete(techId);
+      } else {
+        next.add(techId);
+      }
+      return next;
+    });
+  };
+
+  if (technicianGroups.length === 0) {
     return (
       <div className="bg-white dark:bg-[#171f33] border border-slate-200 dark:border-[#464554]/10 rounded-3xl p-16 text-center shadow-sm">
         <Icon name="engineering" className="text-4xl text-slate-400 dark:text-[#908fa0] mb-3 block mx-auto" />
-        <h3 className="font-display text-xl font-bold text-slate-900 dark:text-[#dae2fd]">No Tracking Data</h3>
-        <p className="text-xs text-slate-500 dark:text-[#908fa0] mt-1">No tickets fit the chosen filter specifications.</p>
+        <h3 className="font-display text-xl font-bold text-slate-900 dark:text-[#dae2fd]">No Tracking Data Found</h3>
+        <p className="text-xs text-slate-500 dark:text-[#908fa0] mt-1">Adjust search query or status filter to locate technician records.</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      {complaints.map((item) => (
-        <div
-          key={item.id}
-          className="bg-white dark:bg-[#171f33] border border-slate-200 dark:border-[#464554]/10 rounded-3xl p-6 shadow-sm space-y-6 dark:vibrant-shadow relative overflow-hidden card-shine"
-        >
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-100 dark:border-[#464554]/20 pb-4">
-            <div>
-              <h3 className="text-sm font-bold text-slate-900 dark:text-[#dae2fd]">
-                {item.category} ({item.id})
-              </h3>
-              <p className="text-xs text-slate-500 dark:text-[#908fa0] mt-0.5">Location: {item.location} • Reporter: Community Member</p>
-            </div>
-            <div className="text-xs font-semibold text-slate-500 dark:text-[#908fa0] flex gap-4">
-              <div>
-                <span>Staff:</span>
-                <span className="text-primary dark:text-[#c0c1ff] ml-1.5 font-bold">{item.technicianName || "Unassigned"}</span>
-              </div>
-              <div>
-                <span>SLA Target:</span>
-                <span className="text-slate-800 dark:text-[#dae2fd] ml-1.5 font-bold">24 Hrs</span>
-              </div>
-            </div>
-          </div>
+    <div className="space-y-8">
+      {/* Render Each Technician & All Their Tickets (Assigned, In Progress, Completed) */}
+      {technicianGroups.map((tech) => {
+        const assignedCount = tech.tickets.filter((t) => t.status === "Assigned").length;
+        const inProgressCount = tech.tickets.filter((t) => t.status === "In Progress").length;
+        const completedCount = tech.tickets.filter((t) => t.status === "Completed").length;
 
-          <div className="overflow-x-auto py-2">
-            <div className="min-w-[600px] flex items-center justify-between relative px-4">
-              <div className="absolute top-[15px] left-8 right-8 h-[2px] bg-slate-200 dark:bg-[#131b2e] pointer-events-none" />
+        // Active ticket (In Progress or Assigned)
+        const activeTicket = tech.tickets.find((t) => t.status === "In Progress") || tech.tickets.find((t) => t.status === "Assigned");
+        const isExpanded = expandedTechIds.has(tech.id);
 
-              {TIMELINE_STEPS.map((step, idx) => {
-                const status = getStepStatus(step.key, item.status);
+        return (
+          <div
+            key={tech.id}
+            className="bg-white dark:bg-[#171f33] border border-slate-200 dark:border-[#464554]/10 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6 dark:vibrant-shadow"
+          >
+            {/* Technician Profile Header */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 dark:border-[#464554]/20 pb-6">
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#8083ff] to-[#4edea3] text-white font-black text-xl flex items-center justify-center shadow-lg shadow-[#8083ff]/20 shrink-0">
+                  {tech.name.slice(0, 2).toUpperCase()}
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-lg font-extrabold text-slate-900 dark:text-white">{tech.name}</h2>
+                    <Link
+                      href={`/technician/${tech.id}`}
+                      className="text-xs font-bold text-primary dark:text-[#c0c1ff] hover:underline flex items-center gap-1"
+                    >
+                      Full Profile & Timelines <Icon name="arrow_forward" className="text-xs" />
+                    </Link>
+                  </div>
+                  <p className="text-xs text-slate-500 dark:text-[#908fa0] mt-0.5">
+                    {tech.email} • {tech.phone || "No phone listed"} • {tech.dept || "Maintenance"}
+                  </p>
+                </div>
+              </div>
+
+              {/* Status Counters */}
+              <div className="flex items-center gap-2">
+                <span className="px-3 py-1.5 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 font-extrabold text-xs">
+                  Assigned: {assignedCount}
+                </span>
+                <span className="px-3 py-1.5 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 font-extrabold text-xs">
+                  In Progress: {inProgressCount}
+                </span>
+                <span className="px-3 py-1.5 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-extrabold text-xs">
+                  Completed: {completedCount}
+                </span>
+              </div>
+            </div>
+
+            {/* Currently Working On Highlight Box */}
+            {activeTicket ? (
+              <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-5 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-xs font-black uppercase text-amber-600 dark:text-amber-400 tracking-wider">
+                    <Icon name="engineering" className="text-amber-500 animate-pulse text-base" />
+                    ⚡ Working On Right Now: <span className="font-mono text-slate-900 dark:text-white">{activeTicket.id}</span>
+                  </div>
+                  {(() => {
+                    const dl = getDeadlineInfo(activeTicket.assignedAt, activeTicket.assignedDate, activeTicket.status);
+                    return (
+                      <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${dl.badgeClass}`}>
+                        <Icon name="timer" className="text-sm" />
+                        3-Day Deadline: {dl.timeLeftText}
+                      </span>
+                    );
+                  })()}
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+                  <div>
+                    <span className="text-slate-500 dark:text-[#908fa0] block">Category & Location</span>
+                    <span className="font-bold text-slate-800 dark:text-white">{activeTicket.category} • {activeTicket.location}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 dark:text-[#908fa0] block">Description</span>
+                    <span className="text-slate-700 dark:text-[#c7c4d7] line-clamp-2">{activeTicket.description || "No description."}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 dark:text-[#908fa0] block">Technician Remarks</span>
+                    <span className="text-slate-700 dark:text-[#c7c4d7] italic">{activeTicket.remarks || "Work in progress..."}</span>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="bg-slate-50 dark:bg-[#131b2e]/40 border border-slate-200/60 dark:border-[#464554]/10 rounded-2xl p-4 text-xs text-slate-500 dark:text-[#908fa0] flex items-center gap-2">
+                <Icon name="check_circle" className="text-emerald-500 text-base" />
+                No active pending tasks. Technician has completed all assigned tickets!
+              </div>
+            )}
+
+            {/* List of All Tickets for this Technician */}
+            <div className="space-y-4 pt-2">
+              <button
+                onClick={() => toggleExpanded(tech.id)}
+                className="w-full flex items-center justify-between gap-2 text-xs font-mono font-bold uppercase tracking-wider text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors cursor-pointer"
+              >
+                <span>All Tickets Handled By {tech.name} ({tech.tickets.length})</span>
+                <Icon
+                  name={isExpanded ? "expand_less" : "expand_more"}
+                  className="text-base transition-transform"
+                />
+              </button>
+
+              {isExpanded && tech.tickets.map((ticket) => {
+                const deadline = getDeadlineInfo(ticket.assignedAt, ticket.assignedDate, ticket.status);
                 return (
-                  <div key={idx} className="relative flex flex-col items-center gap-2 text-center z-10 w-24">
-                    <span className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-bold transition-all duration-300 ${
-                      status === "completed"
-                        ? "bg-primary dark:bg-[#8083ff] border-primary dark:border-[#8083ff] text-white scale-110 shadow-lg"
-                        : status === "active"
-                        ? "bg-white dark:bg-[#171f33] border-primary dark:border-[#8083ff] text-primary dark:text-[#c0c1ff] animate-pulse"
-                        : "bg-white dark:bg-[#171f33] border-slate-200 dark:border-[#464554]/30 text-slate-400 dark:text-[#908fa0]"
-                    }`}>
-                      {status === "completed" ? <Icon name="check" className="text-xs font-black" /> : idx + 1}
-                    </span>
-                    <span className={`text-[10px] font-mono uppercase tracking-wider ${
-                      status === "completed" ? "text-slate-900 dark:text-[#dae2fd] font-bold" :
-                      status === "active" ? "text-primary dark:text-[#c0c1ff] font-extrabold" :
-                      "text-slate-400 dark:text-[#908fa0]"
-                    }`}>
-                      {step.label}
-                    </span>
+                  <div
+                    key={ticket.id}
+                    className="bg-slate-50 dark:bg-[#131b2e]/60 border border-slate-200/60 dark:border-[#464554]/10 rounded-2xl p-5 space-y-4"
+                  >
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-200/40 dark:border-[#464554]/10 pb-3">
+                      <div className="flex items-center gap-3">
+                        <span className="font-mono font-bold text-primary dark:text-[#c0c1ff] text-sm">
+                          {ticket.id}
+                        </span>
+                        <PriorityBadge priority={ticket.priority} />
+                        <StatusBadge status={ticket.status} />
+                      </div>
+                      <span className={`inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[11px] ${deadline.badgeClass}`}>
+                        <Icon name="timer" className="text-xs" />
+                        {deadline.timeLeftText}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                      <div>
+                        <span className="text-slate-400 block text-[10px]">Category & Location</span>
+                        <p className="font-bold text-slate-800 dark:text-[#dae2fd]">
+                          {ticket.category} • <span className="font-normal text-slate-500">{ticket.location}</span>
+                        </p>
+                      </div>
+                      <div>
+                        <span className="text-slate-400 block text-[10px]">Description</span>
+                        <p className="text-slate-700 dark:text-[#c7c4d7] line-clamp-2">
+                          {ticket.description || "-"}
+                        </p>
+                      </div>
+                      <div>
+                        <span className="text-slate-400 block text-[10px]">Assigned Date & Remarks</span>
+                        <p className="text-slate-700 dark:text-[#c7c4d7] italic">
+                          {ticket.assignedDate || "Assigned"} • {ticket.remarks || "No remarks"}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Timeline Stepper */}
+                    <div className="overflow-x-auto pt-2">
+                      <div className="min-w-[500px] flex items-center justify-between relative px-2">
+                        <div className="absolute top-[14px] left-8 right-8 h-[2px] bg-slate-200 dark:bg-[#131b2e] pointer-events-none" />
+
+                        {TIMELINE_STEPS.map((step, idx) => {
+                          const status = getStepStatus(step.key, ticket.status);
+                          return (
+                            <div key={idx} className="relative flex flex-col items-center gap-1.5 text-center z-10 w-20">
+                              <span
+                                className={`w-7 h-7 rounded-full border-2 flex items-center justify-center text-[10px] font-black transition-all ${
+                                  status === "completed"
+                                    ? "bg-emerald-500 border-emerald-500 text-white"
+                                    : status === "active"
+                                    ? "bg-primary dark:bg-[#8083ff] border-primary text-white scale-110 shadow-md"
+                                    : "bg-white dark:bg-[#171f33] border-slate-300 dark:border-[#464554]/40 text-slate-400"
+                                }`}
+                              >
+                                {status === "completed" ? "✓" : idx + 1}
+                              </span>
+                              <span
+                                className={`text-[9px] font-mono uppercase tracking-wider ${
+                                  status === "completed"
+                                    ? "text-emerald-600 dark:text-emerald-400 font-bold"
+                                    : status === "active"
+                                    ? "text-primary dark:text-[#c0c1ff] font-black"
+                                    : "text-slate-400"
+                                }`}
+                              >
+                                {step.label}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
                   </div>
                 );
               })}
             </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

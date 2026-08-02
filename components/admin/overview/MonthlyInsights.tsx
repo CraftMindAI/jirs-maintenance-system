@@ -10,6 +10,7 @@ type DayItem = {
   label: string;
   fullLabel: string;
   count: number;
+  isToday: boolean;
 };
 
 type WeekItem = {
@@ -76,6 +77,7 @@ function buildDataset(complaintDates: string[]): MonthItem[] {
           label: dayName,
           fullLabel: `${dayName}, ${dayDate.toLocaleDateString("default", { month: "short", day: "numeric" })}`,
           count,
+          isToday: isSameDay(dayDate, now),
         };
       });
 
@@ -134,6 +136,7 @@ export default function MonthlyInsights({ complaintDates }: Readonly<{ complaint
         subLabel: `${m.totalCount} complaints`,
         count: m.totalCount,
         clickable: true,
+        isToday: false,
       }));
     }
 
@@ -144,6 +147,7 @@ export default function MonthlyInsights({ complaintDates }: Readonly<{ complaint
         subLabel: `${w.totalCount} complaints`,
         count: w.totalCount,
         clickable: true,
+        isToday: false,
       }));
     }
 
@@ -155,6 +159,7 @@ export default function MonthlyInsights({ complaintDates }: Readonly<{ complaint
         subLabel: d.fullLabel,
         count: d.count,
         clickable: false,
+        isToday: d.isToday,
       }));
     }
 
@@ -321,6 +326,7 @@ export default function MonthlyInsights({ complaintDates }: Readonly<{ complaint
                     {/* Interactive Data Dots with entrance pop */}
                     {linePoints.points.map((pt, idx) => {
                       const isHovered = hoveredIndex === pt.idx;
+                      const isToday = "isToday" in pt && pt.isToday;
                       return (
                         <g
                           key={pt.idx}
@@ -328,18 +334,29 @@ export default function MonthlyInsights({ complaintDates }: Readonly<{ complaint
                           onMouseLeave={() => setHoveredIndex(null)}
                           className="cursor-pointer"
                         >
+                          {isToday && (
+                            <circle
+                              cx={pt.x}
+                              cy={pt.y}
+                              r="12"
+                              fill="none"
+                              stroke="#00a572"
+                              strokeWidth="1.5"
+                              className="animate-ping opacity-60"
+                            />
+                          )}
                           <motion.circle
                             cx={pt.x}
                             cy={pt.y}
-                            r={isHovered ? "7" : "5"}
-                            fill={isHovered ? "#00a572" : "#0f4c81"}
+                            r={isHovered || isToday ? "7" : "5"}
+                            fill={isToday ? "#00a572" : isHovered ? "#00a572" : "#0f4c81"}
                             stroke="#ffffff"
                             strokeWidth="2.5"
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
                             transition={{ duration: 0.3, delay: 0.2 + idx * 0.05 }}
                           />
-                          {isHovered && (
+                          {isHovered && !isToday && (
                             <circle
                               cx={pt.x}
                               cy={pt.y}
@@ -367,7 +384,9 @@ export default function MonthlyInsights({ complaintDates }: Readonly<{ complaint
                       }}
                     >
                       <span className="text-slate-300 dark:text-[#c0c1ff] block text-center">
-                        {linePoints.points[hoveredIndex].label}
+                        {("isToday" in linePoints.points[hoveredIndex] && linePoints.points[hoveredIndex].isToday)
+                          ? "Today"
+                          : linePoints.points[hoveredIndex].label}
                       </span>
                       <span className="text-white font-extrabold block text-center">
                         {linePoints.points[hoveredIndex].count} Complaints
@@ -384,12 +403,22 @@ export default function MonthlyInsights({ complaintDates }: Readonly<{ complaint
                       onMouseEnter={() => setHoveredIndex(idx)}
                       onMouseLeave={() => setHoveredIndex(null)}
                       className={`text-center cursor-pointer transition-colors ${
-                        hoveredIndex === idx ? "text-[#00a572] font-extrabold" : "text-slate-500 dark:text-[#908fa0]"
+                        "isToday" in item && item.isToday
+                          ? "text-[#00a572] font-extrabold"
+                          : hoveredIndex === idx
+                            ? "text-[#00a572] font-extrabold"
+                            : "text-slate-500 dark:text-[#908fa0]"
                       }`}
                     >
-                      <span className="text-[10px] sm:text-xs font-mono font-bold uppercase block">
-                        {item.label}
-                      </span>
+                      {"isToday" in item && item.isToday ? (
+                        <span className="text-[9px] font-mono font-bold uppercase block px-1.5 py-0.5 rounded-full bg-[#00a572]/15 text-[#00a572] border border-[#00a572]/30 mb-0.5">
+                          Today
+                        </span>
+                      ) : (
+                        <span className="text-[10px] sm:text-xs font-mono font-bold uppercase block">
+                          {item.label}
+                        </span>
+                      )}
                       <span className="text-[9px] font-mono text-primary dark:text-[#c0c1ff] block">
                         {item.count}
                       </span>

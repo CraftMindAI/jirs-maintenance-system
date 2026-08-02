@@ -2,7 +2,6 @@ import { ReactNode } from "react";
 import Link from "next/link";
 import AuthHeroPanel from "@/components/auth/AuthHeroPanel";
 import AuthTabs from "@/components/auth/AuthTabs";
-import GoogleSignInButton from "@/components/auth/GoogleSignInButton";
 import AuthFooterLinks from "@/components/auth/AuthFooterLinks";
 import Icon from "@/components/ui/Icon";
 
@@ -37,17 +36,6 @@ export default function AuthPageShell({
 
           <AuthTabs active={active} />
           {children}
-
-          {active === "login" && (
-            <div className="mt-8">
-              <div className="relative flex items-center py-4">
-                <div className="flex-grow border-t border-outline-variant/20 dark:border-white/10" />
-                <span className="mx-4 shrink-0 font-bold text-xs text-outline dark:text-slate-500 uppercase tracking-widest">OR CONTINUE WITH</span>
-                <div className="flex-grow border-t border-outline-variant/20 dark:border-white/10" />
-              </div>
-              <GoogleSignInButton />
-            </div>
-          )}
 
           <AuthFooterLinks />
         </div>

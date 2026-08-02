@@ -20,8 +20,12 @@ export function mapComplaintDoc(doc: QueryDocumentSnapshot<DocumentData>): Compl
     description: data.description || "",
     technicianId: data.technicianId,
     technicianName: data.technicianName,
+    technicianEmail: data.technicianEmail,
     technicianPhone: data.technicianPhone,
     assignedDate: data.assignedDate,
+    assignedAt: data.assignedAt,
+    deadlineAt: data.deadlineAt,
+    completedAt: data.completedAt,
     remarks: data.remarks,
     userId: data.userId,
   };

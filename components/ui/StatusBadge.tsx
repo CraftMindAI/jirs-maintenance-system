@@ -1,4 +1,5 @@
 const STATUS_STYLES: Record<string, string> = {
+  Unassigned: "bg-slate-500/10 text-slate-400 border border-slate-500/20",
   Pending: "bg-[#ff516a]/10 text-[#ffb2b7] border border-[#ff516a]/20",
   Approved: "bg-amber-500/10 text-amber-300 border border-amber-500/20",
   Assigned: "bg-[#8083ff]/10 text-[#c0c1ff] border border-[#8083ff]/20",

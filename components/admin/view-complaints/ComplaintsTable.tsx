@@ -3,6 +3,7 @@ import Icon from "@/components/ui/Icon";
 import StatusBadge from "@/components/ui/StatusBadge";
 import PriorityBadge from "@/components/ui/PriorityBadge";
 import { Complaint } from "@/app/dashboard/page";
+import { getDeadlineInfo } from "@/utils/deadline";
 
 export default function ComplaintsTable({
   complaints,
@@ -51,17 +52,20 @@ export default function ComplaintsTable({
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 dark:divide-[#464554]/10 font-medium text-xs">
-            {complaints.map((item) => {
+            {complaints.map((item, index) => {
               const isOwner = !!currentUserId && item.userId === currentUserId;
               const canManage = isOwner && item.status === "Pending";
               const canApprove = item.status === "Pending" && !isAdmin;
               const canAssign = isAdmin && (item.status === "Approved" || item.status === "Assigned");
               const canUpdateProgress = isTechnician && (item.status === "Assigned" || item.status === "In Progress");
+              const deadline = getDeadlineInfo(item.assignedAt, item.assignedDate, item.status);
+              const displayStatus =
+                item.status === "Pending" || item.status === "Approved" ? "Unassigned" : item.status;
               return (
               <tr key={item.id} className="hover:bg-primary/5 dark:hover:bg-[#8083ff]/5 transition-colors">
                 <td className="py-4 px-6 font-mono text-primary dark:text-[#c0c1ff] font-bold">
                   <Link href={`/admin/view-complaints/${item.id}`} className="hover:underline">
-                    {item.id}
+                    {index + 1}
                   </Link>
                 </td>
                 <td className="py-4 px-6">
@@ -82,8 +86,9 @@ export default function ComplaintsTable({
                     <span className="text-slate-400 dark:text-[#908fa0] italic">Unassigned</span>
                   )}
                 </td>
+               
                 <td className="py-4 px-6">
-                  <StatusBadge status={item.status} />
+                  <StatusBadge status={displayStatus} />
                 </td>
                 <td className="py-4 px-6 text-right">
                   <div className="flex justify-end gap-3 text-slate-400 dark:text-[#908fa0]">

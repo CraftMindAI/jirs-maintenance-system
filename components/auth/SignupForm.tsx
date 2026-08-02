@@ -6,8 +6,7 @@ import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 import { FirebaseError } from "firebase/app";
 import { auth, db } from "@/lib/firebase";
-
-const ROLES = ["Student", "Staff", "Technician", "Admin"];
+import RoleSelect from "@/components/auth/RoleSelect";
 
 function friendlyError(error: unknown): string {
   if (error instanceof FirebaseError) {
@@ -40,7 +39,7 @@ export default function SignupForm() {
     const name = (form.elements.namedItem("name") as HTMLInputElement).value.trim();
     const phone = (form.elements.namedItem("phone") as HTMLInputElement).value.trim();
     const email = (form.elements.namedItem("email") as HTMLInputElement).value.trim();
-    const role = (form.elements.namedItem("role") as HTMLSelectElement).value;
+    const role = (form.elements.namedItem("role") as HTMLInputElement).value;
     const password = (form.elements.namedItem("password") as HTMLInputElement).value;
     const confirmPassword = (form.elements.namedItem("confirmPassword") as HTMLInputElement)
       .value;
@@ -125,27 +124,7 @@ export default function SignupForm() {
           />
         </div>
 
-        <div className="space-y-1">
-          <label htmlFor="role" className="font-bold text-xs uppercase tracking-widest text-on-surface-variant dark:text-slate-300 block mb-1.5">
-            SELECT ROLE
-          </label>
-          <select
-            id="role"
-            name="role"
-            required
-            defaultValue=""
-            className="w-full rounded-xl px-4 py-3.5 font-body-md premium-input dark:text-slate-100 dark:bg-slate-900 appearance-none cursor-pointer"
-          >
-            <option value="" disabled className="dark:bg-slate-950">
-              Choose your role
-            </option>
-            {ROLES.map((role) => (
-              <option key={role} value={role} className="dark:bg-slate-950">
-                {role}
-              </option>
-            ))}
-          </select>
-        </div>
+        <RoleSelect />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-1">
