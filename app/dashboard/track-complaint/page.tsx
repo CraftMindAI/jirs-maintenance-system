@@ -93,7 +93,8 @@ function TrackComplaintContent() {
 
   const { images: selectedImages } = useComplaintDetail(selectedTicketId);
 
-  // Timeline steps config
+  // Timeline steps config — mirrors the real status flow written in utils/admin/complaints.ts
+  // (Pending -> Approved -> Assigned -> In Progress -> Completed -> Verified).
   const STEPS = [
     {
       key: "Pending",
@@ -101,8 +102,8 @@ function TrackComplaintContent() {
       desc: "Your ticket has been logged and queued.",
     },
     {
-      key: "Verified",
-      label: "Verified by Admin",
+      key: "Approved",
+      label: "Approved by Admin",
       desc: "Support confirmed specifications and details.",
     },
     {
@@ -121,9 +122,9 @@ function TrackComplaintContent() {
       desc: "Work completed. Awaiting final verification.",
     },
     {
-      key: "Closed",
-      label: "Closed & Archived",
-      desc: "Ticket closed and archived successfully.",
+      key: "Verified",
+      label: "Verified & Closed",
+      desc: "Admin verified the fix and closed the ticket.",
     },
   ];
 
@@ -131,18 +132,14 @@ function TrackComplaintContent() {
   const getStepStatus = (statusKey: string, currentStatus: string) => {
     const statusOrder = [
       "Pending",
-      "Verified",
+      "Approved",
       "Assigned",
       "In Progress",
       "Completed",
-      "Closed",
+      "Verified",
     ];
 
-    // Normalize status aliases
-    let normalizedCurrent = currentStatus;
-    if (currentStatus === "Verified") normalizedCurrent = "Verified";
-
-    const currentIdx = statusOrder.indexOf(normalizedCurrent);
+    const currentIdx = statusOrder.indexOf(currentStatus);
     const stepIdx = statusOrder.indexOf(statusKey);
 
     if (currentIdx >= stepIdx) return "completed";
@@ -177,9 +174,9 @@ function TrackComplaintContent() {
                 onChange={(e) => setSelectedTicketId(e.target.value)}
                 className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 dark:bg-slate-900 font-body-md text-sm font-bold outline-none focus:border-primary cursor-pointer"
               >
-                {visibleComplaints.map((c) => (
+                {visibleComplaints.map((c, idx) => (
                   <option key={c.id} value={c.id}>
-                    {c.id} — {c.category}
+                    #{idx + 1} — {c.category}
                   </option>
                 ))}
               </select>

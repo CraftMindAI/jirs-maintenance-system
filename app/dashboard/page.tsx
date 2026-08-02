@@ -42,39 +42,39 @@ function timeAgo(dateStr: string) {
   return `${diffDays} days ago`;
 }
 
-function buildNotification(c: Complaint) {
+function buildNotification(c: Complaint, serial: number) {
   switch (c.status) {
     case "Assigned":
       return {
-        text: `Complaint ${c.id} has been assigned to ${c.technicianName || "a technician"}.`,
+        text: `Complaint #${serial} has been assigned to ${c.technicianName || "a technician"}.`,
         icon: "assignment_ind",
         color: "text-indigo-500",
         time: timeAgo(c.assignedDate || c.date),
       };
     case "In Progress":
       return {
-        text: `Technician ${c.technicianName || "assigned staff"} has started working on ${c.id}.`,
+        text: `Technician ${c.technicianName || "assigned staff"} has started working on #${serial}.`,
         icon: "play_circle",
         color: "text-sky-500",
         time: timeAgo(c.assignedDate || c.date),
       };
     case "Completed":
       return {
-        text: `Complaint ${c.id} has been marked as Completed.`,
+        text: `Complaint #${serial} has been marked as Completed.`,
         icon: "check_circle",
         color: "text-emerald-500",
         time: timeAgo(c.date),
       };
     case "Verified":
       return {
-        text: `Complaint ${c.id} has been verified and closed.`,
+        text: `Complaint #${serial} has been verified and closed.`,
         icon: "verified",
         color: "text-emerald-500",
         time: timeAgo(c.date),
       };
     default:
       return {
-        text: `New ticket ${c.id} has been submitted successfully.`,
+        text: `New ticket #${serial} has been submitted successfully.`,
         icon: "add_circle",
         color: "text-primary",
         time: timeAgo(c.date),
@@ -152,40 +152,15 @@ export default function DashboardHome() {
   const stats = getStats();
   const latestComplaint = visibleComplaints[0] || null;
 
-  const notifications = [...visibleComplaints]
+  const notifications = visibleComplaints
+    .map((c, serialIdx) => ({ ...c, serial: serialIdx + 1 }))
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     .slice(0, 4)
-    .map((c, idx) => ({ id: idx, ...buildNotification(c) }));
+    .map((c, idx) => ({ id: idx, ...buildNotification(c, c.serial) }));
 
   return (
     <div className="space-y-8 pb-12">
       <title>Dashboard | JMMS</title>
-
-      {/* 1. GREETING CARD */}
-      <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-tr from-[#0b1c30] to-[#0f4c81] text-white p-8 md:p-10 shadow-xl">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-[100px] pointer-events-none" />
-        <div className="relative z-10 max-w-3xl space-y-4">
-          <div className="text-sm font-black tracking-widest text-[#ffdcc4] uppercase">
-            {new Date().toLocaleDateString("en-US", {
-              weekday: "long",
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}
-          </div>
-          <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-black leading-tight">
-            Good Morning, <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-100 to-[#ffdcc4]">
-              {userProfile?.name ?? "..."}
-            </span>{" "}
-            👋
-          </h1>
-          <p className="font-body-lg text-slate-300 italic text-sm md:text-base leading-relaxed">
-            &ldquo;Efficiency and character meet where we strive to maintain
-            JIRS as the pinnacle of learning sanctuary.&rdquo;
-          </p>
-        </div>
-      </div>
 
       {/* 2. STATS CARDS */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
@@ -268,6 +243,7 @@ export default function DashboardHome() {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="border-b border-slate-100 dark:border-slate-800 text-xs font-black uppercase text-slate-400 bg-slate-50/50 dark:bg-slate-900/50">
+                    <th className="py-4 px-6">Ticket ID</th>
                     <th className="py-4 px-6">Type</th>
                     <th className="py-4 px-6">Priority</th>
                     <th className="py-4 px-6">Status</th>
@@ -281,16 +257,19 @@ export default function DashboardHome() {
                       key={item.id}
                       className="hover:bg-slate-50/40 dark:hover:bg-slate-800/30 transition-colors"
                     >
-                      <td className="py-4 px-6 text-slate-500 dark:text-slate-400 font-bold">
+                      <td className="py-4 px-6 text-slate-800 dark:text-slate-100 font-bold">
+                        {item.id}
+                      </td>
+                      <td className="py-4 px-6 text-slate-500 dark:text-slate-400">
                         {item.category}
                       </td>
                       <td className="py-4 px-6">
                         <span
                           className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${item.priority === "High"
-                            ? "bg-red-500/10 text-red-500 border border-red-500/20"
-                            : item.priority === "Medium"
-                              ? "bg-amber-500/10 text-amber-500 border border-amber-500/20"
-                              : "bg-slate-500/10 text-slate-500 border border-slate-500/20"
+                              ? "bg-red-500/10 text-red-500 border border-red-500/20"
+                              : item.priority === "Medium"
+                                ? "bg-amber-500/10 text-amber-500 border border-amber-500/20"
+                                : "bg-slate-500/10 text-slate-500 border border-slate-500/20"
                             }`}
                         >
                           {item.priority}
@@ -299,12 +278,12 @@ export default function DashboardHome() {
                       <td className="py-4 px-6">
                         <span
                           className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider ${item.status === "Pending"
-                            ? "bg-amber-500/15 text-amber-500 border border-amber-500/30"
-                            : item.status === "Assigned"
-                              ? "bg-indigo-500/15 text-indigo-500 border border-indigo-500/30"
-                              : item.status === "In Progress"
-                                ? "bg-sky-500/15 text-sky-500 border border-sky-500/30"
-                                : "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+                              ? "bg-amber-500/15 text-amber-500 border border-amber-500/30"
+                              : item.status === "Assigned"
+                                ? "bg-indigo-500/15 text-indigo-500 border border-indigo-500/30"
+                                : item.status === "In Progress"
+                                  ? "bg-sky-500/15 text-sky-500 border border-sky-500/30"
+                                  : "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
                             }`}
                         >
                           {item.status}
@@ -331,15 +310,18 @@ export default function DashboardHome() {
             <div className="md:hidden divide-y divide-slate-100 dark:divide-slate-800">
               {visibleComplaints.slice(0, 3).map((item) => (
                 <div key={item.id} className="p-5 space-y-4">
-                  <div className="flex justify-end items-center">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-bold text-slate-800 dark:text-slate-100">
+                      {item.id}
+                    </span>
                     <span
                       className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${item.status === "Pending"
-                        ? "bg-amber-500/15 text-amber-500"
-                        : item.status === "Assigned"
-                          ? "bg-indigo-500/15 text-indigo-500"
-                          : item.status === "In Progress"
-                            ? "bg-sky-500/15 text-sky-500"
-                            : "bg-emerald-500/15 text-emerald-400"
+                          ? "bg-amber-500/15 text-amber-500"
+                          : item.status === "Assigned"
+                            ? "bg-indigo-500/15 text-indigo-500"
+                            : item.status === "In Progress"
+                              ? "bg-sky-500/15 text-sky-500"
+                              : "bg-emerald-500/15 text-emerald-400"
                         }`}
                     >
                       {item.status}
@@ -381,7 +363,7 @@ export default function DashboardHome() {
                     Active Complaint
                   </div>
                   <h4 className="font-bold text-slate-800 dark:text-slate-100 mt-1 truncate">
-                    {latestComplaint.category} ({latestComplaint.id})
+                    {latestComplaint.category} (#1)
                   </h4>
                 </div>
 
@@ -395,6 +377,11 @@ export default function DashboardHome() {
                       label: "Submitted",
                       status: "Pending",
                       desc: "Ticket received by support.",
+                    },
+                    {
+                      label: "Approved",
+                      status: "Approved",
+                      desc: "Reviewed and approved by admin.",
                     },
                     {
                       label: "Assigned",
@@ -414,6 +401,7 @@ export default function DashboardHome() {
                   ].map((step, idx) => {
                     const stepOrder = [
                       "Pending",
+                      "Approved",
                       "Assigned",
                       "In Progress",
                       "Completed",
@@ -495,10 +483,17 @@ export default function DashboardHome() {
             ))}
           </div>
         ) : (
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-10 text-center shadow-sm">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-10 text-center shadow-sm flex flex-col items-center gap-4">
             <p className="text-sm text-slate-400 dark:text-slate-500">
               No recent activity yet.
             </p>
+            <Link
+              href="/dashboard/add-complaint"
+              className="inline-flex items-center gap-2 bg-primary text-white text-sm font-bold px-5 py-2.5 rounded-xl hover:bg-primary/90 transition-colors"
+            >
+              <Icon name="add_circle" className="text-base" />
+              Add Complaint
+            </Link>
           </div>
         )}
       </div>
