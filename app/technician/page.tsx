@@ -12,7 +12,7 @@ export type Complaint = {
   category: string;
   location: string;
   priority: "High" | "Medium" | "Low";
-  status: "Pending" | "Assigned" | "In Progress" | "Completed" | "Closed";
+  status: "Pending" | "Assigned" | "In Progress" | "Completed" | "Closed" | "Approved";
   date: string;
   description: string;
   technicianName?: string;
@@ -86,7 +86,7 @@ export default function TechnicianDashboardHome() {
 
   const getStats = () => {
     const total = complaints.length;
-    const pending = complaints.filter((c) => c.status === "Assigned" || c.status === "Pending").length; // Assigned to tech but not started or unassigned
+    const pending = complaints.filter((c) => c.status === "Assigned" || c.status === "Pending" || c.status === "Approved").length; // Assigned to tech but not started or unassigned
     const progress = complaints.filter((c) => c.status === "In Progress").length;
     const completed = complaints.filter((c) => c.status === "Completed" || c.status === "Closed").length;
     return { total, pending, progress, completed };
