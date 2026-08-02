@@ -76,56 +76,6 @@ export default function ComplaintInfoCard({
         </div>
       </div>
 
-      {/* Admin Quick Action Toolbar: Approve / Reject (admin-only) */}
-      {isAdmin && (
-        <div className="pt-3 border-t border-slate-100 dark:border-[#464554]/10 flex items-center justify-between flex-wrap gap-3">
-          <span className="text-xs font-semibold text-slate-500 dark:text-[#908fa0]">
-            Admin Actions:
-          </span>
-          <div className="flex items-center gap-3">
-            {(complaint.status === "Pending" || complaint.status === "Approved") && (
-              <button
-                onClick={onApprove}
-                disabled={updatingStatus || complaint.status === "Approved"}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 dark:bg-[#00a572] hover:opacity-90 disabled:opacity-50 text-white font-bold text-xs shadow-lg shadow-emerald-600/20 dark:shadow-[#00a572]/20 transition-all cursor-pointer"
-              >
-                <Icon name="check_circle" className="text-base" />
-                <span>{complaint.status === "Approved" ? "Approved" : "Approve"}</span>
-              </button>
-            )}
-
-            {complaint.status === "Pending" && (
-              <button
-                onClick={onReject}
-                disabled={updatingStatus}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-rose-500/10 dark:bg-[#ff516a]/15 hover:bg-rose-500/20 dark:hover:bg-[#ff516a]/25 disabled:opacity-50 text-rose-600 dark:text-[#ff516a] border border-rose-500/30 dark:border-[#ff516a]/30 font-bold text-xs transition-all cursor-pointer"
-              >
-                <Icon name="cancel" className="text-base" />
-                <span>Reject</span>
-              </button>
-            )}
-
-            {complaint.status === "Completed" && onVerify && (
-              <button
-                onClick={onVerify}
-                disabled={updatingStatus}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 dark:bg-blue-500 hover:opacity-90 disabled:opacity-50 text-white font-bold text-xs shadow-lg shadow-blue-600/20 dark:shadow-blue-500/20 transition-all cursor-pointer"
-              >
-                <Icon name="verified" className="text-base" />
-                <span>Verify Ticket</span>
-              </button>
-            )}
-
-            {complaint.status === "Verified" && (
-              <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-bold text-xs">
-                <Icon name="task_alt" className="text-base text-blue-500" />
-                <span>Verified by Admin</span>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
       {/* Technician Assignment Details if any */}
       {(complaint.technicianName || complaint.remarks) && (
         <div className="bg-slate-50 dark:bg-[#131b2e]/90 border border-primary/20 dark:border-[#8083ff]/20 rounded-2xl p-4 space-y-3">

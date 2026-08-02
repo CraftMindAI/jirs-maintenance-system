@@ -71,6 +71,7 @@ export function useComplaintDetail(complaintId: string) {
           assignedDate: data.assignedDate,
           remarks: data.remarks,
           userId: data.userId,
+          imageUrls: data.imageUrls || [],
           completionPhotoUrl: data.completionPhotoUrl,
         };
 

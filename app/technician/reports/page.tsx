@@ -11,7 +11,7 @@ export type Complaint = {
   category: string;
   location: string;
   priority: "High" | "Medium" | "Low";
-  status: "Pending" | "Assigned" | "In Progress" | "Completed" | "Closed";
+  status: "Pending" | "Assigned" | "In Progress" | "Completed" | "Closed" | "Approved";
   date: string; // YYYY-MM-DD (legacy/mock)
   description: string;
   technicianName?: string;
@@ -37,7 +37,7 @@ export default function TechnicianReportsPage() {
     const today = new Date();
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(today.getDate() - 30);
-    
+
     setEndDate(today.toISOString().split('T')[0]);
     setStartDate(thirtyDaysAgo.toISOString().split('T')[0]);
   }, []);
@@ -63,19 +63,20 @@ export default function TechnicianReportsPage() {
           snapshot.forEach((docSnap) => {
             const data = docSnap.data() as Complaint;
             if (
-              data.technicianEmail === currentUser.email || 
-              data.technicianName === techName
+              data.technicianEmail === currentUser.email ||
+              data.technicianName === techName ||
+              !data.technicianName
             ) {
               fetchedComplaints.push({ ...data, id: docSnap.id });
             }
           });
-          
+
           fetchedComplaints.sort((a, b) => {
             const aTime = a.createdAt ? a.createdAt.toDate().getTime() : (a.date ? new Date(a.date).getTime() : 0);
             const bTime = b.createdAt ? b.createdAt.toDate().getTime() : (b.date ? new Date(b.date).getTime() : 0);
             return bTime - aTime;
           });
-          
+
           setAllComplaints(fetchedComplaints);
           setLoading(false);
         }, (error) => {
@@ -135,7 +136,7 @@ export default function TechnicianReportsPage() {
     const today = new Date();
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(today.getDate() - 30);
-    
+
     setEndDate(today.toISOString().split('T')[0]);
     setStartDate(thirtyDaysAgo.toISOString().split('T')[0]);
     setReportType("Monthly Report");
@@ -146,7 +147,7 @@ export default function TechnicianReportsPage() {
     total: filteredComplaints.length,
     completed: filteredComplaints.filter(c => c.status === "Completed" || c.status === "Closed").length,
     inProgress: filteredComplaints.filter(c => c.status === "In Progress").length,
-    pending: filteredComplaints.filter(c => c.status === "Assigned" || c.status === "Pending").length,
+    pending: filteredComplaints.filter(c => c.status === "Assigned" || c.status === "Pending" || c.status === "Approved").length,
   };
 
   return (
@@ -173,8 +174,8 @@ export default function TechnicianReportsPage() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <div>
             <label className="block text-[10px] font-black uppercase tracking-wider text-slate-400 mb-2">Start Date</label>
-            <input 
-              type="date" 
+            <input
+              type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
               className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 dark:text-slate-300 outline-none focus:border-indigo-500 transition-all"
@@ -182,8 +183,8 @@ export default function TechnicianReportsPage() {
           </div>
           <div>
             <label className="block text-[10px] font-black uppercase tracking-wider text-slate-400 mb-2">End Date</label>
-            <input 
-              type="date" 
+            <input
+              type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
               className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 dark:text-slate-300 outline-none focus:border-indigo-500 transition-all"
@@ -192,7 +193,7 @@ export default function TechnicianReportsPage() {
           <div>
             <label className="block text-[10px] font-black uppercase tracking-wider text-slate-400 mb-2">Report Type</label>
             <div className="relative">
-              <select 
+              <select
                 value={reportType}
                 onChange={(e) => setReportType(e.target.value)}
                 className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 dark:text-slate-300 outline-none focus:border-indigo-500 transition-all appearance-none"
@@ -202,14 +203,14 @@ export default function TechnicianReportsPage() {
                 <option value="Custom Date Range">Custom Date Range</option>
               </select>
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
-                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
               </div>
             </div>
           </div>
           <div>
             <label className="block text-[10px] font-black uppercase tracking-wider text-slate-400 mb-2">Status Filter</label>
             <div className="relative">
-              <select 
+              <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
                 className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 dark:text-slate-300 outline-none focus:border-indigo-500 transition-all appearance-none"
@@ -222,14 +223,14 @@ export default function TechnicianReportsPage() {
                 <option value="Closed">Closed</option>
               </select>
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
-                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
               </div>
             </div>
           </div>
         </div>
 
         <div className="flex items-center gap-4 pt-6 border-t border-slate-100 dark:border-slate-800">
-          <button 
+          <button
             onClick={handleResetFilters}
             className="flex items-center gap-2 px-6 py-3 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-[#0f4c81] dark:text-slate-300 text-sm font-bold rounded-xl transition-colors"
           >
@@ -237,7 +238,7 @@ export default function TechnicianReportsPage() {
             Generate Summary
           </button>
 
-          <button 
+          <button
             onClick={handlePrint}
             className="flex items-center gap-2 px-8 py-3 bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-bold rounded-xl shadow-lg shadow-indigo-500/30 transition-all active:scale-95 ml-2"
           >
@@ -286,7 +287,7 @@ export default function TechnicianReportsPage() {
           {/* Data Table */}
           <div className="overflow-hidden">
             <h3 className="font-black text-slate-800 dark:text-slate-100 mb-4 px-2">Task Log Detail</h3>
-            
+
             <div className="overflow-x-auto rounded-2xl border border-slate-100 dark:border-slate-800 print:border-slate-300">
               {filteredComplaints.length === 0 ? (
                 <div className="p-10 text-center text-slate-400 font-bold">No tasks found for the selected date range.</div>
@@ -294,8 +295,8 @@ export default function TechnicianReportsPage() {
                 <table className="w-full text-left border-collapse">
                   <thead>
                     <tr className="border-b border-slate-100 dark:border-slate-800 print:border-slate-300 text-[10px] font-black uppercase tracking-wider text-slate-400 bg-slate-50/50 dark:bg-slate-900/50">
+                      <th className="py-4 px-6">Sl. No.</th>
                       <th className="py-4 px-6">Date</th>
-                      <th className="py-4 px-6">Ticket ID</th>
                       <th className="py-4 px-6">Category</th>
                       <th className="py-4 px-6">Location</th>
                       <th className="py-4 px-6">Priority</th>
@@ -303,27 +304,25 @@ export default function TechnicianReportsPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-800 print:divide-slate-200 text-sm font-semibold bg-white dark:bg-slate-900">
-                    {filteredComplaints.map((item) => (
+                    {filteredComplaints.map((item, index) => (
                       <tr key={item.id} className="hover:bg-slate-50/40 dark:hover:bg-slate-800/30 print:text-black">
+                        <td className="py-3 px-6 text-slate-800 dark:text-slate-100 font-bold">{index + 1}</td>
                         <td className="py-3 px-6 whitespace-nowrap text-slate-500">{item.createdAt ? item.createdAt.toDate().toLocaleDateString() : (item.date ? new Date(item.date).toLocaleDateString() : 'N/A')}</td>
-                        <td className="py-3 px-6 text-slate-800 dark:text-slate-100 font-bold">{item.id}</td>
                         <td className="py-3 px-6 text-slate-600 dark:text-slate-300">{item.category}</td>
                         <td className="py-3 px-6 max-w-[200px] truncate text-slate-600 dark:text-slate-300">{item.location}</td>
                         <td className="py-3 px-6">
-                          <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider print:border print:border-slate-400 ${
-                            item.priority === "High" ? "bg-red-100 text-red-700" :
+                          <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider print:border print:border-slate-400 ${item.priority === "High" ? "bg-red-100 text-red-700" :
                             item.priority === "Medium" ? "bg-amber-100 text-amber-700" :
-                            "bg-slate-100 text-slate-700"
-                          }`}>
+                              "bg-slate-100 text-slate-700"
+                            }`}>
                             {item.priority}
                           </span>
                         </td>
                         <td className="py-3 px-6">
-                          <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider print:border print:border-slate-400 ${
-                            item.status === "Completed" || item.status === "Closed" ? "bg-emerald-100 text-emerald-700" :
+                          <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider print:border print:border-slate-400 ${item.status === "Completed" || item.status === "Closed" ? "bg-emerald-100 text-emerald-700" :
                             item.status === "In Progress" ? "bg-sky-100 text-sky-700" :
-                            "bg-amber-100 text-amber-700"
-                          }`}>
+                              "bg-amber-100 text-amber-700"
+                            }`}>
                             {item.status}
                           </span>
                         </td>
