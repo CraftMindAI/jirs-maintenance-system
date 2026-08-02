@@ -24,7 +24,9 @@ export default function AboutUsPage() {
         title="Experience Smart Campus Maintenance"
         description="Join hundreds of staff members already using JMMS to keep JIRS at the pinnacle of educational infrastructure."
         primaryLabel="Register Now"
+        primaryHref="/signup"
         secondaryLabel="Login to Portal"
+        secondaryHref="/login"
       />
       <FloatingActions />
     </PageShell>

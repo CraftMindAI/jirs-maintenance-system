@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Container from "@/components/ui/Container";
 
 export default function CtaBanner({
@@ -5,11 +6,15 @@ export default function CtaBanner({
   description,
   primaryLabel,
   secondaryLabel,
+  primaryHref = "/signup",
+  secondaryHref = "/login",
 }: {
   title: string;
   description: string;
   primaryLabel: string;
   secondaryLabel: string;
+  primaryHref?: string;
+  secondaryHref?: string;
 }) {
   return (
     <section className="py-20">
@@ -22,12 +27,18 @@ export default function CtaBanner({
             </h2>
             <p className="text-white/80 font-body-lg mb-10 max-w-2xl mx-auto">{description}</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="bg-secondary-container text-on-secondary-container px-10 py-4 rounded-xl font-bold hover:scale-105 transition-all">
+              <Link
+                href={primaryHref}
+                className="bg-white text-primary px-10 py-4 rounded-xl font-bold hover:scale-105 transition-all shadow-xl shadow-slate-950/20"
+              >
                 {primaryLabel}
-              </button>
-              <button className="bg-white/10 border border-white/20 text-white px-10 py-4 rounded-xl font-bold hover:bg-white/20 transition-all">
+              </Link>
+              <Link
+                href={secondaryHref}
+                className="bg-white/10 border border-white/20 text-white px-10 py-4 rounded-xl font-bold hover:bg-white/20 transition-all"
+              >
                 {secondaryLabel}
-              </button>
+              </Link>
             </div>
           </div>
         </div>
