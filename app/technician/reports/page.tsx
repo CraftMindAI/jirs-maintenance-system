@@ -295,8 +295,8 @@ export default function TechnicianReportsPage() {
                 <table className="w-full text-left border-collapse">
                   <thead>
                     <tr className="border-b border-slate-100 dark:border-slate-800 print:border-slate-300 text-[10px] font-black uppercase tracking-wider text-slate-400 bg-slate-50/50 dark:bg-slate-900/50">
+                      <th className="py-4 px-6">Sl. No.</th>
                       <th className="py-4 px-6">Date</th>
-                      <th className="py-4 px-6">Ticket ID</th>
                       <th className="py-4 px-6">Category</th>
                       <th className="py-4 px-6">Location</th>
                       <th className="py-4 px-6">Priority</th>
@@ -304,10 +304,10 @@ export default function TechnicianReportsPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-800 print:divide-slate-200 text-sm font-semibold bg-white dark:bg-slate-900">
-                    {filteredComplaints.map((item) => (
+                    {filteredComplaints.map((item, index) => (
                       <tr key={item.id} className="hover:bg-slate-50/40 dark:hover:bg-slate-800/30 print:text-black">
+                        <td className="py-3 px-6 text-slate-800 dark:text-slate-100 font-bold">{index + 1}</td>
                         <td className="py-3 px-6 whitespace-nowrap text-slate-500">{item.createdAt ? item.createdAt.toDate().toLocaleDateString() : (item.date ? new Date(item.date).toLocaleDateString() : 'N/A')}</td>
-                        <td className="py-3 px-6 text-slate-800 dark:text-slate-100 font-bold">{item.id}</td>
                         <td className="py-3 px-6 text-slate-600 dark:text-slate-300">{item.category}</td>
                         <td className="py-3 px-6 max-w-[200px] truncate text-slate-600 dark:text-slate-300">{item.location}</td>
                         <td className="py-3 px-6">
