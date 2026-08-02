@@ -163,6 +163,20 @@ body {
   display: none;
 }
 
+/* Hide the native document scrollbar everywhere the page scrolls at the window level
+   (landing, about, feedback, etc.) without changing what actually scrolls — scroll-linked
+   effects that track `window` (Framer Motion's useScroll, Header's scroll listener) rely
+   on the window itself being the scrolling element. */
+html,
+body {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+}
+
 .glass-card {
   background: rgba(255, 255, 255, 0.55);
   backdrop-filter: blur(16px);

@@ -4,7 +4,6 @@ import WhyChooseUs from "@/components/landing/WhyChooseUs";
 import Features from "@/components/landing/Features";
 import ProcessTimeline from "@/components/landing/ProcessTimeline";
 import Testimonials from "@/components/landing/Testimonials";
-import Faq from "@/components/landing/Faq";
 import ContactSection from "@/components/landing/ContactSection";
 
 export default function Home() {
@@ -15,7 +14,6 @@ export default function Home() {
       <Features />
       <ProcessTimeline />
       <Testimonials />
-      <Faq />
       <ContactSection />
     </PageShell>
   );

@@ -3,7 +3,7 @@ import PageShell from "@/components/layout/PageShell";
 import AboutHero from "@/components/about/AboutHero";
 import LegacySection from "@/components/about/LegacySection";
 import AdvantageCards from "@/components/about/AdvantageCards";
-import ValuesGrid from "@/components/about/ValuesGrid";
+import AdmissionsSection from "@/components/about/AdmissionsSection";
 import CtaBanner from "@/components/ui/CtaBanner";
 import FloatingActions from "@/components/about/FloatingActions";
 
@@ -19,7 +19,7 @@ export default function AboutUsPage() {
       <AboutHero />
       <LegacySection />
       <AdvantageCards />
-      <ValuesGrid />
+      <AdmissionsSection />
       <CtaBanner
         title="Experience Smart Campus Maintenance"
         description="Join hundreds of staff members already using JMMS to keep JIRS at the pinnacle of educational infrastructure."

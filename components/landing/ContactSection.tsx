@@ -2,8 +2,8 @@ import Container from "@/components/ui/Container";
 import Icon from "@/components/ui/Icon";
 
 const CONTACT_DETAILS = [
-  { icon: "mail", label: "Email Support", value: "maintenance@jirs.ac.in" },
-  { icon: "call", label: "Emergency Hotline", value: "+91 (080) 2757 7000" },
+  { icon: "mail", label: "Email Support", value: "jirsmaintenance@gmail.com" },
+  { icon: "call", label: "Emergency Hotline", value: "+91 7899888099" },
   { icon: "location_on", label: "Campus Office", value: "Jain Global Campus, Bangalore" },
 ];
 
