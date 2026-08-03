@@ -243,7 +243,7 @@ export default function ComplaintForm({
   };
 
   return (
-    <div className="bg-white dark:bg-[#171f33] border border-slate-200 dark:border-[#464554]/10 rounded-3xl p-6 md:p-10 shadow-sm relative overflow-hidden dark:vibrant-shadow">
+    <div className="bg-white dark:bg-[#171f33] border border-slate-200 dark:border-[#464554]/10 rounded-3xl p-6 md:p-6 md:p-10 shadow-sm relative overflow-hidden dark:vibrant-shadow">
 
       {success && (
         <div className="absolute inset-0 z-40 bg-white/95 dark:bg-[#171f33]/95 flex flex-col items-center justify-center space-y-4 animate-fade-in text-center p-6">

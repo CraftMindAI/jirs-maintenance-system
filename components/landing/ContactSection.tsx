@@ -11,7 +11,7 @@ export default function ContactSection() {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-sky-500/10 rounded-full blur-[180px] pointer-events-none" />
 
       <Container className="relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-12 lg:gap-8 md:gap-16 items-center">
           
           {/* Left Column: Clean Typography & Modern Contact Rows */}
           <div className="lg:col-span-6 space-y-10">
@@ -90,7 +90,7 @@ export default function ContactSection() {
           {/* Right Column: Clean Address & Google Maps Link Only */}
           <div className="lg:col-span-6">
             <Reveal delay={200}>
-              <div className="space-y-6 p-8 sm:p-10 rounded-3xl bg-slate-900/40 border border-white/10">
+              <div className="space-y-6 p-8 sm:p-6 md:p-10 rounded-3xl bg-slate-900/40 border border-white/10">
                 <div className="flex items-center gap-3">
                   <Icon name="location_on" className="text-3xl text-sky-400" />
                   <h3 className="font-display text-2xl font-bold text-white">Campus Address</h3>

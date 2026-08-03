@@ -165,7 +165,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         {/* Breadcrumb Trail */}
         {breadcrumbs.length > 0 && (
-          <div className="px-6 lg:px-10 pt-6 flex items-center gap-2 text-sm font-semibold">
+          <div className="px-6 lg:px-10 pt-6 flex items-center gap-2 text-sm font-semibold flex-wrap">
             <Link href="/dashboard" className={darkMode ? "text-[#908fa0] hover:text-[#c0c1ff]" : "text-slate-400 hover:text-primary"}>
               JMMS
             </Link>
@@ -192,7 +192,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         )}
 
         {/* Content View */}
-        <main className="p-6 lg:p-10 space-y-8 flex-1 max-w-[1440px]">{children}</main>
+        <main className="p-6 lg:p-6 md:p-10 space-y-8 flex-1 max-w-[1440px]">{children}</main>
       </div>
 
       {/* 3. BOTTOM NAVIGATION (MOBILE ONLY) */}

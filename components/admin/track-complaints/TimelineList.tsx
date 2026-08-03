@@ -56,7 +56,7 @@ export default function TimelineList({
 
   if (technicianGroups.length === 0) {
     return (
-      <div className="bg-white dark:bg-[#171f33] border border-slate-200 dark:border-[#464554]/10 rounded-3xl p-16 text-center shadow-sm">
+      <div className="bg-white dark:bg-[#171f33] border border-slate-200 dark:border-[#464554]/10 rounded-3xl p-8 md:p-16 text-center shadow-sm">
         <Icon name="engineering" className="text-4xl text-slate-400 dark:text-[#908fa0] mb-3 block mx-auto" />
         <h3 className="font-display text-xl font-bold text-slate-900 dark:text-[#dae2fd]">No Tracking Data Found</h3>
         <p className="text-xs text-slate-500 dark:text-[#908fa0] mt-1">Adjust search query or status filter to locate technician records.</p>

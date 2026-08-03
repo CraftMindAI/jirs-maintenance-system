@@ -21,7 +21,7 @@ export default function LegacySection() {
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-[160px] pointer-events-none" />
 
       <Container className="relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-12 lg:gap-8 md:gap-16 items-center">
           
           {/* Left Column: Image Showcase */}
           <div className="lg:col-span-6 relative">
@@ -70,7 +70,7 @@ export default function LegacySection() {
 
             {/* Modern Stats Grid */}
             <Reveal delay={200}>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
                 {STATS.map((stat) => (
                   <div
                     key={stat.label}

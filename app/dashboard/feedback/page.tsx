@@ -373,7 +373,7 @@ export default function DashboardFeedback() {
               )}
             </>
           ) : (
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-16 text-center shadow-sm">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 md:p-16 text-center shadow-sm">
               <Icon
                 name={isFiltering ? "search_off" : "comment"}
                 className="text-4xl text-slate-300 mb-4 block"

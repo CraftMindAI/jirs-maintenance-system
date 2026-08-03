@@ -16,7 +16,7 @@ export default function FeedbackPage() {
     <PageShell>
       <FeedbackHero />
       <section className="py-16 md:py-24 bg-[#030812] text-white min-h-[50vh]">
-        <Container className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+        <Container className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-10">
           <div className="lg:col-span-1">
             <FeedbackFormCard />
           </div>

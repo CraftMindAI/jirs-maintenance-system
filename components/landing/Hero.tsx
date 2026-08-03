@@ -40,7 +40,7 @@ export default function Hero() {
         <div className="absolute bottom-1/4 right-1/4 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-indigo-600/15 rounded-full blur-[140px] pointer-events-none" />
 
         <div className="relative z-10 w-full px-4 md:px-8 max-w-7xl mx-auto text-white py-2">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-6 md:gap-12 items-center">
             
             {/* Left Column: Headline and CTAs */}
             <div className="lg:col-span-7 space-y-4 sm:space-y-6 md:space-y-8 text-left">

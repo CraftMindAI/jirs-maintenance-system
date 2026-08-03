@@ -527,7 +527,7 @@ export default function MyComplaints() {
           </div>
         </div>
       ) : (
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-16 text-center shadow-sm">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 md:p-16 text-center shadow-sm">
           <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-2xl flex items-center justify-center mx-auto text-slate-400 mb-6">
             <Icon name="assignment_late" className="text-3xl" />
           </div>

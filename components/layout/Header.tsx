@@ -64,7 +64,7 @@ export default function Header() {
         }`}
       >
         <nav className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop h-full flex items-center justify-between">
-          <div className="flex items-center gap-12">
+          <div className="flex items-center gap-6 md:gap-12">
             <Link
               href="/"
               className={`font-display text-2xl font-black tracking-wider flex items-center gap-2 hover:scale-105 transition-transform ${

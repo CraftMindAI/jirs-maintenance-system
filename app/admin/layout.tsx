@@ -113,7 +113,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         />
 
         {/* Content View */}
-        <main className="p-6 lg:p-10 space-y-8 flex-1 max-w-[1440px]">
+        <main className="p-6 lg:p-6 md:p-10 space-y-8 flex-1 max-w-[1440px]">
           {children}
         </main>
       </div>

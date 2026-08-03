@@ -163,7 +163,7 @@ export default function DashboardHome() {
       <title>Dashboard | JMMS</title>
 
       {/* 2. STATS CARDS */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         {[
           {
             label: "Total Complaints",
@@ -483,7 +483,7 @@ export default function DashboardHome() {
             ))}
           </div>
         ) : (
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-10 text-center shadow-sm flex flex-col items-center gap-4">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 md:p-10 text-center shadow-sm flex flex-col items-center gap-4">
             <p className="text-sm text-slate-400 dark:text-slate-500">
               No recent activity yet.
             </p>

@@ -122,7 +122,7 @@ export default function TechnicianViewComplaints() {
           <p className="font-bold text-sm tracking-widest uppercase text-slate-400 mt-6 animate-pulse">Loading Tasks...</p>
         </div>
       ) : complaints.length === 0 ? (
-        <div className="bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border border-white dark:border-slate-800 rounded-[2.5rem] p-16 text-center shadow-xl">
+        <div className="bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border border-white dark:border-slate-800 rounded-[2.5rem] p-8 md:p-16 text-center shadow-xl">
           <div className="w-24 h-24 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-emerald-500/30">
             <Icon name="done_all" className="text-5xl text-white" />
           </div>

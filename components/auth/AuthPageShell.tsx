@@ -20,8 +20,8 @@ export default function AuthPageShell({
       <AuthHeroPanel />
 
       {/* Right Side: Perfectly Centered Professional Form Card Container */}
-      <div className="flex-1 min-h-screen flex items-center justify-center p-4 sm:p-8 lg:p-12 overflow-y-auto">
-        <div className="w-full max-w-lg bg-white/95 backdrop-blur-md rounded-3xl p-6 sm:p-10 shadow-2xl shadow-slate-200/60 border border-slate-200/80 transition-all">
+      <div className="flex-1 min-h-screen flex items-center justify-center p-4 sm:p-8 lg:p-6 md:p-12 overflow-y-auto">
+        <div className="w-full max-w-lg bg-white/95 backdrop-blur-md rounded-3xl p-6 sm:p-6 md:p-10 shadow-2xl shadow-slate-200/60 border border-slate-200/80 transition-all">
           {/* Back to Home Button */}
           <Link
             href="/"

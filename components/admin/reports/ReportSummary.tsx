@@ -42,7 +42,7 @@ export default function ReportSummary({
   ];
 
   return (
-    <div className="space-y-8 bg-white dark:bg-[#171f33] border border-slate-200 dark:border-[#464554]/10 rounded-3xl p-6 md:p-10 shadow-sm print:border-none print:shadow-none print:p-0 print:bg-transparent dark:vibrant-shadow">
+    <div className="space-y-8 bg-white dark:bg-[#171f33] border border-slate-200 dark:border-[#464554]/10 rounded-3xl p-6 md:p-6 md:p-10 shadow-sm print:border-none print:shadow-none print:p-0 print:bg-transparent dark:vibrant-shadow">
       <div className="flex justify-between items-center pb-6 border-b border-slate-200 dark:border-[#464554]/20">
         <div>
           <div className="flex items-center gap-2">
@@ -59,7 +59,7 @@ export default function ReportSummary({
         </div>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {metrics.map((metric, idx) => (
           <div key={idx} className="p-5 bg-slate-50 dark:bg-[#131b2e] border border-slate-200 dark:border-[#464554]/20 rounded-2xl">
             <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 dark:text-[#908fa0] block">{metric.label}</span>

@@ -13,7 +13,7 @@ export default function WelcomeHeader() {
         </p>
       </div>
 
-      <div className="flex gap-3 shrink-0">
+      <div className="flex gap-3 shrink-0 lg:hidden">
         <Link
           href="/admin/reports"
           className="flex items-center gap-2 vibrant-gradient text-white px-5 py-2.5 rounded-xl text-xs font-bold hover:brightness-110 transition-all shadow-lg shadow-[#8083ff]/20 cursor-pointer uppercase tracking-wider"

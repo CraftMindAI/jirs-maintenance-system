@@ -13,7 +13,7 @@ export default function Footer() {
         {/* Subtle Ambient Light */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-px bg-gradient-to-r from-transparent via-sky-500/30 to-transparent" />
 
-        <div className="max-w-container-max mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-6">
+        <div className="max-w-container-max mx-auto grid grid-cols-1 md:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-6">
           
           {/* Brand Col */}
           <div className="space-y-2">

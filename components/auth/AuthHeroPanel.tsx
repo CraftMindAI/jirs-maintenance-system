@@ -20,9 +20,9 @@ export default function AuthHeroPanel() {
       </div>
 
       {/* Glassmorphism Content Panel */}
-      <div className="relative z-10 flex h-full w-full flex-col items-center justify-center p-12 text-white">
+      <div className="relative z-10 flex h-full w-full flex-col items-center justify-center p-6 md:p-12 text-white">
         {/* Glassmorphism Quote Card */}
-        <div className="bg-slate-900/80 backdrop-blur-xl max-w-lg rounded-3xl p-8 sm:p-10 shadow-2xl border border-white/15 space-y-5 my-auto">
+        <div className="bg-slate-900/80 backdrop-blur-xl max-w-lg rounded-3xl p-8 sm:p-6 md:p-10 shadow-2xl border border-white/15 space-y-5 my-auto">
           <Icon name="format_quote" className="text-5xl text-sky-400 opacity-90" />
           <p className="font-display text-lg sm:text-xl font-medium leading-relaxed italic text-slate-100">
             &ldquo;Enlightenment through education is the highest form of service to humanity. We strive to maintain the sanctuary where knowledge meets character.&rdquo;

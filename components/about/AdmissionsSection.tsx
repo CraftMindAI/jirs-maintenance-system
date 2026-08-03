@@ -10,7 +10,7 @@ export default function AdmissionsSection() {
       <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-indigo-500/20 rounded-full blur-[140px] pointer-events-none" />
 
       <Container className="relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-12 lg:gap-8 md:gap-16 items-center">
           
           {/* LEFT SIDE: CONTENT & CENTERED JOIN US BUTTON */}
           <div className="lg:col-span-6 space-y-8 text-center lg:text-left">
