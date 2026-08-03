@@ -8,14 +8,14 @@ export type NewFeedback = {
   message: string;
 };
 
-/** Submission requires sign-in, so every submission is treated as verified. */
+/** New feedback starts unverified — only an admin can mark it verified. */
 export async function submitFeedback({ userId, name, role, message }: NewFeedback) {
   await addDoc(collection(db, "feedback"), {
     userId,
     name,
     role,
     message,
-    verified: true,
+    verified: false,
     createdAt: serverTimestamp(),
   });
 }

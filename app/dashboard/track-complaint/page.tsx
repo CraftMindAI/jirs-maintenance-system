@@ -25,6 +25,7 @@ function TrackComplaintContent() {
   } | null>(null);
   const [selectedTicketId, setSelectedTicketId] = useState("");
   const [zoomImage, setZoomImage] = useState<string | null>(null);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   // Sync auth state (role decides which complaints this user may see)
   useEffect(() => {
@@ -173,24 +174,61 @@ function TrackComplaintContent() {
           </p>
         </div>
 
-        {/* Ticket Selector Dropdown */}
+        {/* Custom Ticket Selector Dropdown */}
         {visibleComplaints.length > 0 && (
-          <div className="w-full md:w-64 space-y-1.5">
+          <div className="w-full md:w-72 space-y-1.5 relative">
             <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400">
               Select Ticket to Track
             </label>
             <div className="relative">
-              <select
-                value={selectedTicketId}
-                onChange={(e) => setSelectedTicketId(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 dark:bg-slate-900 font-body-md text-sm font-bold outline-none focus:border-primary cursor-pointer"
+              <button
+                type="button"
+                onClick={() => setDropdownOpen((prev) => !prev)}
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-body-md text-sm font-bold flex items-center justify-between outline-none cursor-pointer shadow-sm hover:border-primary transition-all text-slate-800 dark:text-slate-100"
               >
-                {visibleComplaints.map((c, idx) => (
-                  <option key={c.id} value={c.id}>
-                    #{idx + 1} — {c.category}
-                  </option>
-                ))}
-              </select>
+                <span className="truncate">
+                  {selectedComplaint
+                    ? `#${visibleComplaints.findIndex((c) => c.id === selectedTicketId) + 1} — ${selectedComplaint.category}`
+                    : "Select Ticket"}
+                </span>
+                <Icon
+                  name="expand_more"
+                  className={`text-lg transition-transform duration-200 ${dropdownOpen ? "rotate-180" : ""}`}
+                />
+              </button>
+
+              {dropdownOpen && (
+                <>
+                  <div
+                    className="fixed inset-0 z-20"
+                    onClick={() => setDropdownOpen(false)}
+                  />
+                  <div className="absolute right-0 left-0 top-full mt-2 z-30 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl max-h-[135px] overflow-y-auto custom-scrollbar p-1 divide-y divide-slate-100 dark:divide-slate-800/50">
+                    {visibleComplaints.map((c, idx) => (
+                      <button
+                        key={c.id}
+                        type="button"
+                        onClick={() => {
+                          setSelectedTicketId(c.id);
+                          setDropdownOpen(false);
+                        }}
+                        className={`w-full text-left px-3.5 py-2.5 text-xs font-bold rounded-xl transition-colors flex items-center justify-between cursor-pointer ${
+                          c.id === selectedTicketId
+                            ? "bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-300 font-black"
+                            : "hover:bg-slate-50 dark:hover:bg-slate-800/60 text-slate-700 dark:text-slate-300"
+                        }`}
+                      >
+                        <span className="truncate">
+                          #{idx + 1} — {c.category}
+                        </span>
+                        {c.id === selectedTicketId && (
+                          <Icon name="check" className="text-sm shrink-0" />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
           </div>
         )}

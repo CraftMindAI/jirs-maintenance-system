@@ -1,9 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import Icon from "@/components/ui/Icon";
+import { useRouter } from "next/navigation";
 import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
@@ -32,7 +30,6 @@ const BOTTOM_NAV_ITEMS: BottomNavItem[] = [
 const BOTTOM_QUICK_ACTION: BottomNavQuickAction = { icon: "add", href: "/dashboard/add-complaint" };
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
   const router = useRouter();
   const [profileOpen, setProfileOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(true);
@@ -120,21 +117,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     }
   };
 
-  // Breadcrumbs builder
-  const getBreadcrumbs = () => {
-    const paths = pathname.split("/").filter(Boolean);
-    return paths.map((path, idx) => {
-      const href = "/" + paths.slice(0, idx + 1).join("/");
-      const label = path
-        .split("-")
-        .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
-        .join(" ");
-      return { label, href };
-    });
-  };
-
-  const breadcrumbs = getBreadcrumbs();
-
   return (
     <div
       className={`min-h-screen font-body-md transition-colors duration-300 ${
@@ -162,34 +144,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           onLogout={handleLogout}
           profileHref="/dashboard/settings"
         />
-
-        {/* Breadcrumb Trail */}
-        {breadcrumbs.length > 0 && (
-          <div className="px-6 lg:px-10 pt-6 flex items-center gap-2 text-sm font-semibold flex-wrap">
-            <Link href="/dashboard" className={darkMode ? "text-[#908fa0] hover:text-[#c0c1ff]" : "text-slate-400 hover:text-primary"}>
-              JMMS
-            </Link>
-            {breadcrumbs.map((crumb, idx) => (
-              <div key={crumb.href} className="flex items-center gap-2">
-                <Icon name="chevron_right" className={`text-xs opacity-60 ${darkMode ? "text-[#908fa0]" : "text-slate-400"}`} />
-                <Link
-                  href={crumb.href}
-                  className={
-                    idx === breadcrumbs.length - 1
-                      ? darkMode
-                        ? "text-[#c0c1ff] font-bold"
-                        : "text-primary font-bold"
-                      : darkMode
-                      ? "text-[#908fa0] hover:text-[#c0c1ff]"
-                      : "text-slate-400 hover:text-primary"
-                  }
-                >
-                  {crumb.label}
-                </Link>
-              </div>
-            ))}
-          </div>
-        )}
 
         {/* Content View */}
         <main className="p-6 lg:p-6 md:p-10 space-y-8 flex-1 max-w-[1440px]">{children}</main>

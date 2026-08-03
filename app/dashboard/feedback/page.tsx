@@ -9,7 +9,7 @@ import { useFeedbackFeed } from "@/hooks/useFeedbackFeed";
 import { submitFeedback } from "@/utils/feedback";
 
 const MESSAGE_MIN_LENGTH = 10;
-const MESSAGE_MAX_LENGTH = 500;
+const MESSAGE_MAX_LENGTH = 250;
 const PAGE_SIZE = 6;
 
 export default function DashboardFeedback() {
@@ -53,10 +53,10 @@ export default function DashboardFeedback() {
     e.preventDefault();
     setFormError(null);
 
-    if (!userId) {
-      setFormError("Please sign in to submit feedback.");
-      return;
-    }
+    const activeUserId = userId || auth.currentUser?.uid || "guest_user";
+    const activeName = name || auth.currentUser?.displayName || "Student User";
+    const activeRole = role || "Student";
+
     if (message.trim().length < MESSAGE_MIN_LENGTH) {
       setFormError(`Please write at least ${MESSAGE_MIN_LENGTH} characters so we can act on it.`);
       return;
@@ -64,10 +64,15 @@ export default function DashboardFeedback() {
 
     setSubmitting(true);
     try {
-      await submitFeedback({ userId, name, role, message: message.trim() });
+      await submitFeedback({
+        userId: activeUserId,
+        name: activeName,
+        role: activeRole,
+        message: message.trim(),
+      });
       setMessage("");
       setSubmitted(true);
-      setTimeout(() => setSubmitted(false), 2000);
+      setTimeout(() => setSubmitted(false), 3000);
     } catch (error) {
       console.error("Error submitting feedback:", error);
       setFormError("Failed to submit feedback. Please try again.");
@@ -82,20 +87,25 @@ export default function DashboardFeedback() {
   };
 
   const handleMessageChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    setMessage(e.target.value);
+    setMessage(e.target.value.slice(0, MESSAGE_MAX_LENGTH));
   };
 
   const charCount = message.length;
   const MAX_CHARS = MESSAGE_MAX_LENGTH;
 
+  const myFeedback = useMemo(
+    () => feedbackList.filter((item) => item.userId === userId),
+    [feedbackList, userId],
+  );
+
   const filteredFeedback = useMemo(
     () =>
-      feedbackList.filter(
+      myFeedback.filter(
         (item) =>
           item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
           item.message.toLowerCase().includes(searchQuery.toLowerCase()),
       ),
-    [feedbackList, searchQuery],
+    [myFeedback, searchQuery],
   );
 
   const visibleFeedback = filteredFeedback.slice(0, visibleCount);
@@ -230,6 +240,7 @@ export default function DashboardFeedback() {
                 id="message"
                 rows={5}
                 required
+                maxLength={MESSAGE_MAX_LENGTH}
                 placeholder="Share specific details about what went well or what needs improvement..."
                 value={message}
                 onChange={handleMessageChange}
@@ -237,13 +248,19 @@ export default function DashboardFeedback() {
                   charCount > MAX_CHARS ? "border-red-500/50 focus:border-red-500" : ""
                 }`}
               />
+              {message.trim().length > 0 && message.trim().length < MESSAGE_MIN_LENGTH && (
+                <p className="text-[10px] text-amber-500 font-bold flex items-center gap-1 mt-1">
+                  <Icon name="info" className="text-xs" />
+                  Please enter at least {MESSAGE_MIN_LENGTH} characters ({MESSAGE_MIN_LENGTH - message.trim().length} more needed).
+                </p>
+              )}
             </div>
 
             {/* Buttons */}
             <div className="flex gap-3 pt-4 border-t border-slate-100 dark:border-slate-800/40">
               <button
                 type="submit"
-                disabled={submitting || message.trim().length < MESSAGE_MIN_LENGTH || charCount > MAX_CHARS}
+                disabled={submitting || !message.trim() || charCount > MAX_CHARS}
                 className="flex-1 py-3 bg-primary hover:bg-opacity-95 text-white rounded-xl font-bold shadow-lg shadow-primary/20 transition-all text-xs cursor-pointer scale-100 active:scale-95 flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
               >
                 <Icon name="send" className="text-sm" />
@@ -265,12 +282,12 @@ export default function DashboardFeedback() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <h3 className="font-display text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
               <Icon name="comment" className="text-primary" />
-              What JIRS Community Says
+              Your Submitted Feedback
             </h3>
           </div>
 
           {/* Search Toolbar */}
-          {feedbackList.length > 0 && (
+          {myFeedback.length > 0 && (
             <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-3 shadow-sm">
               <div className="relative">
                 <Icon
@@ -279,7 +296,7 @@ export default function DashboardFeedback() {
                 />
                 <input
                   type="text"
-                  placeholder="Search feedback by name or message..."
+                  placeholder="Search your feedback by message..."
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
@@ -352,9 +369,15 @@ export default function DashboardFeedback() {
                     </div>
 
                     <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800/40 flex justify-end items-center text-[10px] font-bold text-slate-400">
-                      <span className="text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full uppercase tracking-wider">
-                        Verified
-                      </span>
+                      {item.verified ? (
+                        <span className="text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                          Verified
+                        </span>
+                      ) : (
+                        <span className="text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                          Pending Review
+                        </span>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -379,12 +402,12 @@ export default function DashboardFeedback() {
                 className="text-4xl text-slate-300 mb-4 block"
               />
               <h4 className="font-bold text-slate-700 dark:text-slate-300">
-                {isFiltering ? "No Matching Feedback" : "No Feedback Yet"}
+                {isFiltering ? "No Matching Feedback" : "No Feedback Submitted Yet"}
               </h4>
               <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 max-w-xs mx-auto">
                 {isFiltering
                   ? "Try a different search term."
-                  : "Be the first to share your experience with the maintenance portal."}
+                  : "Share your experience with the maintenance portal using the form."}
               </p>
               {isFiltering && (
                 <button
