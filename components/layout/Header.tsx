@@ -96,31 +96,20 @@ export default function Header() {
             </div>
           </div>
           <div className="hidden md:flex items-center gap-6">
-            {user ? (
-              <button
-                onClick={handleLogout}
-                className="bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-xl font-label-md font-bold hover:shadow-xl hover:shadow-primary/20 transition-all scale-100 active:scale-95 cursor-pointer"
-              >
-                Logout
-              </button>
-            ) : (
-              <>
-                <Link
-                  href="/auth/v1/login"
-                  className={`font-label-md font-extrabold hover:text-sky-400 transition-colors ${
-                    isDarkPage ? "text-white" : "text-black dark:text-white"
-                  }`}
-                >
-                  Login
-                </Link>
-                <Link
-                  href="/auth/v1/signup"
-                  className="bg-gradient-to-r from-blue-600 to-sky-500 hover:from-blue-500 hover:to-sky-400 text-white px-6 py-2.5 rounded-xl font-label-md font-bold shadow-lg shadow-blue-500/25 transition-all scale-100 active:scale-95"
-                >
-                  Sign Up
-                </Link>
-              </>
-            )}
+            <Link
+              href="/auth/v1/login"
+              className={`font-label-md font-extrabold hover:text-sky-400 transition-colors ${
+                isDarkPage ? "text-white" : "text-black dark:text-white"
+              }`}
+            >
+              Login
+            </Link>
+            <Link
+              href="/auth/v1/signup"
+              className="bg-gradient-to-r from-blue-600 to-sky-500 hover:from-blue-500 hover:to-sky-400 text-white px-6 py-2.5 rounded-xl font-label-md font-bold shadow-lg shadow-blue-500/25 transition-all scale-100 active:scale-95"
+            >
+              Sign Up
+            </Link>
           </div>
 
           {/* Mobile hamburger menu toggle */}
@@ -174,31 +163,20 @@ export default function Header() {
           </div>
 
           <div className="flex flex-col gap-3 mt-auto pt-6 border-t border-white/10">
-            {user ? (
-              <button
-                onClick={handleLogout}
-                className="w-full py-3.5 text-center font-bold text-base text-white bg-red-600/80 hover:bg-red-600 rounded-2xl transition-all cursor-pointer"
-              >
-                Logout
-              </button>
-            ) : (
-              <>
-                <Link
-                  href="/auth/v1/login"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="w-full py-3.5 text-center font-bold text-base text-white bg-white/10 hover:bg-white/15 border border-white/15 rounded-2xl transition-all"
-                >
-                  Login
-                </Link>
-                <Link
-                  href="/auth/v1/signup"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="w-full py-3.5 text-center font-bold text-base text-slate-950 font-extrabold bg-sky-400 hover:bg-sky-300 rounded-2xl transition-all shadow-lg shadow-sky-500/25"
-                >
-                  Sign Up
-                </Link>
-              </>
-            )}
+            <Link
+              href="/auth/v1/login"
+              onClick={() => setMobileMenuOpen(false)}
+              className="w-full py-3.5 text-center font-bold text-base text-white bg-white/10 hover:bg-white/15 border border-white/15 rounded-2xl transition-all"
+            >
+              Login
+            </Link>
+            <Link
+              href="/auth/v1/signup"
+              onClick={() => setMobileMenuOpen(false)}
+              className="w-full py-3.5 text-center font-bold text-base text-slate-950 font-extrabold bg-sky-400 hover:bg-sky-300 rounded-2xl transition-all shadow-lg shadow-sky-500/25"
+            >
+              Sign Up
+            </Link>
           </div>
         </div>
       )}
