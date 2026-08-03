@@ -6,6 +6,7 @@ const STATUS_STYLES: Record<string, string> = {
   "In Progress": "bg-[#00a572]/10 text-[#4edea3] border border-[#00a572]/20",
   Completed: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20",
   Verified: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20",
+  Closed: "bg-blue-500/15 text-blue-400 border border-blue-500/30",
   Rejected: "bg-[#ff516a]/20 text-[#ff516a] border border-[#ff516a]/40",
 };
 const DEFAULT_STATUS_STYLE = "bg-[#908fa0]/15 text-[#908fa0] border border-[#908fa0]/20";

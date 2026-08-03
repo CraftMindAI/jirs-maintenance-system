@@ -144,7 +144,7 @@ export default function DashboardHome() {
       (c) => c.status === "In Progress" || c.status === "Assigned",
     ).length;
     const completed = visibleComplaints.filter(
-      (c) => c.status === "Completed" || c.status === "Verified" || c.status === "Rejected",
+      (c) => c.status === "Verified",
     ).length;
     return { total, pending, progress, completed };
   };

@@ -201,40 +201,40 @@ export default function AddComplaint() {
 
             {/* Category selection */}
             <div className="space-y-2">
-              <label htmlFor="category" className="block font-bold text-xs uppercase tracking-widest text-on-surface-variant dark:text-slate-300">
+              <label htmlFor="category" className="block font-bold text-xs uppercase tracking-widest text-slate-700 dark:text-slate-300">
                 Complaint Category
               </label>
               <select
                 id="category"
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full rounded-xl px-4 py-3.5 font-body-md premium-input text-slate-800 dark:text-slate-100 cursor-pointer"
+                className="w-full rounded-xl px-4 py-3.5 font-body-md premium-input bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 text-slate-800 dark:text-slate-100 cursor-pointer"
               >
-                <option value="" disabled>Choose category</option>
-                <option value="Electrical">Electrical</option>
-                <option value="Plumbing">Plumbing</option>
-                <option value="Civil">Civil</option>
-                <option value="Carpentry">Carpentry</option>
-                <option value="HVAC">HVAC</option>
-                <option value="Telephone">Telephone</option>
-                <option value="Others">Others</option>
+                <option value="" disabled className="bg-white dark:bg-slate-900 text-slate-400">Choose category</option>
+                <option value="Electrical" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">Electrical</option>
+                <option value="Plumbing" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">Plumbing</option>
+                <option value="Civil" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">Civil</option>
+                <option value="Carpentry" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">Carpentry</option>
+                <option value="HVAC" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">HVAC</option>
+                <option value="Telephone" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">Telephone</option>
+                <option value="Others" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">Others</option>
               </select>
             </div>
 
             {/* Priority selection */}
             <div className="space-y-2">
-              <label htmlFor="priority" className="block font-bold text-xs uppercase tracking-widest text-on-surface-variant dark:text-slate-300">
+              <label htmlFor="priority" className="block font-bold text-xs uppercase tracking-widest text-slate-700 dark:text-slate-300">
                 Priority Urgency
               </label>
               <select
                 id="priority"
                 value={priority}
                 onChange={(e) => setPriority(e.target.value)}
-                className="w-full rounded-xl px-4 py-3.5 font-body-md premium-input text-slate-800 dark:text-slate-100 cursor-pointer"
+                className="w-full rounded-xl px-4 py-3.5 font-body-md premium-input bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 text-slate-800 dark:text-slate-100 cursor-pointer"
               >
-                <option value="High">High Priority</option>
-                <option value="Medium">Medium Priority</option>
-                <option value="Low">Low Priority</option>
+                <option value="High" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">High Priority</option>
+                <option value="Medium" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">Medium Priority</option>
+                <option value="Low" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">Low Priority</option>
               </select>
             </div>
 
@@ -242,7 +242,7 @@ export default function AddComplaint() {
 
           {/* Location field */}
           <div className="space-y-2">
-            <label htmlFor="location" className="block font-bold text-xs uppercase tracking-widest text-on-surface-variant dark:text-slate-300">
+            <label htmlFor="location" className="block font-bold text-xs uppercase tracking-widest text-slate-700 dark:text-slate-300">
               Campus Location
             </label>
             <input
@@ -251,13 +251,13 @@ export default function AddComplaint() {
               placeholder="e.g. Block B, Room 108 or Physics Lab 3"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
-              className="w-full rounded-xl px-4 py-3.5 font-body-md premium-input text-slate-800 dark:text-slate-100"
+              className="w-full rounded-xl px-4 py-3.5 font-body-md premium-input bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500"
             />
           </div>
 
           {/* Description field */}
           <div className="space-y-2">
-            <label htmlFor="description" className="block font-bold text-xs uppercase tracking-widest text-on-surface-variant dark:text-slate-300">
+            <label htmlFor="description" className="block font-bold text-xs uppercase tracking-widest text-slate-700 dark:text-slate-300">
               Issue Description
             </label>
             <textarea
@@ -266,7 +266,7 @@ export default function AddComplaint() {
               placeholder="Provide a detailed description of the maintenance issue..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full rounded-xl p-4 font-body-md premium-input text-slate-800 dark:text-slate-100 resize-none"
+              className="w-full rounded-xl p-4 font-body-md premium-input bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 resize-none"
             />
           </div>
 

@@ -6,16 +6,16 @@ import StatsCards from "@/components/admin/overview/StatsCards";
 import MonthlyInsights from "@/components/admin/overview/MonthlyInsights";
 import ServiceSplit from "@/components/admin/overview/ServiceSplit";
 import RecentRequestsTable from "@/components/admin/overview/RecentRequestsTable";
-import { RESOLVED_STATUSES, ASSIGNED_STATUSES, buildServiceSplit, buildRecentRequests } from "@/utils/admin/overview";
+import { buildServiceSplit, buildRecentRequests } from "@/utils/admin/overview";
 
 export default function AdminDashboardHome() {
   const { complaints } = useComplaintsFeed(null);
 
   const stats = {
     total: complaints.length,
-    pending: complaints.filter((c) => ["Pending", "Approved"].includes(c.status)).length,
-    assigned: complaints.filter((c) => ASSIGNED_STATUSES.includes(c.status)).length,
-    resolved: complaints.filter((c) => RESOLVED_STATUSES.includes(c.status)).length,
+    pending: complaints.filter((c) => c.status === "Pending").length,
+    inProgress: complaints.filter((c) => c.status === "In Progress").length,
+    completed: complaints.filter((c) => c.status === "Verified").length,
   };
 
   const serviceSplit = buildServiceSplit(complaints);

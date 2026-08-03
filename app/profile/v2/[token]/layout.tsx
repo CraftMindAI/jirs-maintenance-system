@@ -1,112 +1,121 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import Icon from "@/components/ui/Icon";
 import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { doc, getDoc, setDoc } from "firebase/firestore";
-import Sidebar, { type MenuItem, type QuickAction } from "@/components/admin/layout/Sidebar";
+import { doc, getDoc } from "firebase/firestore";
+import Sidebar, { type MenuItem } from "@/components/admin/layout/Sidebar";
 import TopNavbar from "@/components/admin/layout/TopNavbar";
-import MobileBottomNav, { type BottomNavItem, type BottomNavQuickAction } from "@/components/admin/layout/MobileBottomNav";
+import MobileBottomNav, { type BottomNavItem } from "@/components/admin/layout/MobileBottomNav";
 import { encryptTechToken } from "@/lib/encryption";
 
-const MENU_ITEMS: MenuItem[] = [
-  { label: "Dashboard", icon: "dashboard", href: "/dashboard" },
-  { label: "My Complaints", icon: "assignment_late", href: "/dashboard/my-complaints" },
-  { label: "Track Complaint", icon: "my_location", href: "/dashboard/track-complaint" },
-  { label: "Feedback", icon: "comment", href: "/dashboard/feedback" },
-  { label: "Settings", icon: "settings_applications", href: "/dashboard/settings" },
-];
+export default function TechnicianLayout({
+  children,
+  params,
+}: {
+  children: React.ReactNode;
+  params: Promise<{ token: string }>;
+}) {
+  const resolvedParams = use(params);
+  const token = resolvedParams.token;
 
-const QUICK_ACTION: QuickAction = { label: "Add Complaint", icon: "add_circle", href: "/dashboard/add-complaint" };
+  const basePath = `/profile/v2/${token}`;
 
-const BOTTOM_NAV_ITEMS: BottomNavItem[] = [
-  { label: "Home", icon: "dashboard", href: "/dashboard" },
-  { label: "Complaints", icon: "assignment_late", href: "/dashboard/my-complaints" },
-  { label: "Track", icon: "my_location", href: "/dashboard/track-complaint" },
-  { label: "Profile", icon: "settings_applications", href: "/dashboard/settings" },
-];
+  const MENU_ITEMS: MenuItem[] = [
+    { label: "Dashboard", icon: "home", href: `${basePath}/dashboard` },
+    { label: "View Complaints", icon: "assignment", href: `${basePath}/view-complaints` },
+    { label: "Track Complaint", icon: "my_location", href: `${basePath}/track-complaint` },
+    { label: "Reports", icon: "assessment", href: `${basePath}/technician-reports` },
+    { label: "Settings", icon: "settings", href: `${basePath}/technician-settings` },
+  ];
 
-const BOTTOM_QUICK_ACTION: BottomNavQuickAction = { icon: "add", href: "/dashboard/add-complaint" };
+  const BOTTOM_NAV_ITEMS: BottomNavItem[] = [
+    { label: "Home", icon: "home", href: `${basePath}/dashboard` },
+    { label: "Complaints", icon: "assignment", href: `${basePath}/view-complaints` },
+    { label: "Track", icon: "my_location", href: `${basePath}/track-complaint` },
+    { label: "Reports", icon: "assessment", href: `${basePath}/technician-reports` },
+    { label: "Profile", icon: "settings", href: `${basePath}/technician-settings` },
+  ];
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [profileOpen, setProfileOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(true);
-  const [uid, setUid] = useState<string | null>(null);
   const [userProfile, setUserProfile] = useState<{ name: string; role: string; email: string } | null>(null);
 
-  const applyTheme = (isDark: boolean) => {
-    setDarkMode(isDark);
-    document.documentElement.classList.toggle("dark", isDark);
-  };
-
-  // Sync auth state + the signed-in user's saved theme preference
+  // Sync auth state & enforce Technician Token Guard
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        setUid(user.uid);
         try {
           const docRef = doc(db, "users", user.uid);
           const docSnap = await getDoc(docRef);
-          const role = (docSnap.exists() ? docSnap.data().role : "").toLowerCase();
           const name = docSnap.exists() ? docSnap.data().name : user.displayName;
+          const expectedToken = encryptTechToken(user.uid, name || "technician");
 
-          if (role === "technician") {
-            const token = encryptTechToken(user.uid, name || "technician");
-            router.replace(`/profile/v2/${token}/dashboard`);
+          if (token !== expectedToken) {
+            router.replace(`/profile/v2/${expectedToken}/dashboard`);
             return;
           }
 
           if (docSnap.exists()) {
             const data = docSnap.data();
             setUserProfile({
-              name: data.name || "User",
-              role: data.role || "Student",
+              name: data.name || "Technician",
+              role: data.role || "Technician",
               email: user.email || "",
             });
-            applyTheme(data.theme !== "light");
           } else {
             setUserProfile({
-              name: user.displayName || "User",
-              role: "Student",
+              name: user.displayName || "Technician",
+              role: "Technician",
               email: user.email || "",
             });
-            applyTheme(true);
           }
         } catch (error) {
           console.error("Error fetching user doc:", error);
           setUserProfile({
-            name: "Siddharth Roy",
-            role: "Student",
-            email: "siddharth.r@jirs.ac.in",
+            name: "Technician",
+            role: "Technician",
+            email: "technician@jirs.ac.in",
           });
-          applyTheme(true);
         }
       } else {
-        setUid(null);
         setUserProfile({
-          name: "Siddharth Roy",
-          role: "Student",
-          email: "siddharth.r@jirs.ac.in",
+          name: "Technician",
+          role: "Technician",
+          email: "technician@jirs.ac.in",
         });
-        applyTheme(true);
       }
     });
 
     return () => unsubscribe();
-  }, [router]);
+  }, [token, router]);
+
+  // Theme Sync on Mount
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "light") {
+      setDarkMode(false);
+      document.documentElement.classList.remove("dark");
+    } else {
+      setDarkMode(true);
+      document.documentElement.classList.add("dark");
+    }
+  }, []);
 
   const toggleTheme = () => {
-    const nextDark = !darkMode;
-    applyTheme(nextDark);
-    if (uid) {
-      setDoc(doc(db, "users", uid), { theme: nextDark ? "dark" : "light" }, { merge: true }).catch(
-        (error) => console.error("Error saving theme preference:", error),
-      );
+    if (darkMode) {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+      setDarkMode(false);
+    } else {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+      setDarkMode(true);
     }
   };
 
@@ -146,9 +155,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         darkMode={darkMode}
         onLogout={handleLogout}
         menuItems={MENU_ITEMS}
-        brandTitle="JMMS"
-        brandSubtitle="Facility Portal"
-        quickAction={QUICK_ACTION}
+        brandTitle="JMMS Tech"
+        brandSubtitle="Maintenance"
+        quickAction={null}
       />
 
       {/* 2. MAIN CONTAINER & TOP NAVBAR */}
@@ -160,13 +169,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           setProfileOpen={setProfileOpen}
           userProfile={userProfile}
           onLogout={handleLogout}
-          profileHref="/dashboard/settings"
+          profileHref={`${basePath}/technician-settings`}
         />
 
         {/* Breadcrumb Trail */}
         {breadcrumbs.length > 0 && (
           <div className="px-6 lg:px-10 pt-6 flex items-center gap-2 text-sm font-semibold">
-            <Link href="/dashboard" className={darkMode ? "text-[#908fa0] hover:text-[#c0c1ff]" : "text-slate-400 hover:text-primary"}>
+            <Link href="/technician" className={darkMode ? "text-[#908fa0] hover:text-[#c0c1ff]" : "text-slate-400 hover:text-primary"}>
               JMMS
             </Link>
             {breadcrumbs.map((crumb, idx) => (
@@ -196,7 +205,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </div>
 
       {/* 3. BOTTOM NAVIGATION (MOBILE ONLY) */}
-      <MobileBottomNav items={BOTTOM_NAV_ITEMS} quickAction={BOTTOM_QUICK_ACTION} />
+      <MobileBottomNav items={BOTTOM_NAV_ITEMS} quickAction={null} />
     </div>
   );
 }

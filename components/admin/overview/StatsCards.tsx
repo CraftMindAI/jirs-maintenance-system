@@ -3,8 +3,8 @@ import Icon from "@/components/ui/Icon";
 type Stats = {
   total: number;
   pending: number;
-  assigned: number;
-  resolved: number;
+  inProgress: number;
+  completed: number;
 };
 
 export default function StatsCards({ stats }: { stats: Stats }) {
@@ -26,42 +26,42 @@ export default function StatsCards({ stats }: { stats: Stats }) {
         </div>
       </div>
 
-      {/* Stat 2: Pending */}
+      {/* Stat 2: Pending Start */}
       <div className={cardStyle}>
         <div className="w-14 h-14 bg-rose-500/10 dark:bg-[#ff516a]/10 rounded-2xl flex items-center justify-center text-rose-600 dark:text-[#ffb2b7] group-hover:scale-110 transition-transform">
           <Icon name="pending_actions" className="text-3xl" />
         </div>
         <div>
           <p className="text-slate-500 dark:text-[#908fa0] font-mono uppercase tracking-widest text-[11px] mb-1 font-bold">
-            Pending
+            Pending Start
           </p>
           <h3 className="text-3xl font-black text-slate-900 dark:text-[#dae2fd]">{stats.pending}</h3>
         </div>
       </div>
 
-      {/* Stat 3: Assigned */}
+      {/* Stat 3: In Progress */}
       <div className={cardStyle}>
         <div className="w-14 h-14 bg-emerald-500/10 dark:bg-[#00a572]/10 rounded-2xl flex items-center justify-center text-emerald-600 dark:text-[#4edea3] group-hover:scale-110 transition-transform">
           <Icon name="engineering" className="text-3xl" />
         </div>
         <div>
           <p className="text-slate-500 dark:text-[#908fa0] font-mono uppercase tracking-widest text-[11px] mb-1 font-bold">
-            Assigned
+            In Progress
           </p>
-          <h3 className="text-3xl font-black text-slate-900 dark:text-[#dae2fd]">{stats.assigned}</h3>
+          <h3 className="text-3xl font-black text-slate-900 dark:text-[#dae2fd]">{stats.inProgress}</h3>
         </div>
       </div>
 
-      {/* Stat 4: Resolved */}
+      {/* Stat 4: Completed */}
       <div className={cardStyle}>
         <div className="w-14 h-14 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform">
           <Icon name="check_circle" className="text-3xl" />
         </div>
         <div>
           <p className="text-slate-500 dark:text-[#908fa0] font-mono uppercase tracking-widest text-[11px] mb-1 font-bold">
-            Resolved
+            Completed
           </p>
-          <h3 className="text-3xl font-black text-slate-900 dark:text-[#dae2fd]">{stats.resolved.toLocaleString()}</h3>
+          <h3 className="text-3xl font-black text-slate-900 dark:text-[#dae2fd]">{stats.completed.toLocaleString()}</h3>
         </div>
       </div>
     </div>

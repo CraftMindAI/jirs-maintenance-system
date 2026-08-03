@@ -55,7 +55,7 @@ export default function ComplaintsTable({
             {complaints.map((item, index) => {
               const isOwner = !!currentUserId && item.userId === currentUserId;
               const canManage = isOwner && item.status === "Pending";
-              const canAssign = isAdmin && (item.status === "Pending" || item.status === "Approved" || item.status === "Assigned" || item.status === "In Progress");
+              const canAssign = isAdmin && (item.status === "Approved" || item.status === "Assigned");
               const canUpdateProgress = isTechnician && (item.status === "Assigned" || item.status === "In Progress");
               const deadline = getDeadlineInfo(item.assignedAt, item.assignedDate, item.status);
               const displayStatus =

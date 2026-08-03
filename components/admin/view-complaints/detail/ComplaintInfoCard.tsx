@@ -11,6 +11,7 @@ export default function ComplaintInfoCard({
   onApprove,
   onReject,
   onVerify,
+  onReopen,
   updatingStatus,
 }: {
   complaint: Complaint;
@@ -18,8 +19,13 @@ export default function ComplaintInfoCard({
   onApprove?: () => void;
   onReject?: () => void;
   onVerify?: () => void;
+  onReopen?: () => void;
   updatingStatus?: boolean;
 }) {
+  const normalizedStatus = (complaint.status || "").toLowerCase();
+  const isPendingStatus = normalizedStatus.includes("pending");
+  const isCompletedStatus = normalizedStatus.includes("completed") || normalizedStatus.includes("resolved");
+
   return (
     <div className="bg-white dark:bg-[#171f33] border border-slate-200 dark:border-[#464554]/10 rounded-3xl p-6 md:p-8 shadow-sm dark:vibrant-shadow space-y-6">
       {/* Header Info */}
@@ -29,83 +35,54 @@ export default function ComplaintInfoCard({
             <h1 className="font-display text-xl md:text-2xl font-bold text-slate-900 dark:text-[#dae2fd]">
               Ticket #{complaint.id}
             </h1>
-            <StatusBadge status={complaint.status} className="px-3 py-1 text-xs" />
+            <PriorityBadge priority={complaint.priority} />
           </div>
-          <p className="text-xs text-slate-500 dark:text-[#908fa0] mt-1 flex items-center gap-2">
-            <Icon name="calendar_today" className="text-sm" />
-            <span>Submitted on {complaint.date || "N/A"}</span>
+          <p className="text-xs text-slate-500 dark:text-[#908fa0] mt-1 font-mono">
+            Logged on {complaint.date || "N/A"}
           </p>
         </div>
-
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-mono uppercase text-slate-500 dark:text-[#908fa0]">Priority:</span>
-          <PriorityBadge priority={complaint.priority} className="px-3 py-1 text-xs" />
-        </div>
+        <StatusBadge status={complaint.status} />
       </div>
 
-      {/* Grid Fields */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+      {/* Basic Info Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
         <div className="space-y-1">
-          <span className="text-[10px] font-mono uppercase text-slate-500 dark:text-[#908fa0] tracking-wider block">
+          <span className="text-[10px] font-mono text-slate-400 dark:text-[#908fa0] uppercase tracking-wider block">
             Category
           </span>
-          <div className="text-sm font-bold text-slate-900 dark:text-[#dae2fd] flex items-center gap-2">
-            <Icon name="category" className="text-primary dark:text-[#8083ff]" />
-            <span>{complaint.category}</span>
-          </div>
+          <p className="font-bold text-slate-800 dark:text-[#dae2fd]">
+            {complaint.category}
+          </p>
         </div>
-
         <div className="space-y-1">
-          <span className="text-[10px] font-mono uppercase text-slate-500 dark:text-[#908fa0] tracking-wider block">
-            Campus Location
+          <span className="text-[10px] font-mono text-slate-400 dark:text-[#908fa0] uppercase tracking-wider block">
+            Location
           </span>
-          <div className="text-sm font-bold text-slate-900 dark:text-[#dae2fd] flex items-center gap-2">
-            <Icon name="location_on" className="text-rose-500 dark:text-[#ffb2b7]" />
-            <span>{complaint.location || "Unspecified"}</span>
-          </div>
+          <p className="font-bold text-slate-800 dark:text-[#dae2fd]">
+            {complaint.location}
+          </p>
         </div>
       </div>
 
       {/* Description */}
-      <div className="space-y-2 pt-2 border-t border-slate-100 dark:border-[#464554]/10">
-        <span className="text-[10px] font-mono uppercase text-slate-500 dark:text-[#908fa0] tracking-wider block">
+      <div className="space-y-1.5 pt-2 border-t border-slate-100 dark:border-[#464554]/10">
+        <span className="text-[10px] font-mono text-slate-400 dark:text-[#908fa0] uppercase tracking-wider block">
           Issue Description
         </span>
-        <div className="bg-slate-50 dark:bg-[#131b2e]/60 border border-slate-200 dark:border-[#464554]/10 rounded-2xl p-4 text-xs text-slate-700 dark:text-[#c7c4d7] leading-relaxed whitespace-pre-line">
-          {complaint.description || "No description provided."}
+        <div className="text-xs text-slate-700 dark:text-[#c7c4d7] leading-relaxed bg-slate-50 dark:bg-[#131b2e]/60 p-4 rounded-2xl border border-slate-100 dark:border-[#464554]/10">
+          {complaint.description}
         </div>
       </div>
 
-      {/* Technician Assignment Details if any */}
-      {(complaint.technicianName || complaint.remarks) && (
-        <div className="bg-slate-50 dark:bg-[#131b2e]/90 border border-primary/20 dark:border-[#8083ff]/20 rounded-2xl p-4 space-y-3">
-          <h4 className="font-display text-xs font-bold text-primary dark:text-[#c0c1ff] flex items-center gap-2">
-            <Icon name="engineering" className="text-base text-primary dark:text-[#8083ff]" />
-            Technician & Status Remarks
-          </h4>
-
+      {/* Technician & Completion Metadata */}
+      {(complaint.technicianName || complaint.completionPhotoUrl) && (
+        <div className="pt-2 border-t border-slate-100 dark:border-[#464554]/10 space-y-3">
           {complaint.technicianName && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-              <div>
-                <span className="text-[10px] font-mono text-slate-500 dark:text-[#908fa0] block">Assigned Technician</span>
-                <span className="font-bold text-slate-900 dark:text-[#dae2fd]">{complaint.technicianName}</span>
-              </div>
-              {complaint.technicianPhone && (
-                <div>
-                  <span className="text-[10px] font-mono text-slate-500 dark:text-[#908fa0] block">Contact Phone</span>
-                  <span className="font-semibold text-emerald-600 dark:text-[#4edea3]">{complaint.technicianPhone}</span>
-                </div>
-              )}
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-[10px] font-mono text-slate-400 dark:text-[#908fa0]">Assigned Staff:</span>
+              <span className="font-bold text-slate-800 dark:text-[#dae2fd]">{complaint.technicianName}</span>
             </div>
           )}
-
-          {complaint.remarks && (
-            <div className="text-xs text-slate-700 dark:text-[#c7c4d7] pt-1">
-              <span className="text-[10px] font-mono text-slate-500 dark:text-[#908fa0] block">Remarks</span>
-              <p className="mt-0.5 italic">{complaint.remarks}</p>
-            </div>
-          )}
-          
           {complaint.completionPhotoUrl && (
             <div className="text-xs text-slate-700 dark:text-[#c7c4d7] pt-3 mt-3 border-t border-primary/10 dark:border-[#8083ff]/10">
               <span className="text-[10px] font-mono text-slate-500 dark:text-[#908fa0] block mb-2">Completion Photo</span>
@@ -129,6 +106,74 @@ export default function ComplaintInfoCard({
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Admin Quick Action Controls Bar */}
+      {((isPendingStatus && (onApprove || onReject)) || (isCompletedStatus && (onVerify || onReopen))) && (
+        <div className="pt-4 border-t border-slate-100 dark:border-[#464554]/10 space-y-3">
+          <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 dark:text-[#908fa0] block">
+            Admin Action Controls
+          </span>
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Show Approve & Reject ONLY for Pending complaints */}
+            {isPendingStatus && (
+              <>
+                {onApprove && (
+                  <button
+                    type="button"
+                    disabled={updatingStatus}
+                    onClick={onApprove}
+                    className="flex-1 min-w-[130px] inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-xs uppercase tracking-wider shadow-md shadow-emerald-600/20 transition-all cursor-pointer"
+                  >
+                    <Icon name="check_circle" className="text-base" />
+                    <span>Approve Ticket</span>
+                  </button>
+                )}
+
+                {onReject && (
+                  <button
+                    type="button"
+                    disabled={updatingStatus}
+                    onClick={onReject}
+                    className="flex-1 min-w-[130px] inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-rose-600 hover:bg-rose-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-xs uppercase tracking-wider shadow-md shadow-rose-600/20 transition-all cursor-pointer"
+                  >
+                    <Icon name="cancel" className="text-base" />
+                    <span>Reject Ticket</span>
+                  </button>
+                )}
+              </>
+            )}
+
+            {/* Show Mark Verified (Close) & Change Status to In Progress for Completed complaints */}
+            {isCompletedStatus && (
+              <>
+                {onVerify && (
+                  <button
+                    type="button"
+                    disabled={updatingStatus}
+                    onClick={onVerify}
+                    className="flex-1 min-w-[130px] inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-[#00355f] hover:bg-[#0f4c81] dark:bg-[#8083ff] dark:hover:bg-[#686bff] disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-xs uppercase tracking-wider shadow-md transition-all cursor-pointer"
+                  >
+                    <Icon name="verified" className="text-base" />
+                    <span>Mark Verified (Close)</span>
+                  </button>
+                )}
+
+                {onReopen && (
+                  <button
+                    type="button"
+                    disabled={updatingStatus}
+                    onClick={onReopen}
+                    className="flex-1 min-w-[130px] inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-amber-600 hover:bg-amber-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-xs uppercase tracking-wider shadow-md shadow-amber-600/20 transition-all cursor-pointer"
+                  >
+                    <Icon name="restart_alt" className="text-base" />
+                    <span>Reopen: In Progress</span>
+                  </button>
+                )}
+              </>
+            )}
+          </div>
         </div>
       )}
     </div>

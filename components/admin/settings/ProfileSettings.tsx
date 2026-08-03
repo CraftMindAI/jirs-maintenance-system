@@ -186,6 +186,24 @@ export default function ProfileSettings() {
               />
             </div>
           </div>
+
+          {/* Role Designation Field */}
+          <div className="space-y-1.5">
+            <label className="block text-[10px] font-mono uppercase text-slate-500 dark:text-[#908fa0] tracking-wider">
+              System Role Designation
+            </label>
+            <div className="relative">
+              <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#908fa0]">
+                <Icon name="badge" className="text-base" />
+              </div>
+              <input
+                type="text"
+                disabled
+                value={role}
+                className="w-full rounded-xl pl-10 pr-4 py-3 text-xs bg-slate-100 dark:bg-[#131b2e]/40 border border-slate-200 dark:border-[#464554]/20 text-slate-400 dark:text-[#908fa0] font-semibold outline-none cursor-not-allowed"
+              />
+            </div>
+          </div>
         </div>
 
         {/* Action Button Row */}

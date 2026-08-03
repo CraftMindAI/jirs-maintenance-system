@@ -7,10 +7,8 @@ import Icon from "@/components/ui/Icon";
 import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
-import { useComplaintsFeed } from "@/hooks/useComplaintsFeed";
+import { collection, onSnapshot } from "firebase/firestore";
 import { useComplaintDetail } from "@/hooks/useComplaintDetail";
-
-const ADMIN_ROLES = ["admin"];
 
 // Create a component that consumes the search params
 function TrackComplaintContent() {
@@ -25,6 +23,7 @@ function TrackComplaintContent() {
   } | null>(null);
   const [selectedTicketId, setSelectedTicketId] = useState("");
   const [zoomImage, setZoomImage] = useState<string | null>(null);
+  const [visibleComplaints, setVisibleComplaints] = useState<any[]>([]);
 
   // Sync auth state (role decides which complaints this user may see)
   useEffect(() => {
@@ -34,26 +33,26 @@ function TrackComplaintContent() {
           const docSnap = await getDoc(doc(db, "users", user.uid));
           const data = docSnap.exists() ? docSnap.data() : null;
           setUserProfile({
-            name: data?.name || user.displayName || "User",
-            role: data?.role || "Student",
+            name: data?.name || user.displayName || "Technician",
+            role: data?.role || "Technician",
             email: user.email || "",
           });
           setUserId(user.uid);
         } catch (error) {
           console.error("Error fetching user doc:", error);
           setUserProfile({
-            name: "Siddharth Roy",
-            role: "Student",
-            email: "siddharth.r@jirs.ac.in",
+            name: "Technician",
+            role: "Technician",
+            email: "technician@jirs.ac.in",
           });
           setUserId(user.uid);
         }
       } else {
         // Mock fallback for presentation
         setUserProfile({
-          name: "Siddharth Roy",
-          role: "Student",
-          email: "siddharth.r@jirs.ac.in",
+          name: "Technician",
+          role: "Technician",
+          email: "technician@jirs.ac.in",
         });
         setUserId(null);
       }
@@ -62,14 +61,35 @@ function TrackComplaintContent() {
     return () => unsubscribe();
   }, []);
 
-  const isAdmin =
-    !!userProfile && ADMIN_ROLES.includes(userProfile.role.toLowerCase());
+  // Fetch complaints assigned to this technician
+  useEffect(() => {
+    if (!userProfile) return;
+    
+    const complaintsRef = collection(db, "complaints");
+    const unsubscribeSnapshot = onSnapshot(complaintsRef, (snapshot) => {
+      const fetchedComplaints: any[] = [];
+      snapshot.forEach((docSnap) => {
+        const data = docSnap.data();
+        if (
+          data.technicianEmail === userProfile.email || 
+          data.technicianName === userProfile.name ||
+          !data.technicianName
+        ) {
+          fetchedComplaints.push({ ...data, id: docSnap.id });
+        }
+      });
+      
+      fetchedComplaints.sort((a, b) => {
+        const timeA = a.createdAt ? a.createdAt.toMillis() : new Date(a.date).getTime();
+        const timeB = b.createdAt ? b.createdAt.toMillis() : new Date(b.date).getTime();
+        return timeB - timeA;
+      });
+      
+      setVisibleComplaints(fetchedComplaints);
+    });
 
-  // Guests (no real uid) never fetch real data; signed-in admins see every
-  // complaint, signed-in residents see only their own.
-  const { complaints: visibleComplaints } = useComplaintsFeed(
-    userId ? (isAdmin ? null : userId) : undefined,
-  );
+    return () => unsubscribeSnapshot();
+  }, [userProfile]);
 
   // Select ticket: parameter priority -> otherwise keep the current selection
   // if it's still visible, else fall back to the first visible item.
@@ -93,6 +113,30 @@ function TrackComplaintContent() {
 
   const { images: selectedImages } = useComplaintDetail(selectedTicketId);
 
+  const [complainantName, setComplainantName] = useState<string>("Resident / Staff");
+
+  useEffect(() => {
+    async function fetchComplainantName() {
+      if (!selectedComplaint) return;
+      if (selectedComplaint.submittedBy) {
+        setComplainantName(selectedComplaint.submittedBy);
+        return;
+      }
+      if (selectedComplaint.userId) {
+        try {
+          const userDoc = await getDoc(doc(db, "users", selectedComplaint.userId));
+          if (userDoc.exists() && userDoc.data().name) {
+            setComplainantName(userDoc.data().name);
+            return;
+          }
+        } catch(e) {
+          console.error("Error fetching complainant name", e);
+        }
+      }
+      setComplainantName("Resident / Staff");
+    }
+    fetchComplainantName();
+  }, [selectedComplaint]);
   // Timeline steps config — mirrors the real status flow written in utils/admin/complaints.ts
   // (Pending -> Approved -> Assigned -> In Progress -> Completed -> Verified).
   const STEPS = [
@@ -107,11 +151,6 @@ function TrackComplaintContent() {
       desc: "Support confirmed specifications and details.",
     },
     {
-      key: "Rejected",
-      label: "Rejected by Admin",
-      desc: "Complaint ticket was declined by administration.",
-    },
-    {
       key: "Assigned",
       label: "Technician Assigned",
       desc: "A specialized technician has been allocated.",
@@ -124,34 +163,27 @@ function TrackComplaintContent() {
     {
       key: "Completed",
       label: "Completed",
-      desc: "Work completed by technician.",
-    },
-    {
-      key: "Closed",
-      label: "Closed",
-      desc: "Admin verified the fix and officially closed the ticket.",
-    },
+      desc: "Work completed. Awaiting final verification.",
+    }
   ];
-
-  const STANDARD_STEPS = ["Pending", "Approved", "Assigned", "In Progress", "Completed", "Closed"];
-  const REJECTED_STEPS = ["Pending", "Rejected"];
-
-  const isRejected = selectedComplaint?.status === "Rejected";
-  const displaySteps = isRejected
-    ? STEPS.filter((s) => REJECTED_STEPS.includes(s.key))
-    : STEPS.filter((s) => STANDARD_STEPS.includes(s.key));
 
   // Helper to determine if a step is active/completed
   const getStepStatus = (statusKey: string, currentStatus: string) => {
-    if (currentStatus === "Rejected") {
-      if (statusKey === "Pending") return "completed";
-      if (statusKey === "Rejected") return "rejected";
-      return "pending";
+    const statusOrder = [
+      "Pending",
+      "Approved",
+      "Assigned",
+      "In Progress",
+      "Completed",
+    ];
+    
+    let effectiveStatus = currentStatus;
+    if (currentStatus === "Verified" || currentStatus === "Closed") {
+      effectiveStatus = "Completed";
     }
 
-    const normCurrent = currentStatus === "Verified" ? "Closed" : currentStatus;
-    const currentIdx = STANDARD_STEPS.indexOf(normCurrent);
-    const stepIdx = STANDARD_STEPS.indexOf(statusKey);
+    const currentIdx = statusOrder.indexOf(effectiveStatus);
+    const stepIdx = statusOrder.indexOf(statusKey);
 
     if (currentIdx >= stepIdx) return "completed";
     if (currentIdx + 1 === stepIdx) return "active";
@@ -205,20 +237,12 @@ function TrackComplaintContent() {
               Resolution Journey
             </h2>
 
-            {/* Rejected Warning Banner */}
-            {isRejected && (
-              <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-4 mb-6 flex items-center gap-3 text-xs text-red-500 font-bold">
-                <Icon name="cancel" className="text-xl" />
-                <span>This complaint ticket has been declined by administration.</span>
-              </div>
-            )}
-
             {/* Vertical timeline steps */}
             <div className="relative pl-10 space-y-10 py-2">
               {/* Stepper vertical guide line */}
               <div className="absolute top-4 bottom-4 left-[15px] w-[3px] bg-slate-100 dark:bg-slate-800 rounded" />
 
-              {displaySteps.map((step, idx) => {
+              {STEPS.map((step, idx) => {
                 const status = getStepStatus(
                   step.key,
                   selectedComplaint.status,
@@ -232,18 +256,14 @@ function TrackComplaintContent() {
                     {/* Circle Indicator */}
                     <span
                       className={`absolute left-[-35px] top-[2px] w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-all duration-300 ${
-                        status === "rejected"
-                          ? "bg-red-600 border-red-600 text-white scale-110 shadow-lg shadow-red-600/30 ring-4 ring-red-600/20"
-                          : status === "completed"
+                        status === "completed"
                           ? "bg-primary border-primary text-white scale-110 shadow-lg shadow-primary/20"
                           : status === "active"
                             ? "bg-white dark:bg-slate-900 border-primary text-primary animate-pulse"
                             : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-400"
                       }`}
                     >
-                      {status === "rejected" ? (
-                        <Icon name="cancel" className="text-[16px] font-black text-white" />
-                      ) : status === "completed" ? (
+                      {status === "completed" ? (
                         <Icon name="check" className="text-[16px] font-black" />
                       ) : (
                         idx + 1
@@ -253,9 +273,7 @@ function TrackComplaintContent() {
                     {/* Step details */}
                     <div
                       className={`text-sm font-black uppercase tracking-wide transition-colors ${
-                        status === "rejected"
-                          ? "text-red-500"
-                          : status === "completed"
+                        status === "completed"
                           ? "text-slate-800 dark:text-slate-100"
                           : status === "active"
                             ? "text-primary dark:text-blue-300"
@@ -316,60 +334,43 @@ function TrackComplaintContent() {
               </div>
             </div>
 
-            {/* Assigned Technician Profile */}
-            {selectedComplaint.technicianName ? (
-              <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm space-y-6">
-                <h3 className="font-display text-sm font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">
-                  Assigned Technician
-                </h3>
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 text-primary font-black text-lg flex items-center justify-center">
-                    {selectedComplaint.technicianName.charAt(0).toUpperCase()}
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-slate-800 dark:text-slate-100 text-base">
-                      {selectedComplaint.technicianName}
-                    </h4>
-                    <p className="text-xs text-slate-400">
-                      {selectedComplaint.technicianPhone || "Technician Hub"}
-                    </p>
-                  </div>
+            {/* Complainant Profile */}
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm space-y-6">
+              <h3 className="font-display text-sm font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">
+                Raised By
+              </h3>
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-emerald-500/10 text-emerald-500 font-black text-lg flex items-center justify-center">
+                  {complainantName.charAt(0).toUpperCase()}
                 </div>
+                <div>
+                  <h4 className="font-bold text-slate-800 dark:text-slate-100 text-base">
+                    {complainantName}
+                  </h4>
+                </div>
+              </div>
 
-                <div className="space-y-3 text-xs bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-100 dark:border-slate-800/50">
+              <div className="space-y-3 text-xs bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-100 dark:border-slate-800/50">
+                <div>
+                  <span className="font-bold text-slate-400 uppercase">
+                    Submitted On:
+                  </span>
+                  <span className="text-slate-600 dark:text-slate-300 ml-2 font-semibold">
+                    {selectedComplaint.date || "N/A"}
+                  </span>
+                </div>
+                {selectedComplaint.remarks && (
                   <div>
                     <span className="font-bold text-slate-400 uppercase">
-                      Assigned Date:
-                    </span>
-                    <span className="text-slate-600 dark:text-slate-300 ml-2 font-semibold">
-                      {selectedComplaint.assignedDate || "N/A"}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="font-bold text-slate-400 uppercase">
-                      Remarks:
+                      Admin Remarks:
                     </span>
                     <p className="text-slate-600 dark:text-slate-300 font-semibold leading-relaxed mt-1">
-                      {selectedComplaint.remarks ||
-                        "No comments from technician."}
+                      {selectedComplaint.remarks}
                     </p>
                   </div>
-                </div>
+                )}
               </div>
-            ) : (
-              <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm text-center">
-                <Icon
-                  name="assignment_ind"
-                  className="text-slate-300 text-4xl mb-3 block"
-                />
-                <h4 className="text-slate-700 dark:text-slate-300 font-bold">
-                  Unassigned
-                </h4>
-                <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 max-w-[200px] mx-auto">
-                  Awaiting review. Technician will be allocated shortly.
-                </p>
-              </div>
-            )}
+            </div>
 
             {/* Attached Reference Photo(s) */}
             <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm space-y-4">

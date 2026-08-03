@@ -175,5 +175,5 @@ export function useComplaintDetail(complaintId: string) {
     };
   }, [complaintId]);
 
-  return { complaint, poster, images, loading, error };
+  return { complaint, poster, images, loading, error, setComplaint };
 }

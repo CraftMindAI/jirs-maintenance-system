@@ -1,6 +1,7 @@
 "use client";
 
 import { use, useState } from "react";
+import { useRouter } from "next/navigation";
 import BackToComplaintsButton from "@/components/admin/view-complaints/detail/BackToComplaintsButton";
 import PostedByCard from "@/components/admin/view-complaints/detail/PostedByCard";
 import ComplaintInfoCard from "@/components/admin/view-complaints/detail/ComplaintInfoCard";
@@ -11,6 +12,8 @@ import { showToast } from "@/lib/toast";
 import { useComplaintDetail } from "@/hooks/useComplaintDetail";
 import { useUserRole } from "@/hooks/useUserRole";
 import { approveComplaint, rejectComplaint, verifyComplaint } from "@/utils/admin/complaints";
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 import Icon from "@/components/ui/Icon";
 
 export default function ViewComplaintDetailPage({
@@ -20,6 +23,7 @@ export default function ViewComplaintDetailPage({
 }) {
   const resolvedParams = use(params);
   const complaintId = resolvedParams.id;
+  const router = useRouter();
 
   const { complaint, poster, images, loading, error } = useComplaintDetail(complaintId);
   const { isAdmin } = useUserRole();
@@ -41,10 +45,12 @@ export default function ViewComplaintDetailPage({
       await approveComplaint(complaintId);
       setStatusOverride("Approved");
       showToast.success("Complaint ticket approved successfully!");
+      setTimeout(() => {
+        router.push("/admin/view-complaints");
+      }, 500);
     } catch (err) {
       console.error("Error approving complaint:", err);
       showToast.error("Failed to approve complaint.");
-    } finally {
       setUpdatingStatus(false);
     }
   };
@@ -56,10 +62,12 @@ export default function ViewComplaintDetailPage({
       await rejectComplaint(complaintId);
       setStatusOverride("Rejected");
       showToast.warning("Complaint ticket marked as Rejected.");
+      setTimeout(() => {
+        router.push("/admin/view-complaints");
+      }, 500);
     } catch (err) {
       console.error("Error rejecting complaint:", err);
       showToast.error("Failed to reject complaint.");
-    } finally {
       setUpdatingStatus(false);
     }
   };
@@ -70,11 +78,32 @@ export default function ViewComplaintDetailPage({
       setUpdatingStatus(true);
       await verifyComplaint(complaintId);
       setStatusOverride("Verified");
-      showToast.success("Complaint ticket marked as Verified.");
+      showToast.success("Complaint ticket verified and closed.");
+      setTimeout(() => {
+        router.push("/admin/view-complaints");
+      }, 500);
     } catch (err) {
       console.error("Error verifying complaint:", err);
       showToast.error("Failed to verify complaint.");
-    } finally {
+      setUpdatingStatus(false);
+    }
+  };
+
+  const handleReopen = async () => {
+    if (!complaintId) return;
+    try {
+      setUpdatingStatus(true);
+      await updateDoc(doc(db, "complaints", complaintId), {
+        status: "In Progress",
+      });
+      setStatusOverride("In Progress");
+      showToast.info("Complaint status changed back to In Progress.");
+      setTimeout(() => {
+        router.push("/admin/view-complaints");
+      }, 500);
+    } catch (err) {
+      console.error("Error setting status to In Progress:", err);
+      showToast.error("Failed to update status.");
       setUpdatingStatus(false);
     }
   };
@@ -118,6 +147,7 @@ export default function ViewComplaintDetailPage({
               onApprove={handleApprove}
               onReject={handleReject}
               onVerify={handleVerify}
+              onReopen={handleReopen}
               updatingStatus={updatingStatus}
             />
             <ComplaintTrackDetailsCard complaint={currentComplaint} />

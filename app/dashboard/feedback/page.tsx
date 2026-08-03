@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
 import Icon from "@/components/ui/Icon";
 import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
@@ -80,6 +80,13 @@ export default function DashboardFeedback() {
     setMessage("");
     setFormError(null);
   };
+
+  const handleMessageChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    setMessage(e.target.value);
+  };
+
+  const charCount = message.length;
+  const MAX_CHARS = MESSAGE_MAX_LENGTH;
 
   const filteredFeedback = useMemo(
     () =>
@@ -202,27 +209,33 @@ export default function DashboardFeedback() {
                   htmlFor="message"
                   className="block text-[10px] font-black uppercase tracking-widest text-slate-400"
                 >
-                  Feedback Message
+                  Feedback / Complaint Details
                 </label>
+
+                {/* Character Counter Badge */}
                 <span
-                  className={`text-[10px] font-bold ${
-                    message.length > MESSAGE_MAX_LENGTH
-                      ? "text-red-500"
-                      : "text-slate-400"
+                  className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-md transition-colors ${
+                    charCount > MAX_CHARS
+                      ? "bg-red-500/10 text-red-400 border border-red-500/20"
+                      : charCount >= MAX_CHARS * 0.8
+                      ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                      : "bg-slate-800 text-slate-400 border border-slate-700"
                   }`}
                 >
-                  {message.length}/{MESSAGE_MAX_LENGTH}
+                  {charCount}/{MAX_CHARS}
                 </span>
               </div>
+
               <textarea
                 id="message"
-                rows={4}
+                rows={5}
                 required
-                maxLength={MESSAGE_MAX_LENGTH}
-                placeholder="How was your maintenance experience?..."
+                placeholder="Share specific details about what went well or what needs improvement..."
                 value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                className="w-full rounded-xl p-4 font-body-md text-sm premium-input dark:text-slate-100 resize-none"
+                onChange={handleMessageChange}
+                className={`w-full rounded-2xl p-4 font-body-md text-sm premium-input bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 resize-none transition-all ${
+                  charCount > MAX_CHARS ? "border-red-500/50 focus:border-red-500" : ""
+                }`}
               />
             </div>
 
@@ -230,7 +243,7 @@ export default function DashboardFeedback() {
             <div className="flex gap-3 pt-4 border-t border-slate-100 dark:border-slate-800/40">
               <button
                 type="submit"
-                disabled={submitting || message.trim().length < MESSAGE_MIN_LENGTH}
+                disabled={submitting || message.trim().length < MESSAGE_MIN_LENGTH || charCount > MAX_CHARS}
                 className="flex-1 py-3 bg-primary hover:bg-opacity-95 text-white rounded-xl font-bold shadow-lg shadow-primary/20 transition-all text-xs cursor-pointer scale-100 active:scale-95 flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
               >
                 <Icon name="send" className="text-sm" />

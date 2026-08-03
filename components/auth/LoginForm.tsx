@@ -61,7 +61,7 @@ export default function LoginForm({ defaultRole }: LoginFormProps = {}) {
       );
       const credential = await signInWithEmailAndPassword(auth, email, password);
       const profile = await getDoc(doc(db, "users", credential.user.uid));
-      router.push(dashboardPathForRole(profile.data()?.role));
+      router.push(dashboardPathForRole(profile.data()?.role, credential.user.uid, profile.data()?.name));
     } catch (err) {
       setError(friendlyError(err));
       setSubmitting(false);

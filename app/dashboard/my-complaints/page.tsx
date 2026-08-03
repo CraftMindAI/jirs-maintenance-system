@@ -320,6 +320,8 @@ export default function MyComplaints() {
           >
             <option value="all">All Statuses</option>
             <option value="Pending">Pending</option>
+            <option value="Approved">Approved</option>
+            <option value="Rejected">Rejected</option>
             <option value="Verified">Verified</option>
             <option value="Assigned">Assigned</option>
             <option value="In Progress">In Progress</option>
@@ -389,13 +391,15 @@ export default function MyComplaints() {
                     <td className="py-4 px-6">
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider ${
-                          item.status === "Pending"
-                            ? "bg-amber-500/15 text-amber-500 border border-amber-500/30"
-                            : item.status === "Assigned"
-                              ? "bg-indigo-500/15 text-indigo-500 border border-indigo-500/30"
-                              : item.status === "In Progress"
-                                ? "bg-sky-500/15 text-sky-500 border border-sky-500/30"
-                                : "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+                          item.status === "Rejected"
+                            ? "bg-red-500/15 text-red-500 border border-red-500/30"
+                            : item.status === "Pending"
+                              ? "bg-amber-500/15 text-amber-500 border border-amber-500/30"
+                              : item.status === "Assigned"
+                                ? "bg-indigo-500/15 text-indigo-500 border border-indigo-500/30"
+                                : item.status === "In Progress"
+                                  ? "bg-sky-500/15 text-sky-500 border border-sky-500/30"
+                                  : "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
                         }`}
                       >
                         {item.status}
@@ -450,13 +454,15 @@ export default function MyComplaints() {
                   </span>
                   <span
                     className={`text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full ${
-                      item.status === "Pending"
-                        ? "bg-amber-500/15 text-amber-500 border border-amber-500/20"
-                        : item.status === "Assigned"
-                          ? "bg-indigo-500/15 text-indigo-500 border border-indigo-500/20"
-                          : item.status === "In Progress"
-                            ? "bg-sky-500/15 text-sky-500 border border-sky-500/20"
-                            : "bg-emerald-500/15 text-emerald-400 border border-emerald-500/20"
+                      item.status === "Rejected"
+                        ? "bg-red-500/15 text-red-500 border border-red-500/30"
+                        : item.status === "Pending"
+                          ? "bg-amber-500/15 text-amber-500 border border-amber-500/20"
+                          : item.status === "Assigned"
+                            ? "bg-indigo-500/15 text-indigo-500 border border-indigo-500/20"
+                            : item.status === "In Progress"
+                              ? "bg-sky-500/15 text-sky-500 border border-sky-500/20"
+                              : "bg-emerald-500/15 text-emerald-400 border border-emerald-500/20"
                     }`}
                   >
                     {item.status}

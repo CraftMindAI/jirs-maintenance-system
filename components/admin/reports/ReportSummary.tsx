@@ -29,7 +29,11 @@ export type ReportData = {
   generatedBy: string;
 };
 
-export default function ReportSummary({ reportType, data }: Readonly<{ reportType: string; data: ReportData }>) {
+export default function ReportSummary({
+  reportType,
+  data,
+  hideTechnicianCompliance = false,
+}: Readonly<{ reportType: string; data: ReportData; hideTechnicianCompliance?: boolean }>) {
   const metrics = [
     { label: "Complaints Logged", val: `${data.totalComplaints.toLocaleString()} Tickets`, color: "text-primary dark:text-[#c0c1ff]" },
     { label: "Resolution Rate", val: `${data.resolutionRate}%`, color: "text-emerald-600 dark:text-[#4edea3]" },
@@ -64,7 +68,7 @@ export default function ReportSummary({ reportType, data }: Readonly<{ reportTyp
         ))}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-2 text-xs">
+      <div className={`grid grid-cols-1 ${hideTechnicianCompliance ? "" : "md:grid-cols-2"} gap-8 pt-2 text-xs`}>
         <div className="space-y-3">
           <h4 className="font-bold text-slate-900 dark:text-[#dae2fd] text-xs uppercase tracking-wider border-b border-slate-200 dark:border-[#464554]/20 pb-2">Department Output</h4>
           <div className="space-y-2 text-slate-700 dark:text-[#c7c4d7]">
@@ -81,25 +85,27 @@ export default function ReportSummary({ reportType, data }: Readonly<{ reportTyp
           </div>
         </div>
 
-        <div className="space-y-3">
-          <h4 className="font-bold text-slate-900 dark:text-[#dae2fd] text-xs uppercase tracking-wider border-b border-slate-200 dark:border-[#464554]/20 pb-2">Technician Compliance</h4>
-          <div className="space-y-2 text-slate-700 dark:text-[#c7c4d7]">
-            {data.technicianCompliance.length === 0 ? (
-              <p className="text-slate-400 dark:text-[#908fa0] py-2">No technician accounts found.</p>
-            ) : (
-              data.technicianCompliance.map((tech) => (
-                <div key={tech.name} className="flex justify-between py-1 border-b border-slate-100 dark:border-[#464554]/10">
-                  <span className="font-bold text-slate-900 dark:text-[#dae2fd]">{tech.name}</span>
-                  {tech.ticketCount > 0 ? (
-                    <span className="text-emerald-600 dark:text-[#4edea3]">{tech.slaScore}% SLA score ({tech.ticketCount} tickets)</span>
-                  ) : (
-                    <span className="text-slate-400 dark:text-[#908fa0] italic">No tickets assigned</span>
-                  )}
-                </div>
-              ))
-            )}
+        {!hideTechnicianCompliance && (
+          <div className="space-y-3">
+            <h4 className="font-bold text-slate-900 dark:text-[#dae2fd] text-xs uppercase tracking-wider border-b border-slate-200 dark:border-[#464554]/20 pb-2">Technician Compliance</h4>
+            <div className="space-y-2 text-slate-700 dark:text-[#c7c4d7]">
+              {data.technicianCompliance.length === 0 ? (
+                <p className="text-slate-400 dark:text-[#908fa0] py-2">No technician accounts found.</p>
+              ) : (
+                data.technicianCompliance.map((tech) => (
+                  <div key={tech.name} className="flex justify-between py-1 border-b border-slate-100 dark:border-[#464554]/10">
+                    <span className="font-bold text-slate-900 dark:text-[#dae2fd]">{tech.name}</span>
+                    {tech.ticketCount > 0 ? (
+                      <span className="text-emerald-600 dark:text-[#4edea3]">{tech.slaScore}% SLA score ({tech.ticketCount} tickets)</span>
+                    ) : (
+                      <span className="text-slate-400 dark:text-[#908fa0] italic">No tickets assigned</span>
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

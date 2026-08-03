@@ -30,7 +30,7 @@ export async function editComplaint(id: string, fields: ComplaintEditFields) {
 }
 
 export async function verifyComplaint(id: string) {
-  await updateDoc(doc(db, "complaints", id), { status: "Verified" });
+  await updateDoc(doc(db, "complaints", id), { status: "Closed" });
 }
 
 export type AssignedTechnician = {

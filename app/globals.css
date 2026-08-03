@@ -115,12 +115,28 @@
     --color-surface: #0d1e33;
     --color-surface-container: #142a45;
     --color-surface-container-low: #0f2238;
+    --color-surface-container-lowest: #0f2238;
     --color-outline-variant: #283e5a;
     --color-on-surface-variant: #94a3b8;
     --color-on-background: #f1f5f9;
     --color-on-surface: #f8fafc;
     --color-primary: #8ebdf9;
   }
+}
+
+.dark {
+  --background: #08111e;
+  --foreground: #f1f5f9;
+  --color-background-surface: #0a1525;
+  --color-surface: #0d1e33;
+  --color-surface-container: #142a45;
+  --color-surface-container-low: #0f2238;
+  --color-surface-container-lowest: #0f2238;
+  --color-outline-variant: #283e5a;
+  --color-on-surface-variant: #94a3b8;
+  --color-on-background: #f1f5f9;
+  --color-on-surface: #f8fafc;
+  --color-primary: #8ebdf9;
 }
 
 body {
@@ -218,6 +234,7 @@ body::-webkit-scrollbar {
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   border: 1.5px solid var(--color-outline-variant);
   background: var(--color-surface-container-lowest);
+  color: var(--foreground);
 }
 .premium-input:focus {
   outline: none;
@@ -225,10 +242,22 @@ body::-webkit-scrollbar {
   box-shadow: 0 0 0 4px rgba(15, 76, 129, 0.15);
   transform: translateY(-1px);
 }
+.dark .premium-input,
+:where(.dark, .dark *) .premium-input {
+  background: #0f2238 !important;
+  border-color: #283e5a !important;
+  color: #f8fafc !important;
+}
+.dark .premium-input option,
+:where(.dark, .dark *) .premium-input option {
+  background-color: #0f2238 !important;
+  color: #f8fafc !important;
+}
 @media (prefers-color-scheme: dark) {
   .premium-input {
-    background: rgba(15, 34, 56, 0.3);
-    border-color: rgba(255, 255, 255, 0.1);
+    background: #0f2238;
+    border-color: #283e5a;
+    color: #f8fafc;
   }
   .premium-input:focus {
     border-color: var(--color-primary);

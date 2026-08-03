@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { initializeFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
@@ -14,4 +14,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 export const auth = getAuth(app);
-export const db = getFirestore(app);
+// Auto-detect long polling: falls back off WebChannel streaming when a proxy/antivirus
+// breaks the connection (seen as "WebChannelConnection RPC 'Listen' stream transport errored").
+export const db = initializeFirestore(app, {
+  experimentalAutoDetectLongPolling: true,
+});

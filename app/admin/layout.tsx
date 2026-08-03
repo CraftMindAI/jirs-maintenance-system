@@ -8,6 +8,7 @@ import { doc, getDoc } from "firebase/firestore";
 import Sidebar from "@/components/admin/layout/Sidebar";
 import TopNavbar from "@/components/admin/layout/TopNavbar";
 import MobileBottomNav from "@/components/admin/layout/MobileBottomNav";
+import { encryptTechToken } from "@/lib/encryption";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -15,27 +16,27 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [darkMode, setDarkMode] = useState(true);
   const [userProfile, setUserProfile] = useState<{ name: string; role: string; email: string } | null>(null);
 
-  // Sync auth state
+  // Sync auth state & enforce Role Guard
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         try {
           const docRef = doc(db, "users", user.uid);
           const docSnap = await getDoc(docRef);
-          if (docSnap.exists()) {
-            const data = docSnap.data();
-            setUserProfile({
-              name: data.name || "Admin User",
-              role: data.role || "Super Admin",
-              email: user.email || "",
-            });
-          } else {
-            setUserProfile({
-              name: user.displayName || "Admin User",
-              role: "Super Admin",
-              email: user.email || "",
-            });
+          const role = (docSnap.exists() ? docSnap.data().role : "").toLowerCase();
+          const name = docSnap.exists() ? docSnap.data().name : user.displayName;
+
+          if (role === "technician") {
+            const token = encryptTechToken(user.uid, name || "technician");
+            router.replace(`/profile/v2/${token}/dashboard`);
+            return;
           }
+
+          setUserProfile({
+            name: name || "Admin User",
+            role: docSnap.exists() ? docSnap.data().role || "Super Admin" : "Super Admin",
+            email: user.email || "",
+          });
         } catch (error) {
           console.error("Error fetching user doc:", error);
           setUserProfile({
@@ -54,7 +55,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [router]);
 
   // Theme Sync on Mount
   useEffect(() => {

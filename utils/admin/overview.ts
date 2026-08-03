@@ -1,7 +1,7 @@
 import { ServiceSlice } from "@/components/admin/overview/ServiceSplit";
 import { RecentRequest } from "@/components/admin/overview/RecentRequestsTable";
 
-export const RESOLVED_STATUSES = ["Completed", "Verified", "Rejected", "Closed"];
+export const RESOLVED_STATUSES = ["Completed", "Verified", "Closed", "Rejected"];
 export const ASSIGNED_STATUSES = ["Assigned", "In Progress"];
 export const SLICE_COLORS = ["#8083ff", "#4edea3", "#ff516a", "#908fa0"];
 
