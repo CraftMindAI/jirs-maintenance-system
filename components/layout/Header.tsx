@@ -47,19 +47,16 @@ export default function Header() {
   };
 
   const isLanding = pathname === "/";
-  // On landing page, scrollY >= 650 enters WhyChooseUs, Features, Process, & Contact sections
-  const pastHero = isLanding && scrollY >= 650;
-  const isDarkHero = isLanding && !pastHero;
 
   return (
     <>
       <header
         className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
           scrolled
-            ? isDarkHero
-              ? "h-16 bg-slate-950/40 text-white backdrop-blur-md border-b border-white/10 shadow-xl"
-              : "h-16 bg-white/60 dark:bg-slate-950/60 text-slate-900 dark:text-white backdrop-blur-md border-b border-slate-200/60 dark:border-white/10 shadow-md"
-            : "h-20 bg-transparent text-white"
+            ? isLanding
+              ? "h-16 bg-slate-950/80 text-white backdrop-blur-xl border-b border-white/10 shadow-2xl"
+              : "h-16 bg-white/80 dark:bg-slate-950/80 text-slate-900 dark:text-white backdrop-blur-xl border-b border-slate-200/60 dark:border-white/10 shadow-md"
+            : "h-20 bg-slate-950/30 backdrop-blur-md md:bg-transparent md:backdrop-blur-none text-white border-b border-white/5 md:border-none"
         }`}
       >
         <nav className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop h-full flex items-center justify-between">
@@ -67,10 +64,10 @@ export default function Header() {
             <Link
               href="/"
               className={`font-display text-2xl font-black tracking-wider flex items-center gap-2 hover:scale-105 transition-transform ${
-                isDarkHero ? "text-white" : "text-black dark:text-white"
+                isLanding ? "text-white" : "text-black dark:text-white"
               }`}
             >
-              <Icon name="school" className="text-3xl text-primary" />
+              <Icon name="school" className="text-3xl text-sky-400" />
               <span>JMMS</span>
             </Link>
             <div className="hidden md:flex items-center gap-8">
@@ -82,8 +79,8 @@ export default function Header() {
                     href={link.href}
                     className={`font-label-md py-1.5 transition-all nav-link-underline font-extrabold ${
                       active
-                        ? "text-primary dark:text-white border-b-2 border-primary"
-                        : isDarkHero
+                        ? "text-sky-400 border-b-2 border-sky-400"
+                        : isLanding
                         ? "text-slate-200 hover:text-white"
                         : "text-black hover:text-primary dark:text-slate-200 dark:hover:text-white"
                     }`}
@@ -106,15 +103,15 @@ export default function Header() {
               <>
                 <Link
                   href="/login"
-                  className={`font-label-md font-extrabold hover:text-primary transition-colors ${
-                    isDarkHero ? "text-white" : "text-black dark:text-white"
+                  className={`font-label-md font-extrabold hover:text-sky-400 transition-colors ${
+                    isLanding ? "text-white" : "text-black dark:text-white"
                   }`}
                 >
                   Login
                 </Link>
                 <Link
                   href="/signup"
-                  className="bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-xl font-label-md font-bold hover:shadow-xl hover:shadow-primary/20 transition-all scale-100 active:scale-95"
+                  className="bg-gradient-to-r from-blue-600 to-sky-500 hover:from-blue-500 hover:to-sky-400 text-white px-6 py-2.5 rounded-xl font-label-md font-bold shadow-lg shadow-blue-500/25 transition-all scale-100 active:scale-95"
                 >
                   Sign Up
                 </Link>
@@ -125,7 +122,7 @@ export default function Header() {
           {/* Mobile hamburger menu toggle */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden flex items-center justify-center p-2 rounded-lg bg-surface-container-low text-on-surface hover:bg-surface-container-high transition-colors"
+            className="md:hidden flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 text-white backdrop-blur-md border border-white/15 transition-all active:scale-95"
             aria-label="Toggle navigation menu"
           >
             <Icon name={mobileMenuOpen ? "close" : "menu"} className="text-2xl" />
@@ -135,8 +132,23 @@ export default function Header() {
 
       {/* Mobile navigation menu overlay */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 z-45 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md pt-24 pb-8 px-6 flex flex-col md:hidden animate-fade-in">
-          <div className="flex flex-col gap-6 flex-grow">
+        <div className="fixed inset-0 z-60 bg-slate-950/95 backdrop-blur-2xl px-6 pt-6 pb-8 flex flex-col md:hidden animate-fade-in border-b border-white/10 text-white">
+          {/* Mobile Overlay Top Header with Close Button */}
+          <div className="flex items-center justify-between pb-6 border-b border-white/10 mb-6">
+            <div className="flex items-center gap-2">
+              <Icon name="school" className="text-3xl text-sky-400" />
+              <span className="font-display text-2xl font-black tracking-wider text-white">JMMS</span>
+            </div>
+            <button
+              onClick={() => setMobileMenuOpen(false)}
+              className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 text-white flex items-center justify-center border border-white/15 transition-all active:scale-95 cursor-pointer"
+              aria-label="Close navigation menu"
+            >
+              <Icon name="close" className="text-2xl" />
+            </button>
+          </div>
+
+          <div className="flex flex-col gap-3 flex-grow">
             {NAV_LINKS.map((link) => {
               const active = isActive(link.href);
               return (
@@ -144,20 +156,24 @@ export default function Header() {
                   key={link.label}
                   href={link.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`text-2xl font-bold py-2 ${
-                    active ? "text-primary border-l-4 border-primary pl-4 animate-fade-in" : "text-on-surface-variant pl-4"
+                  className={`text-lg font-display font-bold py-3.5 px-4 rounded-2xl transition-all flex items-center justify-between ${
+                    active
+                      ? "bg-sky-500/20 text-sky-400 border border-sky-500/30"
+                      : "text-slate-300 hover:bg-white/5 hover:text-white"
                   }`}
                 >
-                  {link.label}
+                  <span>{link.label}</span>
+                  <Icon name="chevron_right" className="text-slate-500 text-sm" />
                 </Link>
               );
             })}
           </div>
-          <div className="flex flex-col gap-4 mt-auto">
+
+          <div className="flex flex-col gap-3 mt-auto pt-6 border-t border-white/10">
             {user ? (
               <button
                 onClick={handleLogout}
-                className="w-full py-4 text-center font-bold text-lg text-white bg-primary rounded-xl hover:opacity-95 transition-opacity cursor-pointer"
+                className="w-full py-3.5 text-center font-bold text-base text-white bg-red-600/80 hover:bg-red-600 rounded-2xl transition-all cursor-pointer"
               >
                 Logout
               </button>
@@ -166,14 +182,14 @@ export default function Header() {
                 <Link
                   href="/login"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-full py-4 text-center font-bold text-lg text-primary border border-primary/20 rounded-xl hover:bg-surface-container-low transition-colors"
+                  className="w-full py-3.5 text-center font-bold text-base text-white bg-white/10 hover:bg-white/15 border border-white/15 rounded-2xl transition-all"
                 >
                   Login
                 </Link>
                 <Link
                   href="/signup"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-full py-4 text-center font-bold text-lg text-white bg-primary rounded-xl hover:opacity-95 transition-opacity"
+                  className="w-full py-3.5 text-center font-bold text-base text-slate-950 font-extrabold bg-sky-400 hover:bg-sky-300 rounded-2xl transition-all shadow-lg shadow-sky-500/25"
                 >
                   Sign Up
                 </Link>
@@ -185,3 +201,4 @@ export default function Header() {
     </>
   );
 }
+

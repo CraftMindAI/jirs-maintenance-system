@@ -72,6 +72,7 @@ export default function TechnicianDetailTimelinePage({
           technicianName: data.technicianName || "",
           technicianPhone: data.technicianPhone || "",
           remarks: data.remarks || "",
+          imageUrls: data.imageUrls || [],
         };
       });
 

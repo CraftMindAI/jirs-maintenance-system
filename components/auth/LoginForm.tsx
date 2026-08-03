@@ -33,12 +33,17 @@ function friendlyError(error: unknown): string {
   return "Something went wrong. Please try again.";
 }
 
-export default function LoginForm() {
+interface LoginFormProps {
+  defaultRole?: string;
+}
+
+export default function LoginForm({ defaultRole }: LoginFormProps = {}) {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
