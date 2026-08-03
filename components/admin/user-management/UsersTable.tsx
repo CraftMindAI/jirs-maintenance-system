@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Icon from "@/components/ui/Icon";
-import { UserItem } from "@/app/admin/user-management/page";
+import { UserItem } from "@/app/profile/v3/[token]/user-management/page";
 
 export default function UsersTable({
   users,

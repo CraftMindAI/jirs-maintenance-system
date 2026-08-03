@@ -16,9 +16,69 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "JMMS — JIRS Maintenance Management System",
+  metadataBase: new URL("http://localhost:3000"),
+  title: {
+    default: "JMMS — Jain International Residential School Maintenance Management System",
+    template: "%s | JMMS JIRS Portal",
+  },
   description:
-    "Elevating the JIRS residential experience through a centralized, enterprise-grade digital platform for facility management.",
+    "Official JMMS Portal for Jain International Residential School (JIRS). Centralized digital facility management, ticket tracking, maintenance management system for campus, hostel, electrical, plumbing, and HVAC support.",
+  keywords: [
+    "JMMS",
+    "JMMS Portal",
+    "Jain",
+    "JIRS",
+    "JMMS JIRS",
+    "Jain International Residential School",
+    "JIRS Maintenance System",
+    "JMMS Maintenance Management System",
+    "JIRS Facility Portal",
+    "Jain School Maintenance",
+    "JIRS Complaints",
+    "JIRS Campus Maintenance",
+  ],
+  authors: [{ name: "Jain International Residential School (JIRS)" }],
+  creator: "JIRS IT & Facilities Team",
+  publisher: "Jain Group of Institutions",
+  applicationName: "JMMS JIRS Portal",
+  robots: {
+    index: true,
+    follow: true,
+    nocache: false,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_IN",
+    url: "http://localhost:3000",
+    siteName: "JMMS JIRS Portal",
+    title: "JMMS — Jain International Residential School Maintenance System",
+    description:
+      "Enterprise facility management portal for JIRS students, staff, and technicians. Real-time complaint tracking and resolution.",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "JMMS - Jain International Residential School Maintenance Management System",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "JMMS — Jain International Residential School Maintenance System",
+    description:
+      "Enterprise facility management portal for JIRS students, staff, and technicians.",
+    images: ["/og-image.png"],
+  },
+  alternates: {
+    canonical: "/",
+  },
 };
 
 export default function RootLayout({

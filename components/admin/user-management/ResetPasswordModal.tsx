@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Icon from "@/components/ui/Icon";
-import { UserItem } from "@/app/admin/user-management/page";
+import { UserItem } from "@/app/profile/v3/[token]/user-management/page";
 
 export default function ResetPasswordModal({
   user,
