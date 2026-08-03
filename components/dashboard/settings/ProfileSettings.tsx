@@ -194,21 +194,20 @@ export default function ProfileSettings() {
             </div>
           </div>
 
-          {/* Department / Location Field */}
+          {/* System Role Designation Field */}
           <div className="space-y-1.5">
             <label className="block text-[10px] font-mono uppercase text-slate-500 dark:text-[#908fa0] tracking-wider">
-              Department / Location
+              System Role Designation
             </label>
             <div className="relative">
               <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#908fa0]">
-                <Icon name="apartment" className="text-base" />
+                <Icon name="badge" className="text-base" />
               </div>
               <input
                 type="text"
-                value={department}
-                onChange={(e) => setDepartment(e.target.value)}
-                placeholder="e.g. Hostel Block B"
-                className="w-full rounded-xl pl-10 pr-4 py-3 text-xs bg-slate-50 dark:bg-[#131b2e] border border-slate-200 dark:border-[#464554]/20 text-slate-800 dark:text-[#dae2fd] font-semibold outline-none focus:border-primary dark:focus:border-[#8083ff] focus:ring-2 focus:ring-primary/20 dark:focus:ring-[#8083ff]/20 transition-all"
+                disabled
+                value={role}
+                className="w-full rounded-xl pl-10 pr-4 py-3 text-xs bg-slate-100 dark:bg-[#131b2e]/40 border border-slate-200 dark:border-[#464554]/20 text-slate-400 dark:text-[#908fa0] font-semibold outline-none cursor-not-allowed"
               />
             </div>
           </div>

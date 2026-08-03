@@ -2,7 +2,7 @@
 
 import PageHeader from "@/components/dashboard/settings/PageHeader";
 import ProfileSettings from "@/components/dashboard/settings/ProfileSettings";
-import SecuritySettings from "@/components/dashboard/settings/SecuritySettings";
+import SecuritySettings from "@/components/admin/settings/SecuritySettings";
 
 export default function DashboardSettings() {
   return (

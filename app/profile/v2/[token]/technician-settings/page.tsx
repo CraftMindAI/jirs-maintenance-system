@@ -3,8 +3,9 @@
 import { useEffect, useState, FormEvent } from "react";
 import Icon from "@/components/ui/Icon";
 import { auth, db } from "@/lib/firebase";
-import { onAuthStateChanged, updatePassword, User } from "firebase/auth";
+import { onAuthStateChanged, User } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
+import SecuritySettings from "@/components/admin/settings/SecuritySettings";
 
 export default function TechnicianSettings() {
   const [user, setUser] = useState<User | null>(null);
@@ -283,44 +284,23 @@ export default function TechnicianSettings() {
                   </div>
                 </div>
 
-                {/* Department Field */}
+                {/* System Role Designation Field */}
                 <div className="space-y-1.5">
-                  <label htmlFor="dept" className="block text-[10px] font-mono uppercase text-slate-500 dark:text-[#908fa0] tracking-wider">
-                    Department / Expertise
+                  <label htmlFor="role" className="block text-[10px] font-mono uppercase text-slate-500 dark:text-[#908fa0] tracking-wider">
+                    System Role Designation
                   </label>
                   <div className="relative">
                     <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#908fa0]">
-                      <Icon name="business" className="text-base" />
+                      <Icon name="badge" className="text-base" />
                     </div>
                     <input
-                      id="dept"
+                      id="role"
                       type="text"
-                      required
-                      value={department}
-                      onChange={(e) => setDepartment(e.target.value)}
-                      placeholder="e.g. Maintenance"
-                      className="w-full rounded-xl pl-10 pr-4 py-3 text-xs bg-slate-50 dark:bg-[#131b2e] border border-slate-200 dark:border-[#464554]/20 text-slate-800 dark:text-[#dae2fd] font-semibold outline-none focus:border-primary dark:focus:border-[#8083ff] focus:ring-2 focus:ring-primary/20 dark:focus:ring-[#8083ff]/20 transition-all"
+                      disabled
+                      value={role}
+                      className="w-full rounded-xl pl-10 pr-4 py-3 text-xs bg-slate-100 dark:bg-[#131b2e]/40 border border-slate-200 dark:border-[#464554]/20 text-slate-400 dark:text-[#908fa0] font-semibold outline-none cursor-not-allowed"
                     />
                   </div>
-                </div>
-              </div>
-
-              {/* Role Designation Field */}
-              <div className="space-y-1.5">
-                <label htmlFor="role" className="block text-[10px] font-mono uppercase text-slate-500 dark:text-[#908fa0] tracking-wider">
-                  System Role Designation
-                </label>
-                <div className="relative">
-                  <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#908fa0]">
-                    <Icon name="badge" className="text-base" />
-                  </div>
-                  <input
-                    id="role"
-                    type="text"
-                    disabled
-                    value={role}
-                    className="w-full rounded-xl pl-10 pr-4 py-3 text-xs bg-slate-100 dark:bg-[#131b2e]/40 border border-slate-200 dark:border-[#464554]/20 text-slate-400 dark:text-[#908fa0] font-semibold outline-none cursor-not-allowed"
-                  />
                 </div>
               </div>
 
@@ -350,132 +330,7 @@ export default function TechnicianSettings() {
 
         {/* Section 2: Security & Password Update */}
         <div className="bg-white dark:bg-[#171f33] border border-slate-200 dark:border-[#464554]/10 rounded-3xl p-6 md:p-8 shadow-sm relative overflow-hidden dark:vibrant-shadow">
-          <div className="flex items-center justify-between border-b border-slate-200 dark:border-[#464554]/20 pb-4 mb-6">
-            <div>
-              <h3 className="font-display text-base font-bold text-slate-900 dark:text-[#dae2fd]">
-                Security & Authentication
-              </h3>
-              <p className="text-xs text-slate-500 dark:text-[#908fa0]">
-                Update your login password and review active account security settings.
-              </p>
-            </div>
-            <Icon name="lock" className="text-primary dark:text-[#8083ff] text-2xl" />
-          </div>
-
-          <div className="space-y-6">
-            {securityUpdated && (
-              <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 rounded-2xl text-sm font-bold flex items-center gap-3 animate-fade-in">
-                <Icon name="check_circle" />
-                Password updated successfully!
-              </div>
-            )}
-
-            {passwordError && (
-              <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-500 rounded-2xl text-sm font-bold flex items-center gap-3 animate-fade-in">
-                <Icon name="error" />
-                {passwordError}
-              </div>
-            )}
-
-            <form onSubmit={handleUpdatePassword} className="space-y-5 pt-2">
-
-              {/* New Password Field */}
-              <div className="space-y-1.5">
-                <label htmlFor="newpass" className="block text-[10px] font-mono uppercase text-slate-500 dark:text-[#908fa0] tracking-wider">
-                  New Password
-                </label>
-                <div className="relative">
-                  <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#908fa0]">
-                    <Icon name="key" className="text-base" />
-                  </div>
-                  <input
-                    id="newpass"
-                    type={showNew ? "text" : "password"}
-                    required
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    placeholder="Enter new password (min. 6 chars)"
-                    className="w-full rounded-xl pl-10 pr-12 py-3 text-xs bg-slate-50 dark:bg-[#131b2e] border border-slate-200 dark:border-[#464554]/20 text-slate-800 dark:text-[#dae2fd] font-semibold outline-none focus:border-primary dark:focus:border-[#8083ff] focus:ring-2 focus:ring-primary/20 dark:focus:ring-[#8083ff]/20 transition-all"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowNew(!showNew)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#908fa0] hover:text-slate-800 dark:hover:text-[#dae2fd] p-1 cursor-pointer"
-                  >
-                    <Icon name={showNew ? "visibility_off" : "visibility"} className="text-base" />
-                  </button>
-                </div>
-
-                {/* Password strength meter bar */}
-                {newPassword && (
-                  <div className="space-y-2 pt-2">
-                    <div className="flex justify-between items-center text-[10px] font-bold">
-                      <span className="text-slate-400">Password Strength:</span>
-                      <span className={`uppercase font-black ${strength.label === "Weak" ? "text-red-500" :
-                        strength.label === "Medium" ? "text-amber-500" :
-                          "text-emerald-500"
-                        }`}>{strength.label}</span>
-                    </div>
-                    <div className="h-1.5 w-full bg-slate-100 dark:bg-[#131b2e]/40 rounded-full overflow-hidden">
-                      <div
-                        className={`h-full ${strength.color} transition-all duration-300`}
-                        style={{ width: `${(strength.score / 5) * 100}%` }}
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Confirm Password Field */}
-              <div className="space-y-1.5">
-                <label htmlFor="confirmpass" className="block text-[10px] font-mono uppercase text-slate-500 dark:text-[#908fa0] tracking-wider">
-                  Confirm New Password
-                </label>
-                <div className="relative">
-                  <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#908fa0]">
-                    <Icon name="lock_reset" className="text-base" />
-                  </div>
-                  <input
-                    id="confirmpass"
-                    type={showConfirm ? "text" : "password"}
-                    required
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="Confirm new password"
-                    className="w-full rounded-xl pl-10 pr-12 py-3 text-xs bg-slate-50 dark:bg-[#131b2e] border border-slate-200 dark:border-[#464554]/20 text-slate-800 dark:text-[#dae2fd] font-semibold outline-none focus:border-primary dark:focus:border-[#8083ff] focus:ring-2 focus:ring-primary/20 dark:focus:ring-[#8083ff]/20 transition-all"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirm(!showConfirm)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#908fa0] hover:text-slate-800 dark:hover:text-[#dae2fd] p-1 cursor-pointer"
-                  >
-                    <Icon name={showConfirm ? "visibility_off" : "visibility"} className="text-base" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Submit Button */}
-              <div className="pt-4 border-t border-slate-200 dark:border-[#464554]/20 flex justify-end">
-                <button
-                  type="submit"
-                  disabled={securityUpdating}
-                  className="px-6 py-3.5 vibrant-gradient text-white rounded-xl font-bold shadow-lg shadow-primary/20 dark:shadow-[#8083ff]/20 text-xs cursor-pointer tracking-wider disabled:opacity-60 flex items-center gap-2 hover:scale-[1.01] transition-transform"
-                >
-                  {securityUpdating ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      <span>Updating Password...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Icon name="shield" className="text-base" />
-                      <span>Update Password</span>
-                    </>
-                  )}
-                </button>
-              </div>
-            </form>
-          </div>
+          <SecuritySettings />
         </div>
       </div>
     </div>

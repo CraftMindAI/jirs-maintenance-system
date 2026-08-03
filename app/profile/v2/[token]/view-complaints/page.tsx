@@ -57,9 +57,9 @@ export default function TechnicianViewComplaints({
           snapshot.forEach((docSnap) => {
             const data = docSnap.data() as Complaint;
             if (
-              data.technicianEmail === currentUser.email || 
-              data.technicianName === techName ||
-              !data.technicianName
+              data.technicianId === currentUser.uid ||
+              data.technicianEmail === currentUser.email ||
+              data.technicianName === techName
             ) {
               fetchedComplaints.push({ ...data, id: docSnap.id });
             }
@@ -195,7 +195,7 @@ export default function TechnicianViewComplaints({
                   <button className="w-full relative overflow-hidden group/btn flex justify-center items-center gap-2 px-6 py-4 rounded-xl text-sm font-bold bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-md transition-all duration-300">
                     <div className="absolute inset-0 bg-[#0f4c81] dark:bg-blue-500 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300 ease-in-out"></div>
                     <span className="relative z-10 flex items-center gap-2 group-hover/btn:text-white">
-                      Resolve Ticket <Icon name="arrow_forward" className="text-base group-hover/btn:translate-x-1 transition-transform" />
+                      {complaint.status === "Verified" || complaint.status === "Closed" ? "View Ticket" : "Resolve Ticket"} <Icon name="arrow_forward" className="text-base group-hover/btn:translate-x-1 transition-transform" />
                     </span>
                   </button>
                 </Link>

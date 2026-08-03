@@ -24,6 +24,7 @@ function TrackComplaintContent() {
   const [selectedTicketId, setSelectedTicketId] = useState("");
   const [zoomImage, setZoomImage] = useState<string | null>(null);
   const [visibleComplaints, setVisibleComplaints] = useState<any[]>([]);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   // Sync auth state (role decides which complaints this user may see)
   useEffect(() => {
@@ -71,9 +72,9 @@ function TrackComplaintContent() {
       snapshot.forEach((docSnap) => {
         const data = docSnap.data();
         if (
-          data.technicianEmail === userProfile.email || 
-          data.technicianName === userProfile.name ||
-          !data.technicianName
+          (userId && data.technicianId === userId) ||
+          data.technicianEmail === userProfile.email ||
+          data.technicianName === userProfile.name
         ) {
           fetchedComplaints.push({ ...data, id: docSnap.id });
         }
@@ -89,7 +90,7 @@ function TrackComplaintContent() {
     });
 
     return () => unsubscribeSnapshot();
-  }, [userProfile]);
+  }, [userProfile, userId]);
 
   // Select ticket: parameter priority -> otherwise keep the current selection
   // if it's still visible, else fall back to the first visible item.
@@ -164,6 +165,11 @@ function TrackComplaintContent() {
       key: "Completed",
       label: "Completed",
       desc: "Work completed. Awaiting final verification.",
+    },
+    {
+      key: "Closed",
+      label: "Closed",
+      desc: "Admin verified the work and closed the ticket.",
     }
   ];
 
@@ -175,11 +181,12 @@ function TrackComplaintContent() {
       "Assigned",
       "In Progress",
       "Completed",
+      "Closed",
     ];
-    
+
     let effectiveStatus = currentStatus;
-    if (currentStatus === "Verified" || currentStatus === "Closed") {
-      effectiveStatus = "Completed";
+    if (currentStatus === "Verified") {
+      effectiveStatus = "Closed";
     }
 
     const currentIdx = statusOrder.indexOf(effectiveStatus);
@@ -205,24 +212,61 @@ function TrackComplaintContent() {
           </p>
         </div>
 
-        {/* Ticket Selector Dropdown */}
+        {/* Custom Ticket Selector Dropdown */}
         {visibleComplaints.length > 0 && (
-          <div className="w-full md:w-64 space-y-1.5">
+          <div className="w-full md:w-72 space-y-1.5 relative">
             <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400">
               Select Ticket to Track
             </label>
             <div className="relative">
-              <select
-                value={selectedTicketId}
-                onChange={(e) => setSelectedTicketId(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 dark:bg-slate-900 font-body-md text-sm font-bold outline-none focus:border-primary cursor-pointer"
+              <button
+                type="button"
+                onClick={() => setDropdownOpen((prev) => !prev)}
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-body-md text-sm font-bold flex items-center justify-between outline-none cursor-pointer shadow-sm hover:border-primary transition-all text-slate-800 dark:text-slate-100"
               >
-                {visibleComplaints.map((c, idx) => (
-                  <option key={c.id} value={c.id}>
-                    #{idx + 1} — {c.category}
-                  </option>
-                ))}
-              </select>
+                <span className="truncate">
+                  {selectedComplaint
+                    ? `#${visibleComplaints.findIndex((c) => c.id === selectedTicketId) + 1} — ${selectedComplaint.category}`
+                    : "Select Ticket"}
+                </span>
+                <Icon
+                  name="expand_more"
+                  className={`text-lg transition-transform duration-200 ${dropdownOpen ? "rotate-180" : ""}`}
+                />
+              </button>
+
+              {dropdownOpen && (
+                <>
+                  <div
+                    className="fixed inset-0 z-20"
+                    onClick={() => setDropdownOpen(false)}
+                  />
+                  <div className="absolute right-0 left-0 top-full mt-2 z-30 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl max-h-[135px] overflow-y-auto custom-scrollbar p-1 divide-y divide-slate-100 dark:divide-slate-800/50">
+                    {visibleComplaints.map((c, idx) => (
+                      <button
+                        key={c.id}
+                        type="button"
+                        onClick={() => {
+                          setSelectedTicketId(c.id);
+                          setDropdownOpen(false);
+                        }}
+                        className={`w-full text-left px-3.5 py-2.5 text-xs font-bold rounded-xl transition-colors flex items-center justify-between cursor-pointer ${
+                          c.id === selectedTicketId
+                            ? "bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-300 font-black"
+                            : "hover:bg-slate-50 dark:hover:bg-slate-800/60 text-slate-700 dark:text-slate-300"
+                        }`}
+                      >
+                        <span className="truncate">
+                          #{idx + 1} — {c.category}
+                        </span>
+                        {c.id === selectedTicketId && (
+                          <Icon name="check" className="text-sm shrink-0" />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
           </div>
         )}
@@ -289,6 +333,38 @@ function TrackComplaintContent() {
                 );
               })}
             </div>
+
+            {/* Technician Remarks & Completion Photo */}
+            {(selectedComplaint.remarks || selectedComplaint.completionPhotoUrl) && (
+              <div className="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800 space-y-4">
+                <h3 className="font-display text-sm font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 flex items-center gap-2">
+                  <Icon name="engineering" className="text-primary" />
+                  Technician Remarks
+                </h3>
+
+                {selectedComplaint.remarks && (
+                  <p className="text-sm text-slate-600 dark:text-slate-300 font-semibold leading-relaxed bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-100 dark:border-slate-800/50">
+                    {selectedComplaint.remarks}
+                  </p>
+                )}
+
+                {selectedComplaint.completionPhotoUrl && (
+                  <div
+                    onClick={() => setZoomImage(selectedComplaint.completionPhotoUrl)}
+                    className="rounded-2xl overflow-hidden max-w-xs relative border border-slate-100 dark:border-slate-800/50 group cursor-zoom-in"
+                  >
+                    <img
+                      src={selectedComplaint.completionPhotoUrl}
+                      alt="Completion Photo"
+                      className="w-full h-auto object-contain bg-slate-100 dark:bg-slate-950 group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-slate-950/20 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity">
+                      <Icon name="zoom_in" className="text-2xl" />
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Right Column: Ticket Details & Technician Cards */}
@@ -350,26 +426,6 @@ function TrackComplaintContent() {
                 </div>
               </div>
 
-              <div className="space-y-3 text-xs bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-100 dark:border-slate-800/50">
-                <div>
-                  <span className="font-bold text-slate-400 uppercase">
-                    Submitted On:
-                  </span>
-                  <span className="text-slate-600 dark:text-slate-300 ml-2 font-semibold">
-                    {selectedComplaint.date || "N/A"}
-                  </span>
-                </div>
-                {selectedComplaint.remarks && (
-                  <div>
-                    <span className="font-bold text-slate-400 uppercase">
-                      Admin Remarks:
-                    </span>
-                    <p className="text-slate-600 dark:text-slate-300 font-semibold leading-relaxed mt-1">
-                      {selectedComplaint.remarks}
-                    </p>
-                  </div>
-                )}
-              </div>
             </div>
 
             {/* Attached Reference Photo(s) */}

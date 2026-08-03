@@ -3,11 +3,13 @@
 import { use, useState, useRef } from "react";
 import Link from "next/link";
 import Icon from "@/components/ui/Icon";
+import Dropdown, { DropdownOption } from "@/components/ui/Dropdown";
 import { useComplaintDetail } from "@/hooks/useComplaintDetail";
 import ComplaintTrackDetailsCard from "@/components/admin/view-complaints/detail/ComplaintTrackDetailsCard";
 import ComplaintDetailSkeleton from "@/components/admin/view-complaints/detail/ComplaintDetailSkeleton";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { compressImageToBase64 } from "@/lib/image";
 
 export default function TechnicianComplaintDetail({
   params,
@@ -19,7 +21,7 @@ export default function TechnicianComplaintDetail({
   const token = resolvedParams.token;
   const basePath = `/profile/v2/${token}`;
 
-  const { complaint, images, loading, error } = useComplaintDetail(complaintId);
+  const { complaint, images, loading, error, setComplaint } = useComplaintDetail(complaintId);
 
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
@@ -29,7 +31,18 @@ export default function TechnicianComplaintDetail({
   const [viewPhotoUrl, setViewPhotoUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const STATUS_OPTIONS = ["In Progress", "Completed"];
+  const getStatusOptions = (currentStatus: string): DropdownOption[] => {
+    if (currentStatus === "Assigned") {
+      return [
+        { value: "In Progress", label: "In Progress" },
+        { value: "Completed", label: "Completed" },
+      ];
+    }
+    if (currentStatus === "In Progress") {
+      return [{ value: "Completed", label: "Completed" }];
+    }
+    return [];
+  };
 
   const handleUpdateStatus = async (newStatus: string) => {
     if (!complaint) return;
@@ -42,6 +55,7 @@ export default function TechnicianComplaintDetail({
     try {
       const complaintRef = doc(db, "complaints", complaintId);
       await updateDoc(complaintRef, { status: newStatus });
+      setComplaint((prev) => (prev ? { ...prev, status: newStatus as typeof prev.status } : prev));
     } catch (err) {
       console.error("Error updating status:", err);
       alert("Failed to update status. Please check your permissions.");
@@ -51,28 +65,30 @@ export default function TechnicianComplaintDetail({
   };
 
   const handleConfirmCompletion = async () => {
-    if (!photoFile) {
+    if (!photoFile && !complaint?.completionPhotoUrl) {
       alert("Please select a photo to upload before completing the task.");
       return;
     }
 
     setUploadingPhoto(true);
     try {
-      const reader = new FileReader();
-      const base64Promise = new Promise<string>((resolve, reject) => {
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = reject;
-      });
-      reader.readAsDataURL(photoFile);
-      const base64Photo = await base64Promise;
+      let base64Photo = complaint?.completionPhotoUrl || "";
+      if (photoFile) {
+        base64Photo = await compressImageToBase64(photoFile);
+      }
 
       const complaintRef = doc(db, "complaints", complaintId);
-      await updateDoc(complaintRef, { 
+      await updateDoc(complaintRef, {
         status: "Completed",
         completionPhotoUrl: base64Photo,
         remarks: completionRemarks,
         completedAt: new Date()
       });
+      setComplaint((prev) =>
+        prev
+          ? { ...prev, status: "Completed", completionPhotoUrl: base64Photo, remarks: completionRemarks }
+          : prev,
+      );
 
       setShowUploadModal(false);
       setPhotoFile(null);
@@ -83,6 +99,12 @@ export default function TechnicianComplaintDetail({
     } finally {
       setUploadingPhoto(false);
     }
+  };
+
+  const handleEditCompletion = () => {
+    setCompletionRemarks(complaint?.remarks || "");
+    setPhotoFile(null);
+    setShowUploadModal(true);
   };
 
   const closeModal = () => {
@@ -180,70 +202,67 @@ export default function TechnicianComplaintDetail({
             </div>
           </div>
 
-          <div className="space-y-3">
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-[#908fa0]">
-              Task Description
-            </span>
-            <div className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed bg-slate-50 dark:bg-slate-900/50 p-5 rounded-2xl border border-slate-100 dark:border-slate-800">
-              {complaint.description || "No description provided."}
-            </div>
-          </div>
-
           {/* Evidence Images */}
-          {images && images.length > 0 && (
-            <div className="pt-4 border-t border-slate-100 dark:border-[#464554]/10">
+          <div className="pt-4 border-t border-slate-100 dark:border-[#464554]/10 grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div>
               <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-[#908fa0] mb-3 block">
                 Attached Evidence
               </span>
-              <div className="flex gap-3 overflow-x-auto pb-2 custom-scrollbar">
-                {images.map((url: string, idx: number) => (
-                  <button 
-                    key={idx} 
-                    onClick={() => setViewPhotoUrl(url)}
+              {images && images.length > 0 && (
+                <div className="flex gap-3 overflow-x-auto pb-2 custom-scrollbar">
+                  {images.map((url: string, idx: number) => (
+                    <button
+                      key={idx}
+                      onClick={() => setViewPhotoUrl(url)}
+                      className="shrink-0 relative group rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700/50 cursor-pointer block"
+                    >
+                      <img
+                        src={url}
+                        alt={`Evidence ${idx + 1}`}
+                        className="w-24 h-24 object-cover block"
+                      />
+                      <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Icon name="zoom_in" className="text-white text-xl" />
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+              <div className="mt-3 text-sm text-slate-600 dark:text-slate-300 leading-relaxed bg-slate-50 dark:bg-slate-900/50 p-4 rounded-2xl border border-slate-100 dark:border-slate-800">
+                <span className="font-bold block mb-1">Task Description:</span>
+                {complaint.description || "No description provided."}
+              </div>
+            </div>
+
+            {(complaint.status === "Completed" || complaint.status === "Closed" || complaint.status === "Verified") && complaint.completionPhotoUrl && (
+              <div>
+                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-[#908fa0] mb-3 block">
+                  Completion Evidence
+                </span>
+                <div className="flex gap-3 overflow-x-auto pb-2 custom-scrollbar">
+                  <button
+                    onClick={() => setViewPhotoUrl(complaint.completionPhotoUrl!)}
                     className="shrink-0 relative group rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700/50 cursor-pointer block"
                   >
-                    <img 
-                      src={url} 
-                      alt={`Evidence ${idx + 1}`} 
+                    <img
+                      src={complaint.completionPhotoUrl}
+                      alt="Completion Evidence"
                       className="w-24 h-24 object-cover block"
                     />
                     <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                       <Icon name="zoom_in" className="text-white text-xl" />
                     </div>
                   </button>
-                ))}
-              </div>
-            </div>
-          )}
-          
-          {/* Completion Photo (if already completed) */}
-          {(complaint.status === "Completed" || complaint.status === "Closed") && complaint.completionPhotoUrl && (
-            <div className="pt-4 border-t border-slate-100 dark:border-[#464554]/10">
-              <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-[#908fa0] mb-3 block">
-                Completion Evidence
-              </span>
-              <div className="flex items-center justify-between bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800/30 rounded-2xl p-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-emerald-100 dark:bg-emerald-800/50 rounded-xl flex items-center justify-center text-emerald-600 dark:text-emerald-400">
-                    <Icon name="image" className="text-xl" />
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-bold text-emerald-800 dark:text-emerald-300">Photo Uploaded</h4>
-                    <p className="text-xs text-emerald-600 dark:text-emerald-500">Verified completion evidence.</p>
-                  </div>
                 </div>
-                <button onClick={() => setViewPhotoUrl(complaint.completionPhotoUrl!)} className="text-xs font-black uppercase tracking-wider bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 px-4 py-2 rounded-xl border border-emerald-200 dark:border-emerald-800/50 hover:bg-emerald-600 hover:text-white transition-colors cursor-pointer shadow-sm">
-                  View Photo
-                </button>
+                {complaint.remarks && (
+                  <div className="mt-3 text-sm text-slate-600 dark:text-slate-300 leading-relaxed bg-slate-50 dark:bg-slate-900/50 p-4 rounded-2xl border border-slate-100 dark:border-slate-800">
+                    <span className="font-bold block mb-1">Completion Remarks:</span>
+                    {complaint.remarks}
+                  </div>
+                )}
               </div>
-              {complaint.remarks && (
-                 <div className="mt-3 text-sm text-slate-600 dark:text-slate-300 leading-relaxed bg-slate-50 dark:bg-slate-900/50 p-4 rounded-2xl border border-slate-100 dark:border-slate-800">
-                   <span className="font-bold block mb-1">Completion Remarks:</span>
-                   {complaint.remarks}
-                 </div>
-              )}
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
         {/* Action Card */}
@@ -253,39 +272,66 @@ export default function TechnicianComplaintDetail({
             Update Task Status
           </h3>
           
-          {complaint.status !== "Completed" && complaint.status !== "Closed" ? (
+          {complaint.status === "Verified" || complaint.status === "Closed" ? (
+            <div className="bg-gradient-to-br from-emerald-50 to-teal-50/50 dark:from-[#00a572]/15 dark:to-emerald-950/20 border border-emerald-200/80 dark:border-[#00a572]/30 rounded-2xl p-6 flex flex-col sm:flex-row items-center sm:items-start gap-4 shadow-sm">
+              <div className="w-12 h-12 bg-emerald-500 text-white rounded-2xl flex items-center justify-center shrink-0 shadow-lg shadow-emerald-500/20">
+                <Icon name="verified" className="text-2xl" />
+              </div>
+              <div className="space-y-1 text-center sm:text-left">
+                <div className="flex items-center gap-2 justify-center sm:justify-start">
+                  <h4 className="text-base font-black text-slate-900 dark:text-emerald-300">Ticket is Closed</h4>
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
+                    Verified
+                  </span>
+                </div>
+                <p className="text-xs text-slate-600 dark:text-emerald-400/90 font-medium leading-relaxed">
+                  This task has been verified and closed by the admin.
+                </p>
+              </div>
+            </div>
+          ) : complaint.status === "Completed" ? (
+            <div className="bg-gradient-to-br from-emerald-50 to-teal-50/50 dark:from-[#00a572]/15 dark:to-emerald-950/20 border border-emerald-200/80 dark:border-[#00a572]/30 rounded-2xl p-6 flex flex-col sm:flex-row items-center sm:items-start gap-4 shadow-sm">
+              <div className="w-12 h-12 bg-emerald-500 text-white rounded-2xl flex items-center justify-center shrink-0 shadow-lg shadow-emerald-500/20">
+                <Icon name="task_alt" className="text-2xl" />
+              </div>
+              <div className="space-y-1 text-center sm:text-left">
+                <div className="flex items-center gap-2 justify-center sm:justify-start">
+                  <h4 className="text-base font-black text-slate-900 dark:text-emerald-300">Task Completed</h4>
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
+                    Completed
+                  </span>
+                </div>
+                <p className="text-xs text-slate-600 dark:text-emerald-400/90 font-medium leading-relaxed">
+                  This task is fully resolved and awaiting admin verification.
+                </p>
+                <button
+                  onClick={handleEditCompletion}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50 hover:bg-emerald-600 hover:text-white transition-colors cursor-pointer shadow-sm mt-2"
+                >
+                  <Icon name="edit" className="text-sm" />
+                  Edit Remarks / Reupload Photo
+                </button>
+              </div>
+            </div>
+          ) : (
             <div className="space-y-4 max-w-lg">
               <p className="text-xs text-slate-500 dark:text-[#908fa0]">
                 Select a new status below to reflect your current progress on this task.
               </p>
-              <div className="relative">
-                <select
-                  disabled={updatingStatus}
-                  value={complaint.status}
-                  onChange={(e) => handleUpdateStatus(e.target.value)}
-                  className="w-full appearance-none bg-slate-50 dark:bg-[#131b2e] border border-slate-200 dark:border-[#464554]/30 rounded-xl px-4 py-3 text-sm font-bold text-slate-800 dark:text-[#dae2fd] outline-none focus:border-[#0f4c81] dark:focus:border-[#8083ff] transition-all cursor-pointer disabled:opacity-50"
-                >
-                  <option value={complaint.status} disabled>{complaint.status} (Current)</option>
-                  {STATUS_OPTIONS.filter(s => s !== complaint.status).map(opt => (
-                    <option key={opt} value={opt}>Change to: {opt}</option>
-                  ))}
-                </select>
-                <Icon name="expand_more" className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+              <div className={updatingStatus ? "opacity-50 pointer-events-none" : ""}>
+                <Dropdown
+                  options={getStatusOptions(complaint.status)}
+                  value=""
+                  onChange={handleUpdateStatus}
+                  placeholder={`${complaint.status} — select new status`}
+                />
               </div>
-              
+
               {updatingStatus && (
                  <div className="flex items-center gap-2 text-xs text-[#0f4c81] dark:text-[#8083ff] font-bold animate-pulse">
                    <Icon name="sync" className="animate-spin" /> Updating Status...
                  </div>
               )}
-            </div>
-          ) : (
-            <div className="bg-emerald-50 dark:bg-[#00a572]/10 border border-emerald-200 dark:border-[#00a572]/20 rounded-2xl p-4 text-center max-w-lg">
-              <div className="w-12 h-12 bg-emerald-100 dark:bg-[#00a572]/20 text-emerald-600 dark:text-[#00a572] rounded-full flex items-center justify-center mx-auto mb-2">
-                <Icon name="task_alt" className="text-2xl" />
-              </div>
-              <h4 className="text-sm font-bold text-emerald-800 dark:text-emerald-300">Task Completed</h4>
-              <p className="text-xs text-emerald-600 dark:text-emerald-500 mt-1">This task is fully resolved and closed.</p>
             </div>
           )}
         </div>
@@ -323,8 +369,21 @@ export default function TechnicianComplaintDetail({
                 onChange={(e) => setPhotoFile(e.target.files ? e.target.files[0] : null)}
               />
               
-              {!photoFile ? (
-                <button 
+              {!photoFile && complaint?.completionPhotoUrl ? (
+                <div className="w-full relative group">
+                  <img src={complaint.completionPhotoUrl} alt="Current completion photo" className="w-full h-48 object-cover rounded-2xl border border-slate-200 dark:border-[#464554]/20" />
+                  <div className="absolute inset-0 bg-black/60 rounded-2xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button
+                      onClick={() => fileInputRef.current?.click()}
+                      className="bg-white text-slate-900 px-4 py-2 rounded-xl font-bold text-sm hover:bg-slate-100 transition-colors"
+                    >
+                      Replace Photo
+                    </button>
+                  </div>
+                  <p className="text-xs text-center text-slate-500 dark:text-[#908fa0] mt-2 font-mono">Current completion photo</p>
+                </div>
+              ) : !photoFile ? (
+                <button
                   onClick={() => fileInputRef.current?.click()}
                   className="w-full h-40 border-2 border-dashed border-slate-300 dark:border-[#464554]/40 rounded-2xl flex flex-col items-center justify-center gap-3 text-slate-500 dark:text-[#908fa0] hover:bg-slate-50 dark:hover:bg-[#131b2e] hover:border-[#0f4c81] dark:hover:border-[#8083ff] hover:text-[#0f4c81] dark:hover:text-[#8083ff] transition-all cursor-pointer"
                 >
@@ -357,7 +416,7 @@ export default function TechnicianComplaintDetail({
               </button>
               <button 
                 onClick={handleConfirmCompletion}
-                disabled={!photoFile || uploadingPhoto}
+                disabled={(!photoFile && !complaint?.completionPhotoUrl) || uploadingPhoto}
                 className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold vibrant-gradient text-white shadow-lg disabled:opacity-50 disabled:cursor-not-allowed hover:brightness-110 transition-all cursor-pointer"
               >
                 {uploadingPhoto ? (

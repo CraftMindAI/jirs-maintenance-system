@@ -69,6 +69,7 @@ export function useComplaintDetail(complaintId: string) {
           technicianName: data.technicianName,
           technicianPhone: data.technicianPhone,
           assignedDate: data.assignedDate,
+          assignedAt: data.assignedAt,
           remarks: data.remarks,
           userId: data.userId,
           imageUrls: data.imageUrls || [],

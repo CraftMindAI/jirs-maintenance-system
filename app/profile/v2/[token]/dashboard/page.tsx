@@ -19,48 +19,6 @@ export type Complaint = {
   technicianEmail?: string;
 };
 
-function timeAgo(dateStr: string) {
-  const diffDays = Math.floor(
-    (Date.now() - new Date(dateStr).getTime()) / (1000 * 60 * 60 * 24),
-  );
-  if (diffDays <= 0) return "Today";
-  if (diffDays === 1) return "1 day ago";
-  return `${diffDays} days ago`;
-}
-
-function buildNotification(c: Complaint, serial: number) {
-  switch (c.status) {
-    case "Assigned":
-      return {
-        text: `You have been assigned to Complaint #${serial}.`,
-        icon: "assignment_ind",
-        color: "text-indigo-500",
-        time: timeAgo(c.date),
-      };
-    case "In Progress":
-      return {
-        text: `You have started working on #${serial}.`,
-        icon: "play_circle",
-        color: "text-sky-500",
-        time: timeAgo(c.date),
-      };
-    case "Completed":
-      return {
-        text: `Complaint #${serial} has been marked as Completed.`,
-        icon: "check_circle",
-        color: "text-emerald-500",
-        time: timeAgo(c.date),
-      };
-    default:
-      return {
-        text: `New update on ticket #${serial}.`,
-        icon: "info",
-        color: "text-primary",
-        time: timeAgo(c.date),
-      };
-  }
-}
-
 export default function TechnicianDashboardHome({
   params,
 }: {
@@ -106,9 +64,9 @@ export default function TechnicianDashboardHome({
             }
 
             if (
+              data.technicianId === currentUser.uid ||
               data.technicianEmail === currentUser.email ||
-              data.technicianName === techName ||
-              !data.technicianName
+              data.technicianName === techName
             ) {
               fetchedComplaints.push({ ...data, id: docSnap.id, date: formattedDate });
             }
@@ -142,12 +100,6 @@ export default function TechnicianDashboardHome({
 
   const stats = getStats();
   const latestComplaint = complaints[0] || null;
-
-  const notifications = complaints
-    .map((c, serialIdx) => ({ ...c, serial: serialIdx + 1 }))
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-    .slice(0, 4)
-    .map((c, idx) => ({ id: idx, ...buildNotification(c, c.serial) }));
 
   return (
     <div className="space-y-8 pb-12">
@@ -382,44 +334,6 @@ export default function TechnicianDashboardHome({
             )}
           </div>
         </div>
-      </div>
-
-      {/* NOTIFICATION CENTER ROW */}
-      <div className="space-y-6">
-        <h2 className="font-display text-xl font-bold tracking-tight text-slate-800 dark:text-slate-100 flex items-center gap-2">
-          <Icon name="notifications" className="text-primary" />
-          Recent Notification Alerts
-        </h2>
-        {notifications.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {notifications.map((n) => (
-              <div
-                key={n.id}
-                className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 flex items-start gap-4 hover:shadow-md transition-shadow"
-              >
-                <div
-                  className={`${n.color} bg-slate-100 dark:bg-slate-800 p-2.5 rounded-xl`}
-                >
-                  <Icon name={n.icon} className="text-xl" />
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm font-bold text-slate-700 dark:text-slate-300">
-                    {n.text}
-                  </p>
-                  <span className="text-[10px] text-slate-400 font-semibold block">
-                    {n.time}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 md:p-10 text-center shadow-sm flex flex-col items-center gap-4">
-            <p className="text-sm text-slate-400 dark:text-slate-500">
-              No recent activity yet.
-            </p>
-          </div>
-        )}
       </div>
     </div>
   );

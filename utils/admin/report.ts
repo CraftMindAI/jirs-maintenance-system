@@ -2,7 +2,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { ReportData } from "@/components/admin/reports/ReportSummary";
 
-export const RESOLVED_STATUSES = ["Completed", "Verified"];
+export const RESOLVED_STATUSES = ["Completed", "Verified", "Closed"];
 export const ACTIVE_STATUSES = ["Assigned", "In Progress"];
 
 export function formatDate(d: Date) {
