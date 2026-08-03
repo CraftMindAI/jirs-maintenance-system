@@ -12,7 +12,7 @@ export default function StatsCards({ stats }: { stats: Stats }) {
     "bg-white dark:bg-[#171f33] p-6 rounded-2xl border border-slate-200 dark:border-[#464554]/10 flex items-center gap-5 group hover:bg-slate-50 dark:hover:bg-[#222a3d] transition-all shadow-md dark:vibrant-shadow";
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
       {/* Stat 1: Total Complaints */}
       <div className={cardStyle}>
         <div className="w-14 h-14 bg-indigo-500/10 dark:bg-[#8083ff]/10 rounded-2xl flex items-center justify-center text-primary dark:text-[#c0c1ff] group-hover:scale-110 transition-transform">

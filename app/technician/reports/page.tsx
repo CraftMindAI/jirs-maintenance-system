@@ -270,7 +270,7 @@ export default function TechnicianReportsPage() {
           </div>
 
           {/* Summary Stats Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 print:grid-cols-4 mb-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 print:grid-cols-4 mb-10">
             {[
               { label: "Total Tasks", count: stats.total, color: "text-slate-700 dark:text-slate-200" },
               { label: "Completed", count: stats.completed, color: "text-emerald-600" },
@@ -290,7 +290,7 @@ export default function TechnicianReportsPage() {
 
             <div className="overflow-x-auto rounded-2xl border border-slate-100 dark:border-slate-800 print:border-slate-300">
               {filteredComplaints.length === 0 ? (
-                <div className="p-10 text-center text-slate-400 font-bold">No tasks found for the selected date range.</div>
+                <div className="p-6 md:p-10 text-center text-slate-400 font-bold">No tasks found for the selected date range.</div>
               ) : (
                 <table className="w-full text-left border-collapse">
                   <thead>

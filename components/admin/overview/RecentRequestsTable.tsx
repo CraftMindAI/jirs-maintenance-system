@@ -67,7 +67,7 @@ export default function RecentRequestsTable({
       </div>
 
       {requests.length === 0 ? (
-        <div className="p-16 text-center">
+        <div className="p-8 md:p-16 text-center">
           <Icon name="inbox" className="text-4xl text-slate-400 dark:text-[#908fa0] mb-3 block mx-auto" />
           <h4 className="font-display text-lg font-bold text-slate-900 dark:text-[#dae2fd]">No Requests Yet</h4>
           <p className="text-xs text-slate-500 dark:text-[#908fa0] mt-1">New maintenance tickets will show up here.</p>

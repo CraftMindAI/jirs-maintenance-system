@@ -39,7 +39,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className="min-h-full flex flex-col bg-background-surface font-body text-on-background"
+        className="min-h-full flex flex-col bg-background-surface font-body text-on-background overflow-x-hidden w-full"
         suppressHydrationWarning
       >
         <ToastProvider />

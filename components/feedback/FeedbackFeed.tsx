@@ -24,7 +24,7 @@ export default function FeedbackFeed() {
 
   if (items.length === 0) {
     return (
-      <div className="bg-slate-900/60 backdrop-blur-xl border border-white/15 rounded-3xl p-12 md:p-16 text-center shadow-2xl text-white">
+      <div className="bg-slate-900/60 backdrop-blur-xl border border-white/15 rounded-3xl p-6 md:p-12 md:p-8 md:p-16 text-center shadow-2xl text-white">
         <div className="w-16 h-16 rounded-3xl bg-sky-500/10 text-sky-400 flex items-center justify-center mx-auto mb-4 border border-sky-500/20">
           <Icon name="comment" className="text-3xl" />
         </div>

@@ -148,7 +148,7 @@ export default function ResetPasswordTokenPage({
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/40" />
 
         {/* QUOTE OVERLAY */}
-        <div className="absolute inset-0 flex flex-col justify-end p-8 sm:p-12 text-white max-w-lg z-10">
+        <div className="absolute inset-0 flex flex-col justify-end p-8 sm:p-6 md:p-12 text-white max-w-lg z-10">
           <p className="font-display text-lg sm:text-xl font-medium leading-relaxed italic mb-4 text-slate-100 drop-shadow-md">
             &ldquo;Enlightenment through education is the highest form of service to humanity. We strive to maintain the sanctuary where knowledge meets character.&rdquo;
           </p>

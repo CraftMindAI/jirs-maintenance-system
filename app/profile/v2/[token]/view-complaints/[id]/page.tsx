@@ -102,7 +102,7 @@ export default function TechnicianComplaintDetail({
   if (error || !complaint) {
     return (
       <div className="max-w-5xl mx-auto space-y-6 pb-12">
-        <div className="bg-white dark:bg-[#171f33] border border-rose-500/20 dark:border-[#ff516a]/20 rounded-3xl p-12 text-center shadow-sm space-y-4">
+        <div className="bg-white dark:bg-[#171f33] border border-rose-500/20 dark:border-[#ff516a]/20 rounded-3xl p-6 md:p-12 text-center shadow-sm space-y-4">
           <div className="w-16 h-16 bg-rose-500/10 dark:bg-[#ff516a]/10 rounded-full flex items-center justify-center text-rose-500 dark:text-[#ff516a] mx-auto">
             <Icon name="error_outline" className="text-4xl" />
           </div>

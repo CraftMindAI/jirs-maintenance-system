@@ -6,7 +6,7 @@ export default function FeedbackForm() {
   const [rating, setRating] = useState(5);
 
   return (
-    <form className="bg-white p-10 rounded-3xl border border-outline-variant/20 shadow-sm space-y-6">
+    <form className="bg-white p-6 md:p-10 rounded-3xl border border-outline-variant/20 shadow-sm space-y-6">
       <div>
         <label htmlFor="name" className="block font-label-md text-on-surface-variant mb-2">
           Full Name

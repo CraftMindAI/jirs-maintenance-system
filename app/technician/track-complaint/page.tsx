@@ -197,7 +197,7 @@ function TrackComplaintContent() {
       {/* Header and selector dropdown */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
-          <h1 className="font-display text-3xl font-black text-slate-800 dark:text-slate-100 tracking-tight">
+          <h1 className="font-display text-2xl md:text-3xl font-black text-slate-800 dark:text-slate-100 tracking-tight">
             Live Ticket Tracking
           </h1>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
@@ -294,14 +294,14 @@ function TrackComplaintContent() {
           {/* Right Column: Ticket Details & Technician Cards */}
           <div className="xl:col-span-4 space-y-6">
             {/* Ticket Information Card */}
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm space-y-4">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 md:p-6 shadow-sm space-y-4">
               <h3 className="font-display text-sm font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">
                 Ticket Details
               </h3>
               <div className="space-y-3 font-semibold text-sm">
                 <div className="flex justify-between items-center py-2 border-b border-slate-100 dark:border-slate-800/40">
                   <span className="text-slate-400">Category</span>
-                  <span className="text-slate-800 dark:text-slate-100">
+                  <span className="text-slate-800 dark:text-slate-100 text-right max-w-[60%] break-words">
                     {selectedComplaint.category}
                   </span>
                 </div>
@@ -321,7 +321,7 @@ function TrackComplaintContent() {
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-slate-100 dark:border-slate-800/40">
                   <span className="text-slate-400">Location</span>
-                  <span className="text-slate-800 dark:text-slate-100 text-xs truncate max-w-[150px]">
+                  <span className="text-slate-800 dark:text-slate-100 text-xs text-right max-w-[150px] sm:max-w-[200px] break-words">
                     {selectedComplaint.location}
                   </span>
                 </div>
@@ -335,7 +335,7 @@ function TrackComplaintContent() {
             </div>
 
             {/* Complainant Profile */}
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm space-y-6">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 md:p-6 shadow-sm space-y-6">
               <h3 className="font-display text-sm font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">
                 Raised By
               </h3>
@@ -373,7 +373,7 @@ function TrackComplaintContent() {
             </div>
 
             {/* Attached Reference Photo(s) */}
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm space-y-4">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 md:p-6 shadow-sm space-y-4">
               <h3 className="font-display text-sm font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">
                 Reference Photo
               </h3>
@@ -406,7 +406,7 @@ function TrackComplaintContent() {
           </div>
         </div>
       ) : (
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2.5rem] p-16 text-center shadow-sm">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2.5rem] p-8 md:p-8 md:p-16 text-center shadow-sm">
           <Icon
             name="search_off"
             className="text-4xl text-slate-300 mb-4 block"

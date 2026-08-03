@@ -406,7 +406,7 @@ function TrackComplaintContent() {
           </div>
         </div>
       ) : (
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2.5rem] p-16 text-center shadow-sm">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2.5rem] p-8 md:p-16 text-center shadow-sm">
           <Icon
             name="search_off"
             className="text-4xl text-slate-300 mb-4 block"

@@ -158,7 +158,7 @@ export default function AdminTrackComplaints() {
       <PageHeader />
 
       {/* Top Metric Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
         <div className="bg-white dark:bg-[#171f33] border border-slate-200 dark:border-[#464554]/10 rounded-3xl p-5 shadow-sm">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-mono uppercase font-bold text-slate-500 dark:text-[#908fa0]">Active Techs</span>

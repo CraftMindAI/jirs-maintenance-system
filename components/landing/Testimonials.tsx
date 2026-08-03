@@ -40,16 +40,16 @@ export default function Testimonials() {
 
       <Container className="relative z-10">
         <SectionHeading
-         
+          eyebrow="Testimonials"
           title="Trusted by Campus Administrators & Staff"
           description="Hear how our digital maintenance system brings peace of mind to parents, students, and facility leaders."
           light
         />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-6 md:mt-12">
           {TESTIMONIALS.map((testimonial, i) => (
             <Reveal key={testimonial.name} delay={i * 100}>
-              <div className="bg-slate-900/60 backdrop-blur-2xl border border-white/10 p-8 sm:p-10 rounded-3xl relative overflow-hidden h-full flex flex-col justify-between hover:border-sky-400/40 transition-all duration-500 hover:-translate-y-1 shadow-2xl group">
+              <div className="bg-slate-900/60 backdrop-blur-2xl border border-white/10 p-8 sm:p-6 md:p-10 rounded-3xl relative overflow-hidden h-full flex flex-col justify-between hover:border-sky-400/40 transition-all duration-500 hover:-translate-y-1 shadow-2xl group">
                 <Icon
                   name="format_quote"
                   className="absolute -top-4 -right-4 text-9xl opacity-10 text-sky-400 group-hover:scale-110 transition-transform pointer-events-none"

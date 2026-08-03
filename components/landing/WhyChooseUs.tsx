@@ -50,7 +50,7 @@ export default function WhyChooseUs() {
           light
         />
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-6 md:mt-12">
           {REASONS.map((reason, i) => (
             <Reveal key={reason.title} delay={i * 120}>
               <div className="group relative h-full bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-3xl p-8 hover:border-sky-400/40 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-sky-500/10 flex flex-col justify-between overflow-hidden">

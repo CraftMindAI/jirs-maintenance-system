@@ -70,7 +70,7 @@ export default function Features() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {FEATURES.map((feature, i) => (
             <Reveal key={feature.title} delay={i * 100}>
               <div className={`group relative bg-slate-900/50 backdrop-blur-xl border border-white/10 ${feature.borderHover} p-8 rounded-3xl h-full flex flex-col justify-between transition-all duration-300 hover:-translate-y-1.5 shadow-xl hover:shadow-2xl overflow-hidden`}>

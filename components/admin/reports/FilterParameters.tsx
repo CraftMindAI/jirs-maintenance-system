@@ -56,7 +56,7 @@ export default function FilterParameters({
       </h3>
 
       <form onSubmit={onGenerate} className="space-y-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Start Date Custom Picker */}
           <div className="space-y-1.5">
             <label className="block text-[10px] font-mono uppercase text-slate-500 dark:text-[#908fa0] tracking-wider">

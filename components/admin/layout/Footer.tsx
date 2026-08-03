@@ -3,7 +3,7 @@ import Icon from "@/components/ui/Icon";
 
 export default function Footer() {
   return (
-    <footer className="w-full py-12 px-6 lg:px-10 bg-[#060e20] border-t border-[#464554]/10 mt-12">
+    <footer className="w-full py-12 px-6 lg:px-10 bg-[#060e20] border-t border-[#464554]/10 mt-6 md:mt-12">
       <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-start gap-8">
         <div className="max-w-md">
           <div className="flex items-center gap-3 mb-4">
@@ -16,7 +16,7 @@ export default function Footer() {
             Industry-leading facility management engine for Jain International Residential School. Real-time intelligence and automated maintenance workflows.
           </p>
         </div>
-        <div className="grid grid-cols-2 gap-12 text-xs">
+        <div className="grid grid-cols-2 gap-6 md:gap-12 text-xs">
           <div>
             <h5 className="font-bold text-[#dae2fd] text-[10px] uppercase tracking-[0.2em] mb-4">System</h5>
             <ul className="space-y-3 font-semibold text-[#c7c4d7]">

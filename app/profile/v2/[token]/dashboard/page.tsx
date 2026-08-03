@@ -154,7 +154,7 @@ export default function TechnicianDashboardHome({
       <title>Dashboard | Technician | JMMS</title>
 
       {/* STATS CARDS */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         {[
           {
             label: "Total Tasks",
@@ -230,9 +230,9 @@ export default function TechnicianDashboardHome({
 
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl overflow-hidden shadow-sm">
             {loading ? (
-              <div className="p-10 text-center text-slate-400 font-bold animate-pulse">Loading assignments...</div>
+              <div className="p-6 md:p-10 text-center text-slate-400 font-bold animate-pulse">Loading assignments...</div>
             ) : complaints.length === 0 ? (
-              <div className="p-10 text-center text-slate-400">No recent assignments found.</div>
+              <div className="p-6 md:p-10 text-center text-slate-400">No recent assignments found.</div>
             ) : (
               <>
                 {/* Desktop Table View */}
@@ -414,7 +414,7 @@ export default function TechnicianDashboardHome({
             ))}
           </div>
         ) : (
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-10 text-center shadow-sm flex flex-col items-center gap-4">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 md:p-10 text-center shadow-sm flex flex-col items-center gap-4">
             <p className="text-sm text-slate-400 dark:text-slate-500">
               No recent activity yet.
             </p>

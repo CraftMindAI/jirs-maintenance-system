@@ -69,7 +69,7 @@ export default function FiltersToolbar({
         />
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
         <Dropdown options={STATUS_OPTIONS} value={statusFilter} onChange={setStatusFilter} />
         <Dropdown options={PRIORITY_OPTIONS} value={priorityFilter} onChange={setPriorityFilter} />
         <Dropdown options={DEPT_OPTIONS} value={deptFilter} onChange={setDeptFilter} />

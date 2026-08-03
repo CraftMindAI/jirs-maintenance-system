@@ -54,12 +54,12 @@ export default function ProcessTimeline() {
           light
         />
 
-        <div className="relative max-w-6xl mx-auto mt-16">
+        <div className="relative max-w-6xl mx-auto mt-8 md:mt-16">
           {/* Glowing Animated Connecting Pipe */}
           <div className="absolute top-[52px] left-[5%] right-[5%] h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-emerald-400 opacity-30 rounded-full hidden lg:block" />
           <div className="absolute top-[52px] left-[5%] right-[5%] h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-emerald-400 rounded-full hidden lg:block blur-sm opacity-50" />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative">
+          <div className="grid grid-cols-1 md:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 relative">
             {STEPS.map((step, i) => (
               <Reveal key={step.title} delay={i * 120}>
                 <div className="group relative bg-slate-900/60 backdrop-blur-xl border border-white/10 p-8 rounded-3xl h-full flex flex-col justify-between hover:border-sky-400/40 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-blue-500/10">

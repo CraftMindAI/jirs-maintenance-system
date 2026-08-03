@@ -120,7 +120,7 @@ export default function UserDetailsPage({ params }: { params: Promise<{ id: stri
 
   if (!user) {
     return (
-      <div className="bg-white dark:bg-[#171f33] border border-slate-200 dark:border-[#464554]/10 rounded-3xl p-16 text-center shadow-sm">
+      <div className="bg-white dark:bg-[#171f33] border border-slate-200 dark:border-[#464554]/10 rounded-3xl p-8 md:p-16 text-center shadow-sm">
         <Icon name="person_off" className="text-4xl text-slate-400 dark:text-[#908fa0] mb-3 block mx-auto" />
         <h3 className="font-display text-xl font-bold text-slate-900 dark:text-[#dae2fd]">User Not Found</h3>
         <p className="text-xs text-slate-500 dark:text-[#908fa0] mt-1">This account may have been removed.</p>
@@ -129,7 +129,7 @@ export default function UserDetailsPage({ params }: { params: Promise<{ id: stri
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0b101d] text-slate-900 dark:text-[#dae2fd] p-6 lg:p-10 space-y-8">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0b101d] text-slate-900 dark:text-[#dae2fd] p-6 lg:p-6 md:p-10 space-y-8">
       <title>{user.name} | User Details | JMMS Admin</title>
 
       <div>

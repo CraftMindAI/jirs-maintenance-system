@@ -165,7 +165,7 @@ export default function AddComplaint() {
         </p>
       </div>
 
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2.5rem] p-6 md:p-10 shadow-sm relative overflow-hidden">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2.5rem] p-6 md:p-6 md:p-10 shadow-sm relative overflow-hidden">
 
         {/* Success Modal Overlay */}
         {success && (

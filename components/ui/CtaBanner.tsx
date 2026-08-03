@@ -22,7 +22,7 @@ export default function CtaBanner({
   return (
     <section className="py-20 md:py-28 bg-[#020611] text-white relative overflow-hidden">
       <Container>
-        <div className="relative bg-gradient-to-br from-slate-900 via-[#0b1c30] to-slate-950 rounded-[2.5rem] p-10 md:p-16 text-center border border-white/15 overflow-hidden shadow-2xl group">
+        <div className="relative bg-gradient-to-br from-slate-900 via-[#0b1c30] to-slate-950 rounded-[2.5rem] p-6 md:p-10 md:p-8 md:p-16 text-center border border-white/15 overflow-hidden shadow-2xl group">
           {/* Ambient Corner Glows */}
           <div className="absolute top-0 right-0 w-96 h-96 bg-sky-500/15 rounded-full blur-[140px] pointer-events-none group-hover:bg-sky-400/25 transition-all duration-700" />
           <div className="absolute bottom-0 left-0 w-96 h-96 bg-indigo-500/15 rounded-full blur-[140px] pointer-events-none" />

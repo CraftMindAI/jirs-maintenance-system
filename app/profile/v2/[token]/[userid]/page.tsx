@@ -102,7 +102,7 @@ export default function TechnicianDetailTimelinePage({
   });
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0b101d] text-slate-900 dark:text-[#dae2fd] p-6 lg:p-10 space-y-8">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0b101d] text-slate-900 dark:text-[#dae2fd] p-6 lg:p-6 md:p-10 space-y-8">
       <title>{techUser?.name || "Technician"} Timeline | JMMS</title>
 
       {/* Header Breadcrumb & Controls */}
@@ -153,7 +153,7 @@ export default function TechnicianDetailTimelinePage({
         </div>
 
         {/* Ticket Metric Cards */}
-        <div className="md:col-span-3 grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="md:col-span-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="bg-white dark:bg-[#171f33] border border-slate-200 dark:border-[#464554]/10 rounded-3xl p-5 shadow-sm flex flex-col justify-between">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-slate-500 dark:text-[#908fa0] uppercase tracking-wider">Total Tickets</span>
@@ -241,7 +241,7 @@ export default function TechnicianDetailTimelinePage({
           <div className="w-10 h-10 border-4 border-[#464554]/30 border-t-[#8083ff] rounded-full animate-spin" />
         </div>
       ) : visibleTickets.length === 0 ? (
-        <div className="bg-white dark:bg-[#171f33] border border-slate-200 dark:border-[#464554]/10 rounded-3xl p-16 text-center shadow-sm">
+        <div className="bg-white dark:bg-[#171f33] border border-slate-200 dark:border-[#464554]/10 rounded-3xl p-8 md:p-16 text-center shadow-sm">
           <Icon name="assignment_late" className="text-4xl text-slate-400 dark:text-[#908fa0] mb-3 block mx-auto" />
           <h3 className="font-display text-xl font-bold text-slate-900 dark:text-[#dae2fd]">No Tickets Found</h3>
           <p className="text-xs text-slate-500 dark:text-[#908fa0] mt-1">There are no {activeTab.toLowerCase()} tickets for this technician.</p>

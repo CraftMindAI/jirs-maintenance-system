@@ -9,8 +9,8 @@ export default function AuthSimpleShell({ children }: { children: ReactNode }) {
     <div className="min-h-screen w-full flex flex-col lg:flex-row bg-gradient-to-br from-slate-50 via-sky-50/40 to-blue-50/20 text-slate-900 font-body">
       <AuthHeroPanel />
 
-      <div className="flex-1 min-h-screen flex items-center justify-center p-4 sm:p-8 lg:p-12 overflow-y-auto">
-        <div className="w-full max-w-lg bg-white/95 backdrop-blur-md rounded-3xl p-6 sm:p-10 shadow-2xl shadow-slate-200/60 border border-slate-200/80 transition-all">
+      <div className="flex-1 min-h-screen flex items-center justify-center p-4 sm:p-8 lg:p-6 md:p-12 overflow-y-auto">
+        <div className="w-full max-w-lg bg-white/95 backdrop-blur-md rounded-3xl p-6 sm:p-6 md:p-10 shadow-2xl shadow-slate-200/60 border border-slate-200/80 transition-all">
           <Link
             href="/auth/v1/login"
             className="mb-4 inline-flex items-center gap-2 text-[#00355f] font-mono text-xs font-bold uppercase tracking-wider hover:bg-sky-50 px-3 py-2 rounded-xl transition-colors group"
