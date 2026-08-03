@@ -14,6 +14,7 @@ import MobileBottomNav, { type BottomNavItem } from "@/components/admin/layout/M
 const MENU_ITEMS: MenuItem[] = [
   { label: "Dashboard", icon: "home", href: "/technician" },
   { label: "View Complaints", icon: "assignment", href: "/technician/view-complaints" },
+  { label: "Track Complaint", icon: "my_location", href: "/technician/track-complaint" },
   { label: "Reports", icon: "assessment", href: "/technician/reports" },
   { label: "Settings", icon: "settings", href: "/technician/settings" },
 ];
@@ -21,6 +22,7 @@ const MENU_ITEMS: MenuItem[] = [
 const BOTTOM_NAV_ITEMS: BottomNavItem[] = [
   { label: "Home", icon: "home", href: "/technician" },
   { label: "Complaints", icon: "assignment", href: "/technician/view-complaints" },
+  { label: "Track", icon: "my_location", href: "/technician/track-complaint" },
   { label: "Reports", icon: "assessment", href: "/technician/reports" },
   { label: "Profile", icon: "settings", href: "/technician/settings" },
 ];
