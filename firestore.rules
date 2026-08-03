@@ -45,7 +45,8 @@ service cloud.firestore {
       );
       allow delete: if isSignedIn() &&
         (isAdmin() ||
-          (resource.data.userId == request.auth.uid && resource.data.status == 'Pending'));
+          (resource.data.userId == request.auth.uid &&
+            (resource.data.status == 'Pending' || resource.data.status == 'Rejected')));
     }
 
     match /feedback/{feedbackId} {

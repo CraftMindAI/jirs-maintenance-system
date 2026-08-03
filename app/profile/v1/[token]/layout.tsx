@@ -1,35 +1,45 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { use, useEffect, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import Sidebar, { type MenuItem, type QuickAction } from "@/components/admin/layout/Sidebar";
 import TopNavbar from "@/components/admin/layout/TopNavbar";
 import MobileBottomNav, { type BottomNavItem, type BottomNavQuickAction } from "@/components/admin/layout/MobileBottomNav";
-import { encryptTechToken } from "@/lib/encryption";
+import { encryptTechToken, encryptUserToken } from "@/lib/encryption";
 
-const MENU_ITEMS: MenuItem[] = [
-  { label: "Dashboard", icon: "dashboard", href: "/dashboard" },
-  { label: "My Complaints", icon: "assignment_late", href: "/dashboard/my-complaints" },
-  { label: "Track Complaint", icon: "my_location", href: "/dashboard/track-complaint" },
-  { label: "Feedback", icon: "comment", href: "/dashboard/feedback" },
-  { label: "Settings", icon: "settings_applications", href: "/dashboard/settings" },
-];
+export default function DashboardLayout({
+  children,
+  params,
+}: {
+  children: React.ReactNode;
+  params: Promise<{ token: string }>;
+}) {
+  const resolvedParams = use(params);
+  const token = resolvedParams.token;
+  const basePath = `/profile/v1/${token}`;
 
-const QUICK_ACTION: QuickAction = { label: "Add Complaint", icon: "add_circle", href: "/dashboard/add-complaint" };
+  const MENU_ITEMS: MenuItem[] = [
+    { label: "Dashboard", icon: "dashboard", href: `${basePath}/dashboard` },
+    { label: "My Complaints", icon: "assignment_late", href: `${basePath}/my-complaints` },
+    { label: "Track Complaint", icon: "my_location", href: `${basePath}/track-complaint` },
+    { label: "Feedback", icon: "comment", href: `${basePath}/feedback` },
+    { label: "Settings", icon: "settings_applications", href: `${basePath}/settings` },
+  ];
 
-const BOTTOM_NAV_ITEMS: BottomNavItem[] = [
-  { label: "Home", icon: "dashboard", href: "/dashboard" },
-  { label: "Complaints", icon: "assignment_late", href: "/dashboard/my-complaints" },
-  { label: "Track", icon: "my_location", href: "/dashboard/track-complaint" },
-  { label: "Profile", icon: "settings_applications", href: "/dashboard/settings" },
-];
+  const QUICK_ACTION: QuickAction = { label: "Add Complaint", icon: "add_circle", href: `${basePath}/add-complaint` };
 
-const BOTTOM_QUICK_ACTION: BottomNavQuickAction = { icon: "add", href: "/dashboard/add-complaint" };
+  const BOTTOM_NAV_ITEMS: BottomNavItem[] = [
+    { label: "Home", icon: "dashboard", href: `${basePath}/dashboard` },
+    { label: "Complaints", icon: "assignment_late", href: `${basePath}/my-complaints` },
+    { label: "Track", icon: "my_location", href: `${basePath}/track-complaint` },
+    { label: "Profile", icon: "settings_applications", href: `${basePath}/settings` },
+  ];
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const BOTTOM_QUICK_ACTION: BottomNavQuickAction = { icon: "add", href: `${basePath}/add-complaint` };
+
   const router = useRouter();
   const [profileOpen, setProfileOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(true);
@@ -142,7 +152,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           setProfileOpen={setProfileOpen}
           userProfile={userProfile}
           onLogout={handleLogout}
-          profileHref="/dashboard/settings"
+          profileHref={`${basePath}/settings`}
         />
 
         {/* Content View */}

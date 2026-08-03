@@ -4,7 +4,7 @@ import { useState, useRef, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Icon from "@/components/ui/Icon";
 import Dropdown from "@/components/ui/Dropdown";
-import { Complaint } from "@/app/dashboard/page";
+import { Complaint } from "@/types/complaint";
 import { auth, db } from "@/lib/firebase";
 import { addDoc, collection, doc, updateDoc, Bytes, serverTimestamp } from "firebase/firestore";
 

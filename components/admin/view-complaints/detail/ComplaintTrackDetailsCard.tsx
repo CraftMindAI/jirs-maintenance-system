@@ -1,7 +1,7 @@
 "use client";
 
 import Icon from "@/components/ui/Icon";
-import { Complaint } from "@/app/dashboard/page";
+import { Complaint } from "@/types/complaint";
 
 const STEPS = [
   {

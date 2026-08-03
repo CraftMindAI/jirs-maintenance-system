@@ -1,13 +1,21 @@
 "use client";
 
-import { useState, useRef, FormEvent } from "react";
+import { use, useState, useRef, FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Icon from "@/components/ui/Icon";
 import { auth, db } from "@/lib/firebase";
 import { addDoc, collection, Bytes, serverTimestamp } from "firebase/firestore";
 
-export default function AddComplaint() {
+export default function AddComplaint({
+  params,
+}: {
+  params: Promise<{ token: string }>;
+}) {
+  const resolvedParams = use(params);
+  const token = resolvedParams.token;
+  const basePath = `/profile/v1/${token}`;
+
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -126,7 +134,7 @@ export default function AddComplaint() {
 
       // Redirect back after success animation
       setTimeout(() => {
-        router.push("/dashboard/my-complaints");
+        router.push(`${basePath}/my-complaints`);
       }, 1500);
     } catch (err) {
       console.error("Error submitting complaint:", err);
@@ -151,7 +159,7 @@ export default function AddComplaint() {
       {/* Breadcrumb path back */}
       <div>
         <Link
-          href="/dashboard/my-complaints"
+          href={`${basePath}/my-complaints`}
           className="inline-flex items-center gap-2 text-slate-400 dark:text-slate-500 font-bold hover:text-primary transition-colors text-xs uppercase tracking-wider"
         >
           <Icon name="arrow_back" className="text-lg" />

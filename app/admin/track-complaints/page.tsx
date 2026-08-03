@@ -7,7 +7,7 @@ import Icon from "@/components/ui/Icon";
 import PageHeader from "@/components/admin/track-complaints/PageHeader";
 import SearchFilterBar from "@/components/admin/track-complaints/SearchFilterBar";
 import TimelineList, { TechnicianGroup } from "@/components/admin/track-complaints/TimelineList";
-import { Complaint } from "@/app/dashboard/page";
+import { Complaint } from "@/types/complaint";
 import { mapComplaintDoc } from "@/hooks/useComplaintsFeed";
 import { getDeadlineInfo } from "@/utils/deadline";
 

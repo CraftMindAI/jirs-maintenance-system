@@ -1,39 +1,27 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import Icon from "@/components/ui/Icon";
 import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { useComplaintsFeed } from "@/hooks/useComplaintsFeed";
+import type { Complaint } from "@/types/complaint";
 
-export type Complaint = {
-  imageUrls?: any;
-  id: string;
-  category: string;
-  location: string;
-  priority: "High" | "Medium" | "Low";
-  status: "Pending" | "Approved" | "Assigned" | "In Progress" | "Completed" | "Verified" | "Rejected" | "Closed";
-  date: string;
-  description: string;
-  technicianId?: string;
-  technicianName?: string;
-  technicianEmail?: string;
-  technicianPhone?: string;
-  assignedDate?: string;
-  assignedAt?: string;
-  deadlineAt?: string;
-  completedAt?: string;
-  remarks?: string;
-  submittedBy?: string;
-  userId?: string;
-  completionPhotoUrl?: string;
-};
+export type { Complaint };
 
 const ADMIN_ROLES = ["admin"];
 
-export default function DashboardHome() {
+export default function DashboardHome({
+  params,
+}: {
+  params: Promise<{ token: string }>;
+}) {
+  const resolvedParams = use(params);
+  const token = resolvedParams.token;
+  const basePath = `/profile/v1/${token}`;
+
   const [userId, setUserId] = useState<string | null | undefined>(undefined);
   const [userProfile, setUserProfile] = useState<{
     name: string;
@@ -178,7 +166,7 @@ export default function DashboardHome() {
               Recent Complaints
             </h2>
             <Link
-              href="/dashboard/my-complaints"
+              href={`${basePath}/my-complaints`}
               className="text-sm font-bold text-primary hover:underline"
             >
               View All
@@ -242,7 +230,7 @@ export default function DashboardHome() {
                       </td>
                       <td className="py-4 px-6 text-right">
                         <Link
-                          href={`/dashboard/track-complaint?ticket=${item.id}`}
+                          href={`${basePath}/track-complaint?ticket=${item.id}`}
                           className="text-primary dark:text-blue-300 hover:text-opacity-80 transition-opacity"
                         >
                           Track
@@ -284,7 +272,7 @@ export default function DashboardHome() {
                       {item.date}
                     </span>
                     <Link
-                      href={`/dashboard/track-complaint?ticket=${item.id}`}
+                      href={`${basePath}/track-complaint?ticket=${item.id}`}
                       className="text-xs font-bold text-primary dark:text-blue-300"
                     >
                       Track Complaint

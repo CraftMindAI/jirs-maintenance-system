@@ -7,7 +7,7 @@ import { db } from "@/lib/firebase";
 import Icon from "@/components/ui/Icon";
 import StatusBadge from "@/components/ui/StatusBadge";
 import PriorityBadge from "@/components/ui/PriorityBadge";
-import { Complaint } from "@/app/dashboard/page";
+import { Complaint } from "@/types/complaint";
 import { getDeadlineInfo } from "@/utils/deadline";
 
 interface TechnicianUser {

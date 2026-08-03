@@ -1,0 +1,22 @@
+export type Complaint = {
+  imageUrls?: any;
+  id: string;
+  category: string;
+  location: string;
+  priority: "High" | "Medium" | "Low";
+  status: "Pending" | "Approved" | "Assigned" | "In Progress" | "Completed" | "Verified" | "Rejected" | "Closed";
+  date: string;
+  description: string;
+  technicianId?: string;
+  technicianName?: string;
+  technicianEmail?: string;
+  technicianPhone?: string;
+  assignedDate?: string;
+  assignedAt?: string;
+  deadlineAt?: string;
+  completedAt?: string;
+  remarks?: string;
+  submittedBy?: string;
+  userId?: string;
+  completionPhotoUrl?: string;
+};

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { doc, getDoc, Timestamp, Bytes } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { Complaint } from "@/app/dashboard/page";
+import { Complaint } from "@/types/complaint";
 
 export type ComplaintPoster = {
   name: string;

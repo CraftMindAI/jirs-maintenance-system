@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Icon from "@/components/ui/Icon";
 import { auth, db } from "@/lib/firebase";
@@ -9,11 +9,19 @@ import { doc, getDoc, Bytes } from "firebase/firestore";
 import { useComplaintsFeed } from "@/hooks/useComplaintsFeed";
 import { useComplaintDetail } from "@/hooks/useComplaintDetail";
 import { deleteComplaint, editComplaint } from "@/utils/admin/complaints";
-import { Complaint } from "@/app/dashboard/page";
+import { Complaint } from "@/types/complaint";
 
 const ADMIN_ROLES = ["admin"];
 
-export default function MyComplaints() {
+export default function MyComplaints({
+  params,
+}: {
+  params: Promise<{ token: string }>;
+}) {
+  const resolvedParams = use(params);
+  const token = resolvedParams.token;
+  const basePath = `/profile/v1/${token}`;
+
   const [userId, setUserId] = useState<string | null | undefined>(undefined);
   const [userProfile, setUserProfile] = useState<{
     name: string;
@@ -270,6 +278,8 @@ export default function MyComplaints() {
     })
     .sort((a, b) => getSeverityScore(a.status) - getSeverityScore(b.status));
 
+  const deleteTarget = visibleComplaints.find((c) => c.id === showDeleteConfirm) || null;
+
   return (
     <div className="space-y-8 pb-12">
       <title>My Complaints | JMMS</title>
@@ -287,7 +297,7 @@ export default function MyComplaints() {
           </p>
         </div>
         <Link
-          href="/dashboard/add-complaint"
+          href={`${basePath}/add-complaint`}
           className="bg-primary hover:bg-opacity-90 text-white px-6 py-3.5 rounded-xl font-bold flex items-center gap-2 hover:shadow-lg hover:shadow-primary/25 transition-all text-sm scale-100 active:scale-95"
         >
           <Icon name="add" className="text-xl" />
@@ -420,19 +430,21 @@ export default function MyComplaints() {
                           </button>
                         )}
                         <Link
-                          href={`/dashboard/track-complaint?ticket=${item.id}`}
+                          href={`${basePath}/track-complaint?ticket=${item.id}`}
                           title="View Progress"
                           className="hover:text-primary dark:hover:text-white transition-colors"
                         >
                           <Icon name="visibility" className="text-xl" />
                         </Link>
-                        <button
-                          onClick={() => setShowDeleteConfirm(item.id)}
-                          title="Delete Ticket"
-                          className="hover:text-red-500 transition-colors cursor-pointer"
-                        >
-                          <Icon name="delete" className="text-xl" />
-                        </button>
+                        {(item.status === "Pending" || item.status === "Rejected") && (
+                          <button
+                            onClick={() => setShowDeleteConfirm(item.id)}
+                            title="Delete Ticket"
+                            className="hover:text-red-500 transition-colors cursor-pointer"
+                          >
+                            <Icon name="delete" className="text-xl" />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -508,18 +520,20 @@ export default function MyComplaints() {
                       </button>
                     )}
                     <Link
-                      href={`/dashboard/track-complaint?ticket=${item.id}`}
+                      href={`${basePath}/track-complaint?ticket=${item.id}`}
                       className="hover:text-primary transition-colors"
                     >
                       <Icon name="visibility" className="text-lg" />
                     </Link>
 
-                    <button
-                      onClick={() => setShowDeleteConfirm(item.id)}
-                      className="hover:text-red-500 transition-colors cursor-pointer"
-                    >
-                      <Icon name="delete" className="text-lg" />
-                    </button>
+                    {(item.status === "Pending" || item.status === "Rejected") && (
+                      <button
+                        onClick={() => setShowDeleteConfirm(item.id)}
+                        className="hover:text-red-500 transition-colors cursor-pointer"
+                      >
+                        <Icon name="delete" className="text-lg" />
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -553,9 +567,13 @@ export default function MyComplaints() {
                 Confirm Deletion
               </h4>
               <p className="text-sm text-slate-400 dark:text-slate-500 mt-2 leading-relaxed">
-                Are you sure you want to delete maintenance ticket **
-                {showDeleteConfirm}**? This action cannot be undone and will
-                remove it from the tracking feed.
+                Are you sure you want to delete the maintenance ticket for{" "}
+                <strong className="text-slate-600 dark:text-slate-300">
+                  {deleteTarget?.category}
+                  {deleteTarget?.description ? ` — ${deleteTarget.description}` : ""}
+                </strong>
+                ? This action cannot be undone and will remove it from the
+                tracking feed.
               </p>
             </div>
             <div className="flex gap-4">

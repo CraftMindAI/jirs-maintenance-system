@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Icon from "@/components/ui/Icon";
-import { Complaint } from "@/app/dashboard/page";
+import { Complaint } from "@/types/complaint";
 
 type NextStatus = "In Progress" | "Completed";
 

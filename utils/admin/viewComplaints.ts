@@ -1,6 +1,6 @@
 import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { Complaint } from "@/app/dashboard/page";
+import { Complaint } from "@/types/complaint";
 import { TechnicianOption } from "@/components/admin/view-complaints/constants";
 
 export type AdminProfile = {
