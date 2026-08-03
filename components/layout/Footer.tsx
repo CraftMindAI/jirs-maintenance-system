@@ -9,29 +9,29 @@ export default function Footer() {
 
   return (
     <>
-      <footer className="w-full bg-[#030812] py-12 md:py-16 px-margin-mobile md:px-margin-desktop text-white border-t border-white/10 relative overflow-hidden">
+      <footer className="w-full bg-[#030812] py-8 md:py-10 px-margin-mobile md:px-margin-desktop text-white border-t border-white/10 relative overflow-hidden">
         {/* Subtle Ambient Light */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-px bg-gradient-to-r from-transparent via-sky-500/30 to-transparent" />
 
-        <div className="max-w-container-max mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10 mb-10">
+        <div className="max-w-container-max mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-6">
           
           {/* Brand Col */}
-          <div className="space-y-4">
+          <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-sky-400 flex items-center justify-center shadow-lg shadow-blue-500/20">
-                <Icon name="school" className="text-xl text-white" />
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-sky-400 flex items-center justify-center shadow-md shadow-blue-500/20">
+                <Icon name="school" className="text-lg text-white" />
               </div>
-              <span className="font-display text-2xl font-black tracking-wider text-white">JMMS</span>
+              <span className="font-display text-xl font-black tracking-wider text-white">JMMS</span>
             </div>
-            <p className="font-body text-xs sm:text-sm text-slate-400 leading-relaxed max-w-sm">
-              Elevating residential life through professional, enterprise-grade facility maintenance management at Jain International Residential School.
+            <p className="font-body text-xs text-slate-400 leading-relaxed max-w-xs">
+              Elevating residential life through enterprise-grade facility maintenance management at Jain International Residential School.
             </p>
           </div>
 
           {/* System Services */}
-          <div className="space-y-3">
-            <h6 className="font-display text-sm font-bold text-white tracking-wider uppercase">System Services</h6>
-            <div className="flex flex-col gap-2 text-xs sm:text-sm text-slate-400">
+          <div className="space-y-2">
+            <h6 className="font-display text-xs font-bold text-white tracking-wider uppercase">System Services</h6>
+            <div className="flex flex-col gap-1.5 text-xs text-slate-400">
               <Link href="/" className="hover:text-sky-400 transition-colors">Maintenance Portal</Link>
               <Link href="/login" className="hover:text-sky-400 transition-colors">Admin Dashboard</Link>
               <Link href="/login" className="hover:text-sky-400 transition-colors">Technician Hub</Link>
@@ -39,9 +39,9 @@ export default function Footer() {
           </div>
 
           {/* Quick Links */}
-          <div className="space-y-3">
-            <h6 className="font-display text-sm font-bold text-white tracking-wider uppercase">Quick Links</h6>
-            <div className="flex flex-col gap-2 text-xs sm:text-sm text-slate-400">
+          <div className="space-y-2">
+            <h6 className="font-display text-xs font-bold text-white tracking-wider uppercase">Quick Links</h6>
+            <div className="flex flex-col gap-1.5 text-xs text-slate-400">
               <Link href="/about-us" className="hover:text-sky-400 transition-colors">About JIRS</Link>
               <Link href="/feedback" className="hover:text-sky-400 transition-colors">User Feedback</Link>
               <Link href="/login" className="hover:text-sky-400 transition-colors">Submit Ticket</Link>
@@ -49,9 +49,9 @@ export default function Footer() {
           </div>
 
           {/* Legal & Info */}
-          <div className="space-y-3">
-            <h6 className="font-display text-sm font-bold text-white tracking-wider uppercase">Legal & Info</h6>
-            <div className="flex flex-col gap-2 text-xs sm:text-sm text-slate-400">
+          <div className="space-y-2">
+            <h6 className="font-display text-xs font-bold text-white tracking-wider uppercase">Legal & Info</h6>
+            <div className="flex flex-col gap-1.5 text-xs text-slate-400">
               <button
                 onClick={() => setActiveModal("privacy")}
                 className="text-left hover:text-sky-400 transition-colors cursor-pointer"
@@ -70,13 +70,10 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="max-w-container-max mx-auto pt-6 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="font-mono text-xs text-slate-500">
+        <div className="max-w-container-max mx-auto pt-4 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-2">
+          <p className="font-mono text-[11px] text-slate-500">
             © 2026 JAIN International Residential School. All rights reserved.
           </p>
-          <div className="flex items-center gap-4 text-xs font-mono text-slate-400">
-           
-          </div>
         </div>
       </footer>
 

@@ -1,41 +1,51 @@
-import Image from "next/image";
+"use client";
+
 import Link from "next/link";
 import Container from "@/components/ui/Container";
 import Icon from "@/components/ui/Icon";
 
 export default function FeedbackHero() {
   return (
-    <section className="relative py-20 overflow-hidden bg-slate-950 border-b border-slate-900">
-      {/* Glow effect */}
-      <div className="absolute top-1/2 right-1/4 w-80 h-80 bg-primary/10 rounded-full blur-[100px] pointer-events-none" />
-      <Container className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-12">
-        <div className="max-w-2xl">
-          <nav className="flex items-center gap-2 text-slate-400 font-label-sm mb-4 font-semibold">
-            <Link href="/" className="hover:text-white transition-colors">
-              Home
-            </Link>
-            <Icon name="chevron_right" className="text-[14px]" />
-            <span className="text-white">Feedback</span>
-          </nav>
-          <h1 className="font-display text-3xl md:text-5xl font-black text-white mb-6 tracking-tight leading-tight">
-            Community <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-400">Feedback</span>
+    <section className="relative py-24 md:py-32 overflow-hidden bg-[#050b14] text-white border-b border-white/10">
+      {/* Dynamic Background Ambient Glows */}
+      <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[600px] h-[350px] bg-sky-500/15 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute bottom-10 right-1/4 w-[500px] h-[300px] bg-indigo-600/20 rounded-full blur-[120px] pointer-events-none" />
+
+      <Container className="relative z-10">
+        <div className="max-w-3xl mx-auto text-center space-y-6">
+          
+          {/* Breadcrumb Pill */}
+         
+          <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-black text-white tracking-tight leading-[1.1]">
+            Your Voice Shapes Our <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-indigo-400 to-emerald-400">
+              Campus Facilities
+            </span>
           </h1>
-          <p className="font-body-lg text-slate-300 leading-relaxed text-sm md:text-base">
-            We value your feedback! Share your experience with the JIRS
-            Maintenance Management System and help us improve our digital
-            maintenance services for a better campus life.
+
+          <p className="font-body text-slate-300 text-base md:text-lg leading-relaxed max-w-2xl mx-auto">
+            We value your experience! Share your feedback, report suggestions, or commend facility staff to help us continuously elevate residential life at Jain International Residential School.
           </p>
-        </div>
-        <div className="hidden lg:block w-96 h-96 relative shrink-0">
-          <div className="absolute inset-0 bg-secondary-container/20 blur-3xl rounded-full" />
-          <Image
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7PFdXlGAnMDyziyE-BefwLwm71_S3d7X5BcbeA7D9K63n5_P8pOPN1Y2OSt9-4euD03N3tZ_U1sR_SkEFi-J7LZ5btfPkMMdUPpOli8WUqOK7OIdmYwmvZ65Pz1L-ZdjMo5Uyd_UQzal7S2tuzvVapSioJrUYJ7FAWDJhU65wi1-DPZ3b6tfSuhvpGTtmwyBMoB_c6cj7tKhnFN-8g2NN5AQTSWsaxrudwKw-yYDYSuetjF_ODFAh_w"
-            alt="Illustration of a community sharing feedback"
-            fill
-            className="relative z-10 object-contain"
-          />
+
+          {/* Quick Metrics Bar */}
+          <div className="pt-6 grid grid-cols-3 gap-4 max-w-lg mx-auto border-t border-white/10">
+            <div>
+              <div className="text-2xl font-black text-white font-display">4.9★</div>
+              <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400 mt-0.5">Satisfaction Rating</div>
+            </div>
+            <div>
+              <div className="text-2xl font-black text-white font-display">100%</div>
+              <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400 mt-0.5">Audited Feedback</div>
+            </div>
+            <div>
+              <div className="text-2xl font-black text-white font-display">&lt;24 hrs</div>
+              <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400 mt-0.5">Admin Review</div>
+            </div>
+          </div>
+
         </div>
       </Container>
     </section>
   );
 }
+

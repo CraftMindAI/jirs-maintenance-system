@@ -1,64 +1,93 @@
+"use client";
+
 import Image from "next/image";
 import Container from "@/components/ui/Container";
 import Reveal from "@/components/ui/Reveal";
+import Icon from "@/components/ui/Icon";
+import LegacyImage from "@/public/Legacy.png";
 
 const STATS = [
-  { value: "350+", label: "ACRE CAMPUS" },
-  { value: "Global", label: "CURRICULUM" },
+  { value: "350+", label: "ACRE CAMPUS", icon: "square_foot" },
+  { value: "Global", label: "CURRICULUM", icon: "public" },
+  { value: "700+", label: "STUDENTS", icon: "groups" },
+  { value: "100+", label: "TEACHERS", icon: "diversity_3" },
 ];
 
 export default function LegacySection() {
   return (
-    <section className="py-24">
-      <Container>
-        <div className="grid md:grid-cols-2 gap-16 items-center">
-          <Reveal>
-            <div className="relative">
-              <div className="rounded-2xl overflow-hidden shadow-2xl relative aspect-[4/3]">
-                <Image
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuBcw9E2gmS-NkVbJzzPuYf3L9IjlcuWsmS4IvsHaDFWasP-CvR8udLPVEfTnkkcwU41NKRLxG108csYXMRwSBhTJImMgBPDqGe6vanLKebMvDsLNdl1xtCamIonsKQkh_tjGI-k6KR_rfOxpQ9s3WQ6IweZwS_8m55REPRmIDTuovOrth2VnSO_bgtvYZcMkA272RQXCr5Pw4a-4S6TJYP8j7HblfRuWyU1MaNUxl1GlVCF3e54iF-mMw"
-                  alt="Entrance gate of JIRS campus"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <div className="absolute -bottom-8 -right-8 glass-card p-8 rounded-2xl shadow-xl border border-white/50 hidden lg:block">
-                <div className="flex flex-col">
-                  <span className="text-primary font-bold text-3xl">1999</span>
-                  <span className="text-on-surface-variant font-label-md">YEAR FOUNDED</span>
+    <section className="py-24 md:py-32 bg-[#050b14] text-white relative overflow-hidden">
+      {/* Ambient background glow */}
+      <div className="absolute top-1/2 left-0 w-96 h-96 bg-blue-600/10 rounded-full blur-[160px] pointer-events-none" />
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-[160px] pointer-events-none" />
+
+      <Container className="relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+          
+          {/* Left Column: Image Showcase */}
+          <div className="lg:col-span-6 relative">
+            <Reveal>
+              <div className="relative group">
+                <div className="rounded-3xl overflow-hidden border border-white/15 shadow-2xl relative aspect-[4/3] bg-slate-900">
+                  <Image
+                    src={LegacyImage}
+                    alt="Entrance gate of JIRS campus"
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-700"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
+                </div>
+                
+                {/* Floating Founded Badge */}
+                <div className="absolute -bottom-6 -right-4 sm:right-6 bg-slate-900/90 backdrop-blur-2xl p-6 rounded-3xl shadow-2xl border border-sky-400/30 flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-sky-500/20 text-sky-400 flex items-center justify-center">
+                    <Icon name="military_tech" className="text-2xl" />
+                  </div>
+                  <div>
+                    <span className="text-sky-400 font-display font-black text-2xl block tracking-tight">Est. 1999</span>
+                    <span className="text-slate-400 text-xs font-mono font-bold uppercase tracking-wider block">25+ Years Legacy</span>
+                  </div>
                 </div>
               </div>
-            </div>
-          </Reveal>
-          <Reveal delay={100}>
-            <div>
-              <h2 className="font-headline text-3xl md:text-4xl font-bold text-primary dark:text-slate-100 mb-6 tracking-tight">
-                Legacy of Excellence
-              </h2>
-              <p className="font-body-lg text-on-surface-variant dark:text-slate-400 mb-6 text-base leading-relaxed">
-                Founded in 1999 by the visionary educationist Dr. Chenraj
-                Roychand, JAIN International Residential School (JIRS) has
-                grown into one of India&rsquo;s premier residential schools.
-                Our 350-acre sprawling campus is more than just a school;
-                it&rsquo;s a global learning hub.
-              </p>
-              <p className="font-body-lg text-on-surface-variant dark:text-slate-400 mb-8 text-base leading-relaxed">
-                Guided by an international curriculum and traditional Indian
-                values, we foster an environment where 700+ learners from
-                across the globe grow into ethical leaders of tomorrow.
-              </p>
-              <div className="grid grid-cols-2 gap-4">
+            </Reveal>
+          </div>
+
+          {/* Right Column: Content & Stats */}
+          <div className="lg:col-span-6 space-y-8">
+            <Reveal delay={100}>
+              <div className="space-y-4">
+               
+                <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight">
+                  Legacy of Excellence
+                </h2>
+                <p className="font-body text-slate-300 text-base md:text-lg leading-relaxed">
+                  Founded in 1999 by visionary educationist Dr. Chenraj Roychand, JAIN International Residential School (JIRS) has evolved into one of India&rsquo;s premier residential institutions.
+                </p>
+                <p className="font-body text-slate-400 text-sm md:text-base leading-relaxed">
+                  Our 350-acre global learning hub blends international academic rigour with Indian cultural values, nurturing over 700+ residential students from across the globe.
+                </p>
+              </div>
+            </Reveal>
+
+            {/* Modern Stats Grid */}
+            <Reveal delay={200}>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2">
                 {STATS.map((stat) => (
-                  <div key={stat.label} className="p-5 bg-surface-container dark:bg-slate-900/60 border border-outline-variant/10 dark:border-white/5 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
-                    <span className="block text-primary dark:text-blue-300 font-black text-2xl">{stat.value}</span>
-                    <span className="text-xs uppercase tracking-wider text-on-surface-variant dark:text-slate-400 font-semibold mt-1 block">{stat.label}</span>
+                  <div
+                    key={stat.label}
+                    className="p-4 rounded-2xl bg-slate-900/60 backdrop-blur-xl border border-white/10 hover:border-sky-400/40 transition-all duration-300 group hover:-translate-y-1"
+                  >
+                    <Icon name={stat.icon} className="text-sky-400 text-xl mb-2 group-hover:scale-110 transition-transform" />
+                    <span className="block text-white font-display font-black text-xl sm:text-2xl">{stat.value}</span>
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold mt-0.5 block">{stat.label}</span>
                   </div>
                 ))}
               </div>
-            </div>
-          </Reveal>
+            </Reveal>
+          </div>
+
         </div>
       </Container>
     </section>
   );
 }
+

@@ -59,20 +59,23 @@ export default function FeedbackFormCard() {
     return (
       <div
         id="feedback-form"
-        className="bg-white dark:bg-slate-900/50 rounded-3xl border border-outline-variant/20 dark:border-white/5 p-8 lg:sticky lg:top-24 shadow-xl text-center space-y-4"
+        className="bg-slate-900/60 backdrop-blur-xl rounded-3xl border border-white/15 p-8 lg:sticky lg:top-24 shadow-2xl text-center space-y-4 text-white"
       >
-        <h2 className="font-headline text-xl font-bold text-primary dark:text-slate-100 tracking-tight">
+        <div className="w-12 h-12 rounded-2xl bg-sky-500/20 text-sky-400 flex items-center justify-center mx-auto">
+          <Icon name="rate_review" className="text-2xl" />
+        </div>
+        <h2 className="font-display text-xl font-bold text-white tracking-tight">
           Share Your Thoughts
         </h2>
-        <p className="font-body-md text-on-surface-variant dark:text-slate-400 text-sm">
-          Sign in to your JIRS account to leave feedback on the maintenance portal.
+        <p className="font-body text-slate-300 text-sm leading-relaxed">
+          Sign in to your JIRS account to leave feedback for the maintenance administration team.
         </p>
         <Link
           href="/login"
-          className="inline-flex items-center justify-center gap-2 bg-primary hover:bg-opacity-95 text-white font-bold py-3.5 px-6 rounded-xl shadow-md hover:shadow-primary/20 transition-all text-sm"
+          className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-slate-950 font-extrabold py-3.5 px-6 rounded-2xl shadow-lg shadow-sky-500/20 transition-all text-xs uppercase tracking-wider"
         >
-          <Icon name="login" className="text-[18px]" />
-          Sign In
+          <Icon name="login" className="text-base" />
+          <span>Post Feedback</span>
         </Link>
       </div>
     );
@@ -81,17 +84,20 @@ export default function FeedbackFormCard() {
   return (
     <div
       id="feedback-form"
-      className="bg-white dark:bg-slate-900/50 rounded-3xl border border-outline-variant/20 dark:border-white/5 p-8 lg:sticky lg:top-24 shadow-xl"
+      className="bg-slate-900/60 backdrop-blur-xl rounded-3xl border border-white/15 p-8 lg:sticky lg:top-24 shadow-2xl text-white space-y-6"
     >
-      <h2 className="font-headline text-xl font-bold text-primary dark:text-slate-100 mb-2 tracking-tight">
-        Share Your Thoughts
-      </h2>
-      <p className="font-body-md text-on-surface-variant dark:text-slate-400 mb-8 text-sm">
-        Tell us what you love or how we can improve.
-      </p>
-      <form className="space-y-6" onSubmit={handleSubmit}>
+      <div>
+        <h2 className="font-display text-2xl font-bold text-white mb-1 tracking-tight">
+          Share Your Thoughts
+        </h2>
+        <p className="font-body text-slate-400 text-xs sm:text-sm">
+          Tell us what you love or how we can improve.
+        </p>
+      </div>
+
+      <form className="space-y-5" onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="name" className="block font-label-md text-on-surface-variant dark:text-slate-300 font-bold mb-2 text-xs uppercase tracking-wider">
+          <label htmlFor="name" className="block font-mono text-slate-400 font-bold mb-1.5 text-[10px] uppercase tracking-wider">
             Full Name
           </label>
           <input
@@ -100,11 +106,11 @@ export default function FeedbackFormCard() {
             required
             disabled
             value={name}
-            className="w-full rounded-xl p-3.5 font-body-md text-sm border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-400 outline-none"
+            className="w-full rounded-2xl p-3.5 font-body text-xs sm:text-sm border border-white/10 bg-slate-950/60 text-slate-400 outline-none"
           />
         </div>
         <div>
-          <label htmlFor="email" className="block font-label-md text-on-surface-variant dark:text-slate-300 font-bold mb-2 text-xs uppercase tracking-wider">
+          <label htmlFor="email" className="block font-mono text-slate-400 font-bold mb-1.5 text-[10px] uppercase tracking-wider">
             Email Address
           </label>
           <input
@@ -113,17 +119,17 @@ export default function FeedbackFormCard() {
             required
             disabled
             value={email}
-            className="w-full rounded-xl p-3.5 font-body-md text-sm border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-400 outline-none"
+            className="w-full rounded-2xl p-3.5 font-body text-xs sm:text-sm border border-white/10 bg-slate-950/60 text-slate-400 outline-none"
           />
         </div>
         <div>
-          <div className="flex justify-between items-center mb-2">
-            <label htmlFor="message" className="font-label-md text-on-surface-variant dark:text-slate-300 font-bold text-xs uppercase tracking-wider">
+          <div className="flex justify-between items-center mb-1.5">
+            <label htmlFor="message" className="font-mono text-slate-300 font-bold text-[10px] uppercase tracking-wider">
               Your Message
             </label>
             <span
-              className={`font-label-sm font-bold text-xs ${
-                message.length > 450 ? "text-error" : "text-outline dark:text-slate-500"
+              className={`font-mono text-[10px] font-bold ${
+                message.length > 450 ? "text-red-400" : "text-slate-400"
               }`}
             >
               {message.length} / {MAX_LENGTH}
@@ -131,24 +137,27 @@ export default function FeedbackFormCard() {
           </div>
           <textarea
             id="message"
-            rows={5}
+            rows={4}
             required
             maxLength={MAX_LENGTH}
             placeholder="Write your experience here..."
             value={message}
             onChange={(event) => setMessage(event.target.value)}
-            className="w-full rounded-xl p-3.5 font-body-md premium-input dark:text-slate-100 resize-none"
+            className="w-full rounded-2xl p-3.5 font-body text-xs sm:text-sm border border-white/10 bg-slate-950/40 focus:border-sky-400 text-white placeholder-slate-500 outline-none transition-colors resize-none"
           />
         </div>
-        <div className="flex gap-4">
+
+        <div className="flex gap-3 pt-2">
           <button
             type="submit"
             disabled={status !== "idle"}
-            className={`flex-1 text-white font-bold py-3.5 rounded-xl transition-all scale-100 active:scale-95 flex items-center justify-center gap-2 disabled:opacity-80 text-sm cursor-pointer ${
-              status === "submitted" ? "bg-emerald-500" : "bg-primary hover:bg-opacity-95 shadow-md hover:shadow-primary/20"
+            className={`flex-1 text-slate-950 font-extrabold py-3.5 px-4 rounded-2xl transition-all flex items-center justify-center gap-2 disabled:opacity-80 text-xs uppercase tracking-wider cursor-pointer ${
+              status === "submitted"
+                ? "bg-emerald-400 text-slate-950"
+                : "bg-gradient-to-r from-sky-500 via-blue-600 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white shadow-lg shadow-sky-500/20"
             }`}
           >
-            <Icon name={status === "submitted" ? "check_circle" : "send"} className="text-[18px]" />
+            <Icon name={status === "submitted" ? "check_circle" : "send"} className="text-base" />
             {status === "submitted"
               ? "Submitted!"
               : status === "submitting"
@@ -158,7 +167,7 @@ export default function FeedbackFormCard() {
           <button
             type="button"
             onClick={() => setMessage("")}
-            className="px-6 border border-outline-variant dark:border-white/10 text-on-surface-variant dark:text-slate-300 font-bold rounded-xl hover:bg-surface-container-high dark:hover:bg-slate-800 transition-colors text-sm cursor-pointer"
+            className="px-4 border border-white/15 text-slate-300 font-bold rounded-2xl hover:bg-white/10 hover:text-white transition-colors text-xs uppercase tracking-wider cursor-pointer"
           >
             Clear
           </button>
@@ -167,3 +176,4 @@ export default function FeedbackFormCard() {
     </div>
   );
 }
+

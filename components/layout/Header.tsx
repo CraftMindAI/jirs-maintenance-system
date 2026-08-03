@@ -46,14 +46,14 @@ export default function Header() {
     return pathname === href;
   };
 
-  const isLanding = pathname === "/";
+  const isDarkPage = pathname === "/" || pathname === "/about-us" || pathname === "/feedback";
 
   return (
     <>
       <header
         className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
           scrolled
-            ? isLanding
+            ? isDarkPage
               ? "h-16 bg-slate-950/80 text-white backdrop-blur-xl border-b border-white/10 shadow-2xl"
               : "h-16 bg-white/80 dark:bg-slate-950/80 text-slate-900 dark:text-white backdrop-blur-xl border-b border-slate-200/60 dark:border-white/10 shadow-md"
             : "h-20 bg-slate-950/30 backdrop-blur-md md:bg-transparent md:backdrop-blur-none text-white border-b border-white/5 md:border-none"
@@ -64,7 +64,7 @@ export default function Header() {
             <Link
               href="/"
               className={`font-display text-2xl font-black tracking-wider flex items-center gap-2 hover:scale-105 transition-transform ${
-                isLanding ? "text-white" : "text-black dark:text-white"
+                isDarkPage ? "text-white" : "text-black dark:text-white"
               }`}
             >
               <Icon name="school" className="text-3xl text-sky-400" />
@@ -80,7 +80,7 @@ export default function Header() {
                     className={`font-label-md py-1.5 transition-all nav-link-underline font-extrabold ${
                       active
                         ? "text-sky-400 border-b-2 border-sky-400"
-                        : isLanding
+                        : isDarkPage
                         ? "text-slate-200 hover:text-white"
                         : "text-black hover:text-primary dark:text-slate-200 dark:hover:text-white"
                     }`}
@@ -104,7 +104,7 @@ export default function Header() {
                 <Link
                   href="/login"
                   className={`font-label-md font-extrabold hover:text-sky-400 transition-colors ${
-                    isLanding ? "text-white" : "text-black dark:text-white"
+                    isDarkPage ? "text-white" : "text-black dark:text-white"
                   }`}
                 >
                   Login
