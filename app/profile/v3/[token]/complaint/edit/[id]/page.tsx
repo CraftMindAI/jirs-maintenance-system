@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { use, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Icon from "@/components/ui/Icon";
 import ComplaintForm, { ExistingComplaintImage } from "@/components/admin/raise-complaint/ComplaintForm";
@@ -15,10 +15,16 @@ type ComplaintInitialData = {
   description: string;
 };
 
-export default function EditComplaintPage() {
-  const params = useParams();
+export default function EditComplaintPage({
+  params,
+}: {
+  params: Promise<{ token: string; id: string }>;
+}) {
+  const resolvedParams = use(params);
+  const token = resolvedParams.token;
+  const id = resolvedParams.id;
+  const basePath = `/profile/v3/${token}`;
   const router = useRouter();
-  const id = params.id as string;
 
   const [initialData, setInitialData] = useState<ComplaintInitialData | null>(null);
   const [initialImages, setInitialImages] = useState<ExistingComplaintImage[]>([]);
@@ -86,7 +92,7 @@ export default function EditComplaintPage() {
           <h3 className="font-display text-xl font-bold text-slate-900 dark:text-[#dae2fd]">Ticket Not Found</h3>
           <p className="text-xs text-slate-500 dark:text-[#908fa0] mt-1">This complaint may have been removed.</p>
           <button
-            onClick={() => router.push("/admin/view-complaints")}
+            onClick={() => router.push(`${basePath}/view-complaints`)}
             className="mt-6 px-6 py-3 vibrant-gradient text-white rounded-xl font-bold text-xs cursor-pointer"
           >
             Back to Overview
@@ -102,7 +108,7 @@ export default function EditComplaintPage() {
 
       <div>
         <Link
-          href="/admin/view-complaints"
+          href={`${basePath}/view-complaints`}
           className="inline-flex items-center gap-2 text-slate-500 dark:text-[#908fa0] font-bold hover:text-primary dark:hover:text-[#c0c1ff] transition-colors text-xs uppercase tracking-wider"
         >
           <Icon name="arrow_back" className="text-lg" />
@@ -116,7 +122,7 @@ export default function EditComplaintPage() {
         </p>
       </div>
 
-      <ComplaintForm mode="edit" complaintId={id} initialData={initialData} initialImages={initialImages} />
+      <ComplaintForm mode="edit" complaintId={id} initialData={initialData} initialImages={initialImages} basePath={basePath} />
     </div>
   );
 }

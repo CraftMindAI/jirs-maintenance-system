@@ -6,7 +6,7 @@ export type ServiceSlice = {
   color: string;
 };
 
-export default function ServiceSplit({ data }: Readonly<{ data: ServiceSlice[] }>) {
+export default function ServiceSplit({ data, href = "/admin/reports" }: Readonly<{ data: ServiceSlice[]; href?: string }>) {
   return (
     <div className="bg-white dark:bg-[#171f33] p-8 rounded-3xl border border-slate-200 dark:border-[#464554]/10 flex flex-col justify-between shadow-md dark:vibrant-shadow">
       <div>
@@ -34,7 +34,7 @@ export default function ServiceSplit({ data }: Readonly<{ data: ServiceSlice[] }
       </div>
 
       <Link
-        href="/admin/reports"
+        href={href}
         className="w-full mt-8 py-3.5 bg-primary/10 dark:bg-[#222a3d] text-primary dark:text-[#c0c1ff] font-extrabold rounded-2xl hover:bg-primary/20 dark:hover:bg-[#2d3449] transition-all text-xs uppercase tracking-widest border border-primary/20 dark:border-[#c0c1ff]/20 text-center block"
       >
         Detailed Analytics

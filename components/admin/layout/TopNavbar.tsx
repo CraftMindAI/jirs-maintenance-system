@@ -14,6 +14,7 @@ export default function TopNavbar({
   onLogout,
   profileHref = "/admin/settings",
   brandLabel = "JMMS",
+  onMenuToggle,
 }: {
   darkMode: boolean;
   toggleTheme: () => void;
@@ -23,18 +24,28 @@ export default function TopNavbar({
   onLogout: () => void;
   profileHref?: string;
   brandLabel?: string;
+  onMenuToggle?: () => void;
 }) {
   return (
     <header
-      className={`sticky top-0 z-40 w-full h-16 transition-colors border-b flex justify-between items-center px-6 lg:px-10 shadow-lg ${
+      className={`sticky top-0 z-40 w-full h-16 transition-colors border-b flex justify-between items-center px-4 lg:px-10 shadow-lg ${
         darkMode
           ? "bg-[#171f33]/80 backdrop-blur-md border-[#464554]/20 text-[#dae2fd]"
           : "bg-white/80 backdrop-blur-md border-slate-200 text-slate-800"
       }`}
     >
-      <div className="flex items-center gap-8">
+      <div className="flex items-center gap-3">
+        {onMenuToggle && (
+          <button
+            onClick={onMenuToggle}
+            className="lg:hidden p-2 rounded-xl text-slate-400 hover:text-white hover:bg-[#222a3d] transition-colors cursor-pointer"
+            aria-label="Open Navigation Menu"
+          >
+            <Icon name="menu" className="text-2xl" />
+          </button>
+        )}
         <span
-          className={`font-display text-2xl font-extrabold tracking-tighter lg:hidden ${
+          className={`font-display text-xl md:text-2xl font-extrabold tracking-tighter lg:hidden ${
             darkMode ? "text-[#c0c1ff]" : "text-primary"
           }`}
         >

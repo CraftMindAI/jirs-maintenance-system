@@ -1,44 +1,77 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
-import Sidebar from "@/components/admin/layout/Sidebar";
+import Sidebar, { MenuItem, QuickAction } from "@/components/admin/layout/Sidebar";
 import TopNavbar from "@/components/admin/layout/TopNavbar";
-import MobileBottomNav from "@/components/admin/layout/MobileBottomNav";
-import { encryptTechToken } from "@/lib/encryption";
+import { encryptAdminToken } from "@/lib/encryption";
+import { dashboardPathForRole } from "@/lib/roleRedirect";
+import { roleGroup } from "@/lib/roles";
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default function AdminLayout({
+  children,
+  params,
+}: {
+  children: React.ReactNode;
+  params: Promise<{ token: string }>;
+}) {
+  const resolvedParams = use(params);
+  const token = resolvedParams.token;
+  const basePath = `/profile/v3/${token}`;
+
+  const ADMIN_MENU_ITEMS: MenuItem[] = [
+    { label: "Dashboard", icon: "dashboard", href: `${basePath}/dashboard` },
+    { label: "All Complaints", icon: "assignment_late", href: `${basePath}/view-complaints` },
+    { label: "Technicians", icon: "engineering", href: `${basePath}/track-complaints` },
+    { label: "Feedbacks", icon: "comment", href: `${basePath}/feedbacks` },
+    { label: "Reports", icon: "inventory_2", href: `${basePath}/reports` },
+    { label: "User Management", icon: "group", href: `${basePath}/user-management` },
+    { label: "Settings", icon: "settings_applications", href: `${basePath}/settings` },
+  ];
+
+  const ADMIN_QUICK_ACTION: QuickAction = { label: "Raise Complaint", icon: "add_circle", href: `${basePath}/raise-complaint` };
+
   const router = useRouter();
   const [profileOpen, setProfileOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(true);
   const [userProfile, setUserProfile] = useState<{ name: string; role: string; email: string } | null>(null);
 
-  // Sync auth state & enforce Role Guard
+  // Sync auth state & enforce Role Guard (ONLY ADMIN ACCESS)
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         try {
           const docRef = doc(db, "users", user.uid);
           const docSnap = await getDoc(docRef);
-          const role = (docSnap.exists() ? docSnap.data().role : "").toLowerCase();
+          const rawRole = docSnap.exists() ? docSnap.data().role || "admin" : "admin";
+          const role = rawRole.toLowerCase();
           const name = docSnap.exists() ? docSnap.data().name : user.displayName;
 
-          if (role === "technician") {
-            const token = encryptTechToken(user.uid, name || "technician");
-            router.replace(`/profile/v2/${token}/dashboard`);
+          // If logged-in user is NOT admin, redirect them to their respective role dashboard
+          if (roleGroup(role) !== "admin") {
+            const redirectPath = dashboardPathForRole(role, user.uid, name || role);
+            router.replace(redirectPath);
+            return;
+          }
+
+          // Verify token alignment; if token mismatch, update URL
+          const expectedToken = encryptAdminToken(user.uid, role);
+          if (token !== expectedToken) {
+            router.replace(`/profile/v3/${expectedToken}/dashboard`);
             return;
           }
 
           setUserProfile({
             name: name || "Admin User",
-            role: docSnap.exists() ? docSnap.data().role || "Super Admin" : "Super Admin",
+            role: rawRole,
             email: user.email || "",
           });
         } catch (error) {
-          console.error("Error fetching user doc:", error);
+          console.error("Error fetching admin doc:", error);
           setUserProfile({
             name: "Admin User",
             role: "Super Admin",
@@ -46,16 +79,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           });
         }
       } else {
-        setUserProfile({
-          name: "Admin User",
-          role: "Super Admin",
-          email: "admin@jirs.ac.in",
-        });
+        // If not logged in, redirect to login page
+        router.replace("/login");
       }
     });
 
     return () => unsubscribe();
-  }, [router]);
+  }, [router, token]);
 
   // Theme Sync on Mount
   useEffect(() => {
@@ -97,8 +127,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         darkMode ? "bg-[#0b1326] text-[#dae2fd] selection:bg-[#8083ff]/30" : "bg-slate-50 text-slate-900 selection:bg-primary/20"
       }`}
     >
-      {/* 1. DESKTOP SIDEBAR NAVIGATION */}
-      <Sidebar darkMode={darkMode} onLogout={handleLogout} />
+      {/* 1. SIDEBAR NAVIGATION (DESKTOP & MOBILE DRAWER) */}
+      <Sidebar
+        darkMode={darkMode}
+        onLogout={handleLogout}
+        menuItems={ADMIN_MENU_ITEMS}
+        quickAction={ADMIN_QUICK_ACTION}
+        mobileOpen={mobileOpen}
+        setMobileOpen={setMobileOpen}
+      />
 
       {/* 2. MAIN CONTAINER & TOP NAVBAR */}
       <div className="lg:ml-64 min-h-screen flex flex-col">
@@ -110,6 +147,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           setProfileOpen={setProfileOpen}
           userProfile={userProfile}
           onLogout={handleLogout}
+          profileHref={`${basePath}/settings`}
+          onMenuToggle={() => setMobileOpen(true)}
         />
 
         {/* Content View */}
@@ -117,9 +156,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           {children}
         </main>
       </div>
-
-      {/* 3. BOTTOM NAVIGATION (MOBILE ONLY) */}
-      <MobileBottomNav />
     </div>
   );
 }

@@ -17,9 +17,11 @@ export type BottomNavQuickAction = {
 
 const ADMIN_NAV_ITEMS: BottomNavItem[] = [
   { label: "Home", icon: "dashboard", href: "/admin" },
-  { label: "Issues", icon: "assignment_late", href: "/admin/view-complaints" },
-  { label: "Staff", icon: "engineering", href: "/admin/track-complaints" },
-  { label: "Profile", icon: "person", href: "/admin/settings" },
+  { label: "Complaints", icon: "assignment_late", href: "/admin/view-complaints" },
+  { label: "Feedback", icon: "comment", href: "/admin/feedbacks" },
+  { label: "Reports", icon: "inventory_2", href: "/admin/reports" },
+  { label: "Users", icon: "group", href: "/admin/user-management" },
+  { label: "Settings", icon: "settings_applications", href: "/admin/settings" },
 ];
 
 const ADMIN_QUICK_ACTION: BottomNavQuickAction = { icon: "add", href: "/admin/raise-complaint" };
@@ -32,35 +34,36 @@ export default function MobileBottomNav({
   quickAction?: BottomNavQuickAction | null;
 }) {
   const pathname = usePathname();
-  const splitAt = Math.ceil(items.length / 2);
-  const firstHalf = quickAction ? items.slice(0, splitAt) : items;
-  const secondHalf = quickAction ? items.slice(splitAt) : [];
 
   const renderItem = (item: BottomNavItem) => (
     <Link
       key={item.label}
       href={item.href}
-      className={`flex flex-col items-center justify-center ${pathname === item.href ? "text-[#c0c1ff]" : "text-[#c7c4d7]"}`}
+      className={`flex flex-col items-center justify-center shrink-0 px-2 py-1 transition-all ${
+        pathname === item.href ? "text-[#c0c1ff] font-bold" : "text-[#c7c4d7] hover:text-white"
+      }`}
     >
-      <Icon name={item.icon} className="text-2xl" />
-      <span className="text-[10px] mt-1 font-bold uppercase tracking-tighter">{item.label}</span>
+      <Icon name={item.icon} className="text-xl" />
+      <span className="text-[10px] mt-0.5 font-bold uppercase tracking-tighter whitespace-nowrap">{item.label}</span>
     </Link>
   );
 
   return (
-    <nav className="lg:hidden fixed bottom-0 left-0 w-full z-50 glass border-t border-[#464554]/20 flex justify-around items-center h-20 px-4 shadow-2xl rounded-t-3xl">
-      {firstHalf.map(renderItem)}
-      {quickAction && (
-        <div className="relative -top-6">
-          <Link
-            href={quickAction.href}
-            className="w-14 h-14 vibrant-gradient rounded-full flex items-center justify-center text-white shadow-xl shadow-[#8083ff]/40 border-4 border-[#0b1326] ring-2 ring-[#8083ff]/20"
-          >
-            <Icon name={quickAction.icon} className="text-3xl" />
-          </Link>
-        </div>
-      )}
-      {secondHalf.map(renderItem)}
+    <nav className="lg:hidden fixed bottom-0 left-0 w-full z-50 glass border-t border-[#464554]/20 flex items-center h-16 px-3 shadow-2xl rounded-t-2xl">
+      <div className="flex items-center justify-between w-full overflow-x-auto hide-scrollbar gap-3 px-1">
+        {items.slice(0, 3).map(renderItem)}
+        {quickAction && (
+          <div className="shrink-0 px-1">
+            <Link
+              href={quickAction.href}
+              className="w-11 h-11 vibrant-gradient rounded-full flex items-center justify-center text-white shadow-xl shadow-[#8083ff]/40 border-2 border-[#0b1326]"
+            >
+              <Icon name={quickAction.icon} className="text-2xl" />
+            </Link>
+          </div>
+        )}
+        {items.slice(3).map(renderItem)}
+      </div>
     </nav>
   );
 }

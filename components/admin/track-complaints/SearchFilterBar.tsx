@@ -35,6 +35,7 @@ export default function SearchFilterBar({
           <option value="In Progress">In Progress</option>
           <option value="Completed">Completed</option>
           <option value="Verified">Verified</option>
+          <option value="Closed">Closed</option>
         </select>
       </div>
     </div>

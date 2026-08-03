@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, Suspense } from "react";
+import { use, useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { TechnicianOption } from "@/components/admin/view-complaints/constants";
 import PageHeader from "@/components/admin/view-complaints/PageHeader";
@@ -27,7 +27,10 @@ import {
   filterComplaints,
 } from "@/utils/admin/viewComplaints";
 
-function ViewComplaintsContent() {
+function ViewComplaintsContent({ params }: { params: Promise<{ token: string }> }) {
+  const resolvedParams = use(params);
+  const token = resolvedParams.token;
+  const basePath = `/profile/v3/${token}`;
   const searchParams = useSearchParams();
   const ticketParam = searchParams.get("ticket");
 
@@ -197,6 +200,7 @@ function ViewComplaintsContent() {
         onAssign={handleOpenAssign}
         onDeleteRequest={setShowDeleteConfirm}
         onUpdateRequest={setUpdatingComplaintId}
+        basePath={basePath}
       />
 
       {/* 4. MODAL: TECHNICIAN ALLOCATION */}
@@ -241,14 +245,18 @@ function ViewComplaintsContent() {
   );
 }
 
-export default function ViewComplaints() {
+export default function ViewComplaints({
+  params,
+}: {
+  params: Promise<{ token: string }>;
+}) {
   return (
     <Suspense fallback={
       <div className="flex h-screen items-center justify-center">
         <div className="w-10 h-10 border-4 border-[#464554]/30 border-t-[#8083ff] rounded-full animate-spin" />
       </div>
     }>
-      <ViewComplaintsContent />
+      <ViewComplaintsContent params={params} />
     </Suspense>
   );
 }

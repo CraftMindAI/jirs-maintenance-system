@@ -8,7 +8,9 @@ import { doc, getDoc, setDoc } from "firebase/firestore";
 import Sidebar, { type MenuItem, type QuickAction } from "@/components/admin/layout/Sidebar";
 import TopNavbar from "@/components/admin/layout/TopNavbar";
 import MobileBottomNav, { type BottomNavItem, type BottomNavQuickAction } from "@/components/admin/layout/MobileBottomNav";
-import { encryptTechToken, encryptUserToken } from "@/lib/encryption";
+import { encryptUserToken } from "@/lib/encryption";
+import { dashboardPathForRole } from "@/lib/roleRedirect";
+import { roleGroup } from "@/lib/roles";
 
 export default function DashboardLayout({
   children,
@@ -54,58 +56,53 @@ export default function DashboardLayout({
   // Sync auth state + the signed-in user's saved theme preference
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        setUid(user.uid);
-        try {
-          const docRef = doc(db, "users", user.uid);
-          const docSnap = await getDoc(docRef);
-          const role = (docSnap.exists() ? docSnap.data().role : "").toLowerCase();
-          const name = docSnap.exists() ? docSnap.data().name : user.displayName;
+      if (!user) {
+        setUid(null);
+        router.replace("/login");
+        return;
+      }
 
-          if (role === "technician") {
-            const token = encryptTechToken(user.uid, name || "technician");
-            router.replace(`/profile/v2/${token}/dashboard`);
-            return;
-          }
+      setUid(user.uid);
+      try {
+        const docRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(docRef);
+        const rawRole = docSnap.exists() ? docSnap.data().role || "student" : "student";
+        const name = docSnap.exists() ? docSnap.data().name : user.displayName;
 
-          if (docSnap.exists()) {
-            const data = docSnap.data();
-            setUserProfile({
-              name: data.name || "User",
-              role: data.role || "Student",
-              email: user.email || "",
-            });
-            applyTheme(data.theme !== "light");
-          } else {
-            setUserProfile({
-              name: user.displayName || "User",
-              role: "Student",
-              email: user.email || "",
-            });
-            applyTheme(true);
-          }
-        } catch (error) {
-          console.error("Error fetching user doc:", error);
+        if (roleGroup(rawRole) !== "student") {
+          router.replace(dashboardPathForRole(rawRole, user.uid, name || rawRole));
+          return;
+        }
+
+        const expectedToken = encryptUserToken(user.uid, rawRole);
+        if (token !== expectedToken) {
+          router.replace(`/profile/v1/${expectedToken}/dashboard`);
+          return;
+        }
+
+        if (docSnap.exists()) {
+          const data = docSnap.data();
           setUserProfile({
-            name: "Siddharth Roy",
+            name: data.name || "User",
+            role: data.role || "Student",
+            email: user.email || "",
+          });
+          applyTheme(data.theme !== "light");
+        } else {
+          setUserProfile({
+            name: user.displayName || "User",
             role: "Student",
-            email: "siddharth.r@jirs.ac.in",
+            email: user.email || "",
           });
           applyTheme(true);
         }
-      } else {
-        setUid(null);
-        setUserProfile({
-          name: "Siddharth Roy",
-          role: "Student",
-          email: "siddharth.r@jirs.ac.in",
-        });
-        applyTheme(true);
+      } catch (error) {
+        console.error("Error fetching user doc:", error);
       }
     });
 
     return () => unsubscribe();
-  }, [router]);
+  }, [router, token]);
 
   const toggleTheme = () => {
     const nextDark = !darkMode;

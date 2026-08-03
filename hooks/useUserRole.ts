@@ -4,9 +4,7 @@ import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
-
-const ADMIN_ROLES = ["admin", "super admin"];
-const TECHNICIAN_ROLES = ["technician"];
+import { ADMIN_ROLES, TECHNICIAN_ROLES } from "@/lib/roles";
 
 export type UserRoleState = {
   userId: string | null;

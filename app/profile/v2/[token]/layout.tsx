@@ -9,6 +9,8 @@ import Sidebar, { type MenuItem } from "@/components/admin/layout/Sidebar";
 import TopNavbar from "@/components/admin/layout/TopNavbar";
 import MobileBottomNav, { type BottomNavItem } from "@/components/admin/layout/MobileBottomNav";
 import { encryptTechToken } from "@/lib/encryption";
+import { dashboardPathForRole } from "@/lib/roleRedirect";
+import { roleGroup } from "@/lib/roles";
 
 export default function TechnicianLayout({
   children,
@@ -46,46 +48,44 @@ export default function TechnicianLayout({
   // Sync auth state & enforce Technician Token Guard
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        try {
-          const docRef = doc(db, "users", user.uid);
-          const docSnap = await getDoc(docRef);
-          const name = docSnap.exists() ? docSnap.data().name : user.displayName;
-          const expectedToken = encryptTechToken(user.uid, name || "technician");
+      if (!user) {
+        router.replace("/login");
+        return;
+      }
 
-          if (token !== expectedToken) {
-            router.replace(`/profile/v2/${expectedToken}/dashboard`);
-            return;
-          }
+      try {
+        const docRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(docRef);
+        const rawRole = docSnap.exists() ? docSnap.data().role || "technician" : "technician";
+        const name = docSnap.exists() ? docSnap.data().name : user.displayName;
 
-          if (docSnap.exists()) {
-            const data = docSnap.data();
-            setUserProfile({
-              name: data.name || "Technician",
-              role: data.role || "Technician",
-              email: user.email || "",
-            });
-          } else {
-            setUserProfile({
-              name: user.displayName || "Technician",
-              role: "Technician",
-              email: user.email || "",
-            });
-          }
-        } catch (error) {
-          console.error("Error fetching user doc:", error);
+        if (roleGroup(rawRole) !== "technician") {
+          router.replace(dashboardPathForRole(rawRole, user.uid, name || rawRole));
+          return;
+        }
+
+        const expectedToken = encryptTechToken(user.uid, name || "technician");
+        if (token !== expectedToken) {
+          router.replace(`/profile/v2/${expectedToken}/dashboard`);
+          return;
+        }
+
+        if (docSnap.exists()) {
+          const data = docSnap.data();
           setUserProfile({
-            name: "Technician",
+            name: data.name || "Technician",
+            role: data.role || "Technician",
+            email: user.email || "",
+          });
+        } else {
+          setUserProfile({
+            name: user.displayName || "Technician",
             role: "Technician",
-            email: "technician@jirs.ac.in",
+            email: user.email || "",
           });
         }
-      } else {
-        setUserProfile({
-          name: "Technician",
-          role: "Technician",
-          email: "technician@jirs.ac.in",
-        });
+      } catch (error) {
+        console.error("Error fetching user doc:", error);
       }
     });
 

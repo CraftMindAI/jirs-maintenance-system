@@ -138,12 +138,17 @@ export default function AdminTrackComplaints() {
 
   // Top metric counters
   const activeTechniciansCount = technicianGroups.filter((g) =>
-    g.tickets.some((t) => t.status === "In Progress" || t.status === "Assigned")
+    g.tickets.some((t) => (t.status || "").toLowerCase() !== "rejected")
   ).length;
 
   const inProgressCount = complaints.filter((c) => c.status === "In Progress").length;
   const assignedCount = complaints.filter((c) => c.status === "Assigned").length;
-  const completedCount = complaints.filter((c) => c.status === "Completed").length;
+  const completedCount = complaints.filter(
+    (c) =>
+      c.status === "Completed" ||
+      c.status === "Verified" ||
+      c.status === "Closed"
+  ).length;
 
   const overdueCount = complaints.filter((c) => {
     if (c.status === "Completed") return false;
@@ -158,7 +163,7 @@ export default function AdminTrackComplaints() {
       <PageHeader />
 
       {/* Top Metric Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-white dark:bg-[#171f33] border border-slate-200 dark:border-[#464554]/10 rounded-3xl p-5 shadow-sm">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-mono uppercase font-bold text-slate-500 dark:text-[#908fa0]">Active Techs</span>
@@ -208,19 +213,6 @@ export default function AdminTrackComplaints() {
           <div className="mt-3">
             <span className="text-3xl font-black text-emerald-600 dark:text-emerald-400">{completedCount}</span>
             <p className="text-[10px] text-slate-400 mt-0.5">Resolved Successfully</p>
-          </div>
-        </div>
-
-        <div className="bg-white dark:bg-[#171f33] border border-slate-200 dark:border-[#464554]/10 rounded-3xl p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-mono uppercase font-bold text-red-600 dark:text-red-400">Overdue</span>
-            <div className="w-8 h-8 rounded-xl bg-red-500/10 text-red-600 dark:text-red-400 flex items-center justify-center">
-              <Icon name="timer_off" className="text-base" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <span className="text-3xl font-black text-red-600 dark:text-red-400">{overdueCount}</span>
-            <p className="text-[10px] text-slate-400 mt-0.5">&gt; 3 Days Target Exceeded</p>
           </div>
         </div>
       </div>

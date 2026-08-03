@@ -1,4 +1,4 @@
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { addDoc, collection, doc, updateDoc, deleteDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
 export type NewFeedback = {
@@ -18,4 +18,14 @@ export async function submitFeedback({ userId, name, role, message }: NewFeedbac
     verified: false,
     createdAt: serverTimestamp(),
   });
+}
+
+/** Admin function to approve/verify a user feedback. */
+export async function verifyFeedback(id: string) {
+  await updateDoc(doc(db, "feedback", id), { verified: true });
+}
+
+/** Admin function to delete a feedback log. */
+export async function deleteFeedback(id: string) {
+  await deleteDoc(doc(db, "feedback", id));
 }

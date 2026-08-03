@@ -1,4 +1,5 @@
 import Icon from "@/components/ui/Icon";
+import Dropdown, { DropdownOption } from "@/components/ui/Dropdown";
 import { TechnicianOption } from "./constants";
 
 export default function AssignTechnicianModal({
@@ -18,6 +19,11 @@ export default function AssignTechnicianModal({
   onCancel: () => void;
   onConfirm: () => void;
 }) {
+  const technicianOptions: DropdownOption[] = technicians.map((t) => ({
+    value: t.id,
+    label: `${t.name}${t.phone ? ` (${t.phone})` : ""}`,
+  }));
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 dark:bg-[#0b1326]/80 backdrop-blur-md p-6">
       <div className="bg-white dark:bg-[#171f33] border border-slate-200 dark:border-[#464554]/30 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-6 animate-scale-in">
@@ -37,16 +43,12 @@ export default function AssignTechnicianModal({
 
         <div className="space-y-1.5">
           <label className="block text-[10px] font-mono uppercase text-slate-500 dark:text-[#908fa0]">Select Staff</label>
-          <select
+          <Dropdown
+            options={technicianOptions}
             value={selectedTechnicianId}
-            onChange={(e) => setSelectedTechnicianId(e.target.value)}
-            className="w-full rounded-xl px-4 py-3 text-xs bg-slate-50 dark:bg-[#131b2e] border border-slate-200 dark:border-[#464554]/30 text-slate-800 dark:text-[#dae2fd] font-bold outline-none focus:border-primary dark:focus:border-[#8083ff]"
-          >
-            <option value="">Choose technician...</option>
-            {technicians.map((t) => (
-              <option key={t.id} value={t.id}>{t.name}{t.phone ? ` (${t.phone})` : ""}</option>
-            ))}
-          </select>
+            onChange={setSelectedTechnicianId}
+            placeholder="Choose technician..."
+          />
           {technicians.length === 0 && (
             <p className="text-[10px] text-slate-500 dark:text-[#908fa0] mt-1">
               No technician accounts found. Ask them to sign up with the Technician role.

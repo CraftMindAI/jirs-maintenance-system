@@ -94,7 +94,7 @@ export default function DashboardFeedback() {
   const MAX_CHARS = MESSAGE_MAX_LENGTH;
 
   const myFeedback = useMemo(
-    () => feedbackList.filter((item) => item.userId === userId),
+    () => feedbackList.filter((item) => item.verified || (userId && item.userId === userId)),
     [feedbackList, userId],
   );
 

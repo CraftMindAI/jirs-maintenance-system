@@ -39,11 +39,23 @@ export type ComplaintFilters = {
   techFilter: string;
 };
 
+const STATUS_ORDER: Record<string, number> = {
+  pending: 1,
+  approved: 2,
+  assigned: 3,
+  "in progress": 4,
+  inprogress: 4,
+  completed: 5,
+  verified: 5,
+  closed: 5,
+  rejected: 6,
+};
+
 export function filterComplaints(complaints: Complaint[], filters: ComplaintFilters): Complaint[] {
   const { searchQuery, statusFilter, priorityFilter, deptFilter, techFilter } = filters;
   const query = searchQuery.toLowerCase();
 
-  return complaints.filter((c) => {
+  const filtered = complaints.filter((c) => {
     const matchQuery =
       c.id.toLowerCase().includes(query) ||
       c.category.toLowerCase().includes(query) ||
@@ -58,5 +70,11 @@ export function filterComplaints(complaints: Complaint[], filters: ComplaintFilt
       c.technicianName === techFilter;
 
     return matchQuery && matchStatus && matchPriority && matchDept && matchTech;
+  });
+
+  return [...filtered].sort((a, b) => {
+    const orderA = STATUS_ORDER[(a.status || "").toLowerCase()] ?? 99;
+    const orderB = STATUS_ORDER[(b.status || "").toLowerCase()] ?? 99;
+    return orderA - orderB;
   });
 }

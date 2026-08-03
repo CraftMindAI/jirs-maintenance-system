@@ -19,10 +19,12 @@ import Icon from "@/components/ui/Icon";
 export default function ViewComplaintDetailPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ token: string; id: string }>;
 }) {
   const resolvedParams = use(params);
+  const token = resolvedParams.token;
   const complaintId = resolvedParams.id;
+  const basePath = `/profile/v3/${token}`;
   const router = useRouter();
 
   const { complaint, poster, images, loading, error } = useComplaintDetail(complaintId);
@@ -46,7 +48,7 @@ export default function ViewComplaintDetailPage({
       setStatusOverride("Approved");
       showToast.success("Complaint ticket approved successfully!");
       setTimeout(() => {
-        router.push("/admin/view-complaints");
+        router.push(`${basePath}/view-complaints`);
       }, 500);
     } catch (err) {
       console.error("Error approving complaint:", err);
@@ -99,7 +101,7 @@ export default function ViewComplaintDetailPage({
       setStatusOverride("In Progress");
       showToast.info("Complaint status changed back to In Progress.");
       setTimeout(() => {
-        router.push("/admin/view-complaints");
+        router.push(`${basePath}/view-complaints`);
       }, 500);
     } catch (err) {
       console.error("Error setting status to In Progress:", err);
@@ -112,9 +114,9 @@ export default function ViewComplaintDetailPage({
     <div className="space-y-6 pb-12">
       <title>{`Complaint #${complaintId} | JMMS Admin`}</title>
 
-      {/* Top Header Row with Transparent Back Button */}
-      <div className="flex items-center justify-between">
-        <BackToComplaintsButton />
+      {/* Navigation & Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <BackToComplaintsButton href={`${basePath}/view-complaints`} />
         <span className="text-xs font-mono text-[#908fa0]">
           Ticket Details Module
         </span>

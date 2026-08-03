@@ -14,11 +14,12 @@ function initials(name: string) {
   return name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
 }
 
-function actionFor(request: RecentRequest) {
+function actionFor(request: RecentRequest, basePath?: string) {
+  const targetHref = basePath ? `${basePath}/view-complaints/${request.id}` : `/admin/view-complaints/${request.id}`;
   if (request.status === "Pending") {
     return (
       <Link
-        href={`/admin/view-complaints/${request.id}`}
+        href={targetHref}
         className="vibrant-gradient text-white px-3.5 py-1.5 rounded-xl text-[10px] font-extrabold uppercase tracking-widest shadow-md shadow-[#8083ff]/20 hover:scale-105 transition-transform inline-block"
       >
         Assign Now
@@ -28,7 +29,7 @@ function actionFor(request: RecentRequest) {
   if (request.status === "Assigned" || request.status === "In Progress") {
     return (
       <Link
-        href={`/admin/view-complaints/${request.id}`}
+        href={targetHref}
         className="text-primary dark:text-[#c0c1ff] font-bold text-xs uppercase tracking-widest inline-flex items-center gap-1 hover:underline"
       >
         Track <Icon name="chevron_right" className="text-sm" />
@@ -37,7 +38,7 @@ function actionFor(request: RecentRequest) {
   }
   return (
     <Link
-      href={`/admin/view-complaints/${request.id}`}
+      href={targetHref}
       className="text-primary dark:text-[#c0c1ff] font-bold text-xs uppercase tracking-widest inline-flex items-center gap-1 hover:underline"
     >
       View <Icon name="chevron_right" className="text-sm" />
@@ -48,7 +49,9 @@ function actionFor(request: RecentRequest) {
 export default function RecentRequestsTable({
   requests,
   totalCount,
-}: Readonly<{ requests: RecentRequest[]; totalCount: number }>) {
+  basePath,
+}: Readonly<{ requests: RecentRequest[]; totalCount: number; basePath?: string }>) {
+  const viewComplaintsHref = basePath ? `${basePath}/view-complaints` : "/admin/view-complaints";
   return (
     <div className="lg:col-span-3 bg-white dark:bg-[#171f33] rounded-3xl border border-slate-200 dark:border-[#464554]/10 overflow-hidden shadow-md dark:vibrant-shadow">
       <div className="p-6 md:p-8 border-b border-slate-200 dark:border-[#464554]/10 flex justify-between items-center bg-slate-50/50 dark:bg-[#131b2e]/30">
@@ -57,10 +60,10 @@ export default function RecentRequestsTable({
           <p className="text-slate-500 dark:text-[#908fa0] text-xs font-semibold mt-1">Live feed of reported issues across campus</p>
         </div>
         <div className="flex gap-2">
-          <Link href="/admin/view-complaints" className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-[#222a3d] flex items-center justify-center text-slate-600 dark:text-[#c7c4d7] hover:text-primary dark:hover:text-[#c0c1ff] transition-colors border border-slate-200 dark:border-[#464554]/20">
+          <Link href={viewComplaintsHref} className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-[#222a3d] flex items-center justify-center text-slate-600 dark:text-[#c7c4d7] hover:text-primary dark:hover:text-[#c0c1ff] transition-colors border border-slate-200 dark:border-[#464554]/20">
             <Icon name="search" className="text-lg" />
           </Link>
-          <Link href="/admin/view-complaints" className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-[#222a3d] flex items-center justify-center text-slate-600 dark:text-[#c7c4d7] hover:text-primary dark:hover:text-[#c0c1ff] transition-colors border border-slate-200 dark:border-[#464554]/20">
+          <Link href={viewComplaintsHref} className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-[#222a3d] flex items-center justify-center text-slate-600 dark:text-[#c7c4d7] hover:text-primary dark:hover:text-[#c0c1ff] transition-colors border border-slate-200 dark:border-[#464554]/20">
             <Icon name="tune" className="text-lg" />
           </Link>
         </div>
@@ -109,7 +112,7 @@ export default function RecentRequestsTable({
                   <td className="px-8 py-5">
                     <StatusBadge status={request.status} className="px-3 py-1 text-[11px]" />
                   </td>
-                  <td className="px-8 py-5 text-right">{actionFor(request)}</td>
+                  <td className="px-8 py-5 text-right">{actionFor(request, basePath)}</td>
                 </tr>
               ))}
             </tbody>

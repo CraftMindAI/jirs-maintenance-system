@@ -3,10 +3,10 @@
 import Link from "next/link";
 import Icon from "@/components/ui/Icon";
 
-export default function BackToComplaintsButton() {
+export default function BackToComplaintsButton({ href = "/admin/view-complaints" }: { href?: string }) {
   return (
     <Link
-      href="/admin/view-complaints"
+      href={href}
       className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-[#464554]/30 bg-transparent text-slate-800 dark:text-[#dae2fd] hover:bg-primary/10 dark:hover:bg-[#8083ff]/10 hover:border-primary/40 dark:hover:border-[#8083ff]/40 text-xs font-bold transition-all duration-200 cursor-pointer shadow-sm group"
     >
       <Icon

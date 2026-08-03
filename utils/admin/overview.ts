@@ -23,7 +23,13 @@ export function buildServiceSplit(complaints: { category: string }[]): ServiceSl
     percent: Math.round((count / complaints.length) * 100),
   }));
   if (others > 0) {
-    slices.push({ category: "Others", percent: Math.round((others / complaints.length) * 100) });
+    const existingOthers = slices.find((slice) => slice.category === "Others");
+    const othersPercent = Math.round((others / complaints.length) * 100);
+    if (existingOthers) {
+      existingOthers.percent += othersPercent;
+    } else {
+      slices.push({ category: "Others", percent: othersPercent });
+    }
   }
 
   return slices.map((slice, idx) => ({ ...slice, color: SLICE_COLORS[idx % SLICE_COLORS.length] }));

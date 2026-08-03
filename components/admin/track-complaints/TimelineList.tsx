@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import Icon from "@/components/ui/Icon";
 import StatusBadge from "@/components/ui/StatusBadge";
 import PriorityBadge from "@/components/ui/PriorityBadge";
@@ -23,12 +22,18 @@ const TIMELINE_STEPS = [
   { key: "Assigned", label: "Assigned" },
   { key: "In Progress", label: "In Progress" },
   { key: "Completed", label: "Completed" },
+  { key: "Closed", label: "Closed" },
 ];
 
 const getStepStatus = (stepKey: string, currentStatus: string) => {
-  const order = ["Pending", "Approved", "Assigned", "In Progress", "Completed"];
-  const currentIdx = order.indexOf(currentStatus);
-  const stepIdx = order.indexOf(stepKey);
+  const order = ["Pending", "Approved", "Assigned", "In Progress", "Completed", "Verified", "Closed"];
+  let currentIdx = order.indexOf(currentStatus);
+  if (currentIdx === -1) currentIdx = 0;
+  
+  let stepIdx = order.indexOf(stepKey);
+  if (stepKey === "Closed" && (currentStatus === "Closed" || currentStatus === "Verified")) {
+    return currentIdx >= order.indexOf("Verified") ? (currentStatus === "Closed" || currentStatus === "Verified" ? "completed" : "active") : "pending";
+  }
 
   if (currentIdx > stepIdx) return "completed";
   if (currentIdx === stepIdx) return "active";
@@ -88,15 +93,7 @@ export default function TimelineList({
                   {tech.name.slice(0, 2).toUpperCase()}
                 </div>
                 <div>
-                  <div className="flex items-center gap-2">
-                    <h2 className="text-lg font-extrabold text-slate-900 dark:text-white">{tech.name}</h2>
-                    <Link
-                      href={`/technician/${tech.id}`}
-                      className="text-xs font-bold text-primary dark:text-[#c0c1ff] hover:underline flex items-center gap-1"
-                    >
-                      Full Profile & Timelines <Icon name="arrow_forward" className="text-xs" />
-                    </Link>
-                  </div>
+                  <h2 className="text-lg font-extrabold text-slate-900 dark:text-white">{tech.name}</h2>
                   <p className="text-xs text-slate-500 dark:text-[#908fa0] mt-0.5">
                     {tech.email} • {tech.phone || "No phone listed"} • {tech.dept || "Maintenance"}
                   </p>
@@ -160,14 +157,52 @@ export default function TimelineList({
             {/* List of All Tickets for this Technician */}
             <div className="space-y-4 pt-2">
               <button
+                type="button"
                 onClick={() => toggleExpanded(tech.id)}
-                className="w-full flex items-center justify-between gap-2 text-xs font-mono font-bold uppercase tracking-wider text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors cursor-pointer"
+                className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all duration-300 cursor-pointer shadow-sm ${
+                  isExpanded
+                    ? "bg-slate-900 text-white dark:bg-[#131b2e] dark:text-[#dae2fd] border-slate-800 dark:border-[#8083ff]/40 ring-2 ring-primary/20 dark:ring-[#8083ff]/20"
+                    : "bg-slate-50 dark:bg-[#131b2e]/60 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-[#464554]/20 hover:bg-slate-100 dark:hover:bg-[#171f33]"
+                }`}
               >
-                <span>All Tickets Handled By {tech.name} ({tech.tickets.length})</span>
-                <Icon
-                  name={isExpanded ? "expand_less" : "expand_more"}
-                  className="text-base transition-transform"
-                />
+                <div className="flex items-center gap-3">
+                  <div
+                    className={`w-8 h-8 rounded-xl flex items-center justify-center text-sm font-black transition-colors ${
+                      isExpanded
+                        ? "bg-primary text-white dark:bg-[#8083ff] dark:text-slate-950"
+                        : "bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-[#908fa0]"
+                    }`}
+                  >
+                    <Icon name="assignment" className="text-base" />
+                  </div>
+                  <div className="text-left">
+                    <span className="text-xs font-bold font-display tracking-tight block">
+                      All Tickets Handled By {tech.name}
+                    </span>
+                    <span className="text-[10px] font-mono opacity-70">
+                      Click to {isExpanded ? "collapse" : "expand"} ticket history
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-mono font-black ${
+                      isExpanded
+                        ? "bg-primary/20 text-[#c0c1ff] border border-primary/30"
+                        : "bg-slate-200/80 dark:bg-[#222a3d] text-slate-800 dark:text-[#dae2fd]"
+                    }`}
+                  >
+                    {tech.tickets.length} {tech.tickets.length === 1 ? "Ticket" : "Tickets"}
+                  </span>
+                  <div
+                    className={`w-7 h-7 rounded-lg flex items-center justify-center transition-transform duration-300 ${
+                      isExpanded ? "rotate-180 bg-white/10" : "bg-transparent"
+                    }`}
+                  >
+                    <Icon name="expand_more" className="text-lg" />
+                  </div>
+                </div>
               </button>
 
               {isExpanded && tech.tickets.map((ticket) => {

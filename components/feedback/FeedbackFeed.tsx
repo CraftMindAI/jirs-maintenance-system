@@ -7,7 +7,7 @@ import Icon from "@/components/ui/Icon";
 import { useFeedbackFeed } from "@/hooks/useFeedbackFeed";
 
 export default function FeedbackFeed() {
-  const { feedback: items } = useFeedbackFeed();
+  const { feedback: items } = useFeedbackFeed({ verifiedOnly: true });
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
 

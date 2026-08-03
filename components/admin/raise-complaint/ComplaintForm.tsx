@@ -38,6 +38,7 @@ export default function ComplaintForm({
   complaintId,
   initialData,
   initialImages,
+  basePath,
 }: {
   mode?: "create" | "edit";
   complaintId?: string;
@@ -48,6 +49,7 @@ export default function ComplaintForm({
     description: string;
   };
   initialImages?: ExistingComplaintImage[];
+  basePath?: string;
 }) {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -185,7 +187,7 @@ export default function ComplaintForm({
         setSuccess(true);
 
         setTimeout(() => {
-          router.push("/admin/view-complaints");
+          router.push(basePath ? `${basePath}/view-complaints` : "/admin/view-complaints");
         }, 1500);
         return;
       }
@@ -221,7 +223,7 @@ export default function ComplaintForm({
       setSuccess(true);
 
       setTimeout(() => {
-        router.push("/admin/view-complaints");
+        router.push(basePath ? `${basePath}/view-complaints` : "/admin/view-complaints");
       }, 1500);
     } catch (err) {
       console.error("Error submitting complaint:", err);

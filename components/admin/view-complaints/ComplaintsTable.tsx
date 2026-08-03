@@ -15,6 +15,7 @@ export default function ComplaintsTable({
   onAssign,
   onDeleteRequest,
   onUpdateRequest,
+  basePath,
 }: {
   complaints: Complaint[];
   currentUserId: string | null;
@@ -25,6 +26,7 @@ export default function ComplaintsTable({
   onAssign: (id: string) => void;
   onDeleteRequest: (id: string) => void;
   onUpdateRequest: (id: string) => void;
+  basePath?: string;
 }) {
   if (complaints.length === 0) {
     return (
@@ -63,7 +65,7 @@ export default function ComplaintsTable({
               return (
               <tr key={item.id} className="hover:bg-primary/5 dark:hover:bg-[#8083ff]/5 transition-colors">
                 <td className="py-4 px-6 font-mono text-primary dark:text-[#c0c1ff] font-bold">
-                  <Link href={`/admin/view-complaints/${item.id}`} className="hover:underline">
+                  <Link href={basePath ? `${basePath}/view-complaints/${item.id}` : `/admin/view-complaints/${item.id}`} className="hover:underline">
                     {index + 1}
                   </Link>
                 </td>
@@ -91,12 +93,12 @@ export default function ComplaintsTable({
                 </td>
                 <td className="py-4 px-6 text-right">
                   <div className="flex justify-end gap-3 text-slate-400 dark:text-[#908fa0]">
-                    <Link href={`/admin/view-complaints/${item.id}`} title="View Details" className="hover:text-primary dark:hover:text-[#c0c1ff] transition-colors cursor-pointer">
+                    <Link href={basePath ? `${basePath}/view-complaints/${item.id}` : `/admin/view-complaints/${item.id}`} title="View Details" className="hover:text-primary dark:hover:text-[#c0c1ff] transition-colors cursor-pointer">
                       <Icon name="visibility" className="text-lg" />
                     </Link>
                     {canManage && (
                       <>
-                        <Link href={`/admin/complaint/edit/${item.id}`} title="Edit Ticket" className="hover:text-amber-500 transition-colors cursor-pointer">
+                        <Link href={basePath ? `${basePath}/complaint/edit/${item.id}` : `/admin/complaint/edit/${item.id}`} title="Edit Ticket" className="hover:text-amber-500 transition-colors cursor-pointer">
                           <Icon name="edit" className="text-lg" />
                         </Link>
                         <button onClick={() => onDeleteRequest(item.id)} title="Delete Ticket" className="hover:text-red-500 transition-colors cursor-pointer">

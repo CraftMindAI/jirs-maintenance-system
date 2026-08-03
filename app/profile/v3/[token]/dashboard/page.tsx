@@ -1,5 +1,6 @@
 "use client";
 
+import { use } from "react";
 import { useComplaintsFeed } from "@/hooks/useComplaintsFeed";
 import WelcomeHeader from "@/components/admin/overview/WelcomeHeader";
 import StatsCards from "@/components/admin/overview/StatsCards";
@@ -8,7 +9,15 @@ import ServiceSplit from "@/components/admin/overview/ServiceSplit";
 import RecentRequestsTable from "@/components/admin/overview/RecentRequestsTable";
 import { buildServiceSplit, buildRecentRequests } from "@/utils/admin/overview";
 
-export default function AdminDashboardHome() {
+export default function AdminDashboardHome({
+  params,
+}: {
+  params: Promise<{ token: string }>;
+}) {
+  const resolvedParams = use(params);
+  const token = resolvedParams.token;
+  const basePath = `/profile/v3/${token}`;
+
   const { complaints } = useComplaintsFeed(null);
 
   const stats = {
@@ -37,10 +46,10 @@ export default function AdminDashboardHome() {
         <MonthlyInsights complaintDates={complaints.map((c) => c.date)} />
 
         {/* Right Bento: Service Split Progress Bars (1 Col) */}
-        <ServiceSplit data={serviceSplit} />
+        <ServiceSplit data={serviceSplit} href={`${basePath}/reports`} />
 
         {/* 4. RECENT MAINTENANCE REQUESTS TABLE (3 COLS) */}
-        <RecentRequestsTable requests={recentRequests} totalCount={complaints.length} />
+        <RecentRequestsTable requests={recentRequests} totalCount={complaints.length} basePath={basePath} />
       </div>
     </div>
   );
