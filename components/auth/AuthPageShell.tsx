@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, useEffect } from "react";
+import { ReactNode } from "react";
 import Link from "next/link";
 import AuthHeroPanel from "@/components/auth/AuthHeroPanel";
 import AuthTabs from "@/components/auth/AuthTabs";
@@ -14,43 +14,46 @@ export default function AuthPageShell({
   active: "login" | "signup";
   children: ReactNode;
 }) {
-  // Auth pages have no theme toggle of their own, so sync the same "dark" class the
-  // dashboard/admin/technician layouts use — otherwise a fresh visit never gets the
-  // class at all, and premium-input's OS-level dark styling ends up mismatched
-  // against an unstyled light page.
-  useEffect(() => {
-    const savedTheme = localStorage.getItem("theme");
-    document.documentElement.classList.toggle("dark", savedTheme !== "light");
-  }, []);
-
   return (
-    <div className="flex min-h-screen w-full flex-col lg:flex-row bg-slate-50 dark:bg-[#0f2238]">
+    <div className="min-h-screen w-full flex flex-col lg:flex-row bg-gradient-to-br from-slate-50 via-sky-50/40 to-blue-50/20 text-slate-900 font-body">
+      {/* Left Side: Campus Hero Panel */}
       <AuthHeroPanel />
 
-      <div className="flex min-h-screen w-full flex-col items-center justify-center bg-white dark:bg-[#0f2238] px-6 py-12 lg:w-1/2 lg:px-20 overflow-y-auto border-l border-outline-variant/10 dark:border-white/5">
-        <div className="w-full max-w-md">
+      {/* Right Side: Perfectly Centered Professional Form Card Container */}
+      <div className="flex-1 min-h-screen flex items-center justify-center p-4 sm:p-8 lg:p-12 overflow-y-auto">
+        <div className="w-full max-w-lg bg-white/95 backdrop-blur-md rounded-3xl p-6 sm:p-10 shadow-2xl shadow-slate-200/60 border border-slate-200/80 transition-all">
+          {/* Back to Home Button */}
           <Link
             href="/"
-            className="mb-8 inline-flex items-center gap-2 text-primary dark:text-blue-300 font-bold hover:bg-slate-100 dark:hover:bg-slate-900 px-3 py-2 rounded-xl transition-all group text-sm"
+            className="mb-4 inline-flex items-center gap-2 text-[#00355f] font-mono text-xs font-bold uppercase tracking-wider hover:bg-sky-50 px-3 py-2 rounded-xl transition-colors group"
           >
             <Icon
               name="arrow_back"
-              className="text-[20px] transition-transform group-hover:-translate-x-1"
+              className="text-base transition-transform group-hover:-translate-x-1 text-[#00355f]"
             />
-            BACK TO HOME
+            Back to Home
           </Link>
 
-          <div className="mb-8 flex items-center justify-center gap-2 lg:hidden">
-            <Icon name="school" className="text-primary dark:text-blue-300 text-[28px]" />
-            <span className="font-headline text-lg font-bold text-primary dark:text-slate-100">JMMS</span>
+          {/* Mobile Branding Header */}
+          <div className="mb-6 flex items-center justify-center gap-3.5 lg:hidden pb-4 border-b border-slate-100">
+            <div className="w-10 h-10 rounded-xl bg-sky-50 p-1.5 border border-sky-200 flex items-center justify-center shrink-0">
+              <img src="/Logo.png" alt="JIRS Logo" className="w-full h-full object-contain" />
+            </div>
+            <div>
+              <span className="font-display text-xl font-black text-[#00355f] tracking-wide block">JIRS JMMS</span>
+              <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-sky-600 block">School Maintenance Portal</span>
+            </div>
           </div>
 
           <AuthTabs active={active} />
           {children}
-
           <AuthFooterLinks />
         </div>
       </div>
     </div>
   );
 }
+
+
+
+

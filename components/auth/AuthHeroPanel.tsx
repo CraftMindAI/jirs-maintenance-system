@@ -1,41 +1,45 @@
+"use client";
+
 import Icon from "@/components/ui/Icon";
 
 export default function AuthHeroPanel() {
   return (
-    <div className="relative hidden h-screen w-full lg:flex lg:w-1/2 overflow-hidden bg-slate-950">
+    <div className="relative hidden min-h-screen w-full lg:flex lg:w-1/2 overflow-hidden bg-[#00355f] select-none">
+      {/* Background Image Showcase */}
       <div className="absolute inset-0 z-0">
         <div
-          className="h-full w-full bg-cover bg-center opacity-60 scale-105"
+          className="h-full w-full bg-cover bg-center opacity-70 scale-105 transition-transform duration-1000"
           role="img"
-          aria-label="Cinematic view of the JAIN International Residential School campus at golden hour"
+          aria-label="Cinematic view of the JAIN International Residential School campus"
           style={{
-            backgroundImage:
-              "url('https://lh3.googleusercontent.com/aida-public/AB6AXuC_ev9QCelm3ZYzNbZveaewBkkRBD1WTJDoeaP1kSpDzEgmWhRJBibQKOBrbC1TsHpOpQ7oVK2hk4EFO6t7Oc4zTCSh6x8M1rK9pPHnqQgqx2UounK5QMeNDTtuQZiPNmSAQjB8W6JX9udnVtGLiiIh-4CTSLUNF7GQwMHK-cOI9Sv8WQwNVZBv8NKMfI9egg2fhaxX3ttaLxVVkZzWVA0EsT58KwqRtzKb91cEUMhN13JaLUaDoEYDUA')",
+            backgroundImage: "url('/Login.png')",
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-tr from-slate-950 via-slate-950/70 to-primary/30" />
+        <div className="absolute inset-0 bg-[#00355f]/40 mix-blend-multiply" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0b1c30] via-transparent to-[#00355f]/60" />
       </div>
-      <div className="relative z-10 flex h-full w-full flex-col justify-between p-12 text-white">
-        <div className="flex items-center gap-3">
-          <Icon name="school" className="text-[32px] text-primary" />
-          <h1 className="font-display text-xl font-black tracking-widest uppercase">JMMS</h1>
+
+      {/* Glassmorphism Content Panel */}
+      <div className="relative z-10 flex h-full w-full flex-col items-center justify-center p-12 text-white">
+        {/* Glassmorphism Quote Card */}
+        <div className="bg-slate-900/80 backdrop-blur-xl max-w-lg rounded-3xl p-8 sm:p-10 shadow-2xl border border-white/15 space-y-5 my-auto">
+          <Icon name="format_quote" className="text-5xl text-sky-400 opacity-90" />
+          <p className="font-display text-lg sm:text-xl font-medium leading-relaxed italic text-slate-100">
+            &ldquo;Enlightenment through education is the highest form of service to humanity. We strive to maintain the sanctuary where knowledge meets character.&rdquo;
+          </p>
+          <div className="h-1 w-16 bg-sky-400 rounded-full" />
+          <div>
+            <p className="font-mono text-xs uppercase tracking-widest font-bold text-sky-300">
+              JAIN International Residential School
+            </p>
+            <p className="font-body text-slate-400 text-xs mt-1">
+              Infrastructure &amp; Maintenance Division
+            </p>
+          </div>
         </div>
-        <div className="glass-card max-w-lg rounded-3xl p-10 shadow-2xl border border-white/10">
-          <Icon name="format_quote" filled className="text-[48px] text-primary opacity-60 mb-4" />
-          <p className="font-headline text-lg mb-6 leading-relaxed italic text-slate-100">
-            &ldquo;Enlightenment through education is the highest form of
-            service to humanity. We strive to maintain the sanctuary where
-            knowledge meets character.&rdquo;
-          </p>
-          <div className="h-[2px] w-16 bg-primary rounded-full mb-4" />
-          <p className="font-label-md uppercase tracking-widest text-xs font-bold text-primary">
-            JAIN International Residential School
-          </p>
-          <p className="font-body-md mt-1 opacity-70 text-sm">
-            Infrastructure &amp; Maintenance Division
-          </p>
-        </div>
-        <div className="flex gap-6 font-label-md uppercase opacity-60 text-xs font-bold tracking-wider">
+
+        {/* Heritage Footer Bar */}
+        <div className="flex items-center gap-6 font-mono text-xs font-bold uppercase tracking-widest text-slate-300 opacity-80 mt-auto">
           <span>Precision</span>
           <span>•</span>
           <span>Efficiency</span>
@@ -46,3 +50,4 @@ export default function AuthHeroPanel() {
     </div>
   );
 }
+

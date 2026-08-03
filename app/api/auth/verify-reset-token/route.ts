@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { collection, query, where, getDocs } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { adminDb } from "@/lib/firebaseAdmin";
 import { decryptResetToken } from "@/utils/crypto";
 
 export async function POST(req: Request) {
@@ -20,9 +19,7 @@ export async function POST(req: Request) {
 
     const cleanEmail = decrypted.email.toLowerCase().trim();
 
-    // Query user document in Firestore by email
-    const usersQuery = query(collection(db, "users"), where("email", "==", cleanEmail));
-    const snapshot = await getDocs(usersQuery);
+    const snapshot = await adminDb.collection("users").where("email", "==", cleanEmail).get();
 
     if (snapshot.empty) {
       return NextResponse.json({
@@ -32,6 +29,13 @@ export async function POST(req: Request) {
     }
 
     const userDoc = snapshot.docs[0].data();
+
+    if (userDoc.resetToken !== decodedToken || !userDoc.resetTokenExpiresAt || userDoc.resetTokenExpiresAt < Date.now()) {
+      return NextResponse.json({
+        exists: false,
+        error: "This reset link has already been used or has expired.",
+      }, { status: 410 });
+    }
 
     return NextResponse.json({
       exists: true,

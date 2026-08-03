@@ -35,7 +35,7 @@ export default function RoleSelect({
     <div className="space-y-1" ref={containerRef}>
       <label
         htmlFor={`${name}-trigger`}
-        className="font-bold text-xs uppercase tracking-widest text-on-surface-variant dark:text-slate-300 block mb-1.5"
+        className="font-mono text-xs font-bold uppercase tracking-wider text-slate-700 block"
       >
         SELECT ROLE
       </label>
@@ -49,24 +49,24 @@ export default function RoleSelect({
           onClick={() => setOpen((prev) => !prev)}
           aria-haspopup="listbox"
           aria-expanded={open}
-          className="w-full flex items-center justify-between rounded-xl px-4 py-3.5 font-body-md premium-input dark:text-slate-100 dark:bg-slate-900 cursor-pointer text-left"
+          className="w-full flex items-center justify-between rounded-lg px-3 py-2 font-body text-xs bg-[#f8f9ff] border border-slate-300 text-slate-900 cursor-pointer text-left focus:border-[#00355f] focus:ring-2 focus:ring-[#00355f]/20 outline-none transition-all"
         >
-          <span className={`flex items-center gap-2 ${selectedOption ? "" : "text-outline dark:text-slate-500"}`}>
+          <span className={`flex items-center gap-2 ${selectedOption ? "text-slate-900 font-semibold" : "text-slate-400"}`}>
             {selectedOption && (
-              <Icon name={selectedOption.icon} className="text-[20px] text-primary dark:text-blue-300" />
+              <Icon name={selectedOption.icon} className="text-xl text-[#00355f]" />
             )}
             {selectedOption ? selectedOption.label : "Choose your role"}
           </span>
           <Icon
             name="expand_more"
-            className={`text-[20px] text-outline dark:text-slate-500 transition-transform ${open ? "rotate-180" : ""}`}
+            className={`text-xl text-slate-400 transition-transform ${open ? "rotate-180" : ""}`}
           />
         </button>
 
         {open && (
           <ul
             role="listbox"
-            className="absolute z-10 mt-2 w-full overflow-hidden rounded-xl border border-outline-variant/20 dark:border-white/10 bg-white dark:bg-slate-900 shadow-lg"
+            className="absolute z-10 mt-1 w-full overflow-hidden rounded-lg border border-slate-200 bg-white shadow-xl"
           >
             {ROLE_OPTIONS.map((option) => (
               <li key={option.value} role="option" aria-selected={option.value === selected}>
@@ -76,13 +76,13 @@ export default function RoleSelect({
                     setSelected(option.value);
                     setOpen(false);
                   }}
-                  className={`w-full flex items-center gap-2 px-4 py-3 text-sm font-body-md cursor-pointer transition-colors ${
+                  className={`w-full flex items-center gap-2 px-4 py-3 text-sm font-body cursor-pointer transition-colors ${
                     option.value === selected
-                      ? "bg-primary/10 text-primary dark:text-blue-300"
-                      : "text-on-surface dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800"
+                      ? "bg-[#00355f]/10 text-[#00355f] font-bold"
+                      : "text-slate-800 hover:bg-slate-50"
                   }`}
                 >
-                  <Icon name={option.icon} className="text-[20px]" />
+                  <Icon name={option.icon} className="text-xl" />
                   {option.label}
                 </button>
               </li>
@@ -93,3 +93,4 @@ export default function RoleSelect({
     </div>
   );
 }
+

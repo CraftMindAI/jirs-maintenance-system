@@ -2,23 +2,23 @@ import Link from "next/link";
 
 export default function AuthTabs({ active }: { active: "login" | "signup" }) {
   return (
-    <div className="mb-10 flex border-b border-outline-variant/30">
+    <div className="mb-8 flex border-b border-slate-200">
       <Link
-        href="/login"
-        className={`font-label-md px-6 py-3 transition-all border-b-2 -mb-px ${
+        href="/auth/v1/login"
+        className={`font-mono text-xs uppercase tracking-wider px-6 py-3 transition-all border-b-2 -mb-px font-bold ${
           active === "login"
-            ? "border-primary text-primary font-bold"
-            : "border-transparent text-on-surface-variant hover:text-primary"
+            ? "border-[#00355f] text-[#00355f]"
+            : "border-transparent text-slate-500 hover:text-[#00355f]"
         }`}
       >
         LOGIN
       </Link>
       <Link
-        href="/signup"
-        className={`font-label-md px-6 py-3 transition-all border-b-2 -mb-px ${
+        href="/auth/v1/signup"
+        className={`font-mono text-xs uppercase tracking-wider px-6 py-3 transition-all border-b-2 -mb-px font-bold ${
           active === "signup"
-            ? "border-primary text-primary font-bold"
-            : "border-transparent text-on-surface-variant hover:text-primary"
+            ? "border-[#00355f] text-[#00355f]"
+            : "border-transparent text-slate-500 hover:text-[#00355f]"
         }`}
       >
         SIGN UP
@@ -26,3 +26,6 @@ export default function AuthTabs({ active }: { active: "login" | "signup" }) {
     </div>
   );
 }
+
+
+

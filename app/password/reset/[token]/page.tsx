@@ -60,6 +60,16 @@ export default function ResetPasswordTokenPage({
     verifyAndFindUser();
   }, [token]);
 
+  useEffect(() => {
+    if (verifying || userFound) return;
+
+    const timer = setTimeout(() => {
+      router.push("/auth/v1/login");
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [verifying, userFound, router]);
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
@@ -90,6 +100,10 @@ export default function ResetPasswordTokenPage({
       if (!res.ok) throw new Error(data.error || "Failed to reset password.");
 
       setSuccess(true);
+      // Auto-navigate to login after 3 seconds
+      setTimeout(() => {
+        router.push("/auth/v1/login");
+      }, 3000);
     } catch (err: any) {
       console.error("Error submitting password reset:", err);
       setErrorMsg(err.message || "An error occurred while resetting your password.");
@@ -98,147 +112,216 @@ export default function ResetPasswordTokenPage({
     }
   };
 
-  return (
-    <div className="min-h-screen bg-slate-900 text-white flex items-center justify-center p-4 sm:p-6 font-sans">
-      <div className="w-full max-w-md bg-slate-800/90 border border-slate-700/60 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-md space-y-6">
-        
-        {/* Logo / Header Branding */}
-        <div className="text-center space-y-2">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-primary to-indigo-500 flex items-center justify-center mx-auto shadow-lg shadow-primary/25">
-            <Icon name="lock_reset" className="text-2xl text-white" />
+  if (!verifying && !userFound) {
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center bg-slate-950 p-4 sm:p-6 font-body">
+        <div className="w-full max-w-sm text-center space-y-5">
+          <Icon name="error_outline" className="text-6xl text-red-500 mx-auto block" />
+          <div className="space-y-2">
+            <h1 className="font-display text-2xl font-black text-white tracking-tight">Oops!</h1>
+            <p className="text-slate-300 text-sm">
+              You&rsquo;ve mistakenly landed on the wrong page. Please head back to the login page.
+            </p>
+            <p className="text-slate-500 text-xs font-mono">{invalidReason}</p>
           </div>
-          <h1 className="font-display text-2xl font-black text-white tracking-tight">
-            JMMS Password Reset
-          </h1>
-          <p className="text-xs text-slate-400">
-            Secure password modification portal
+          <Link
+            href="/auth/v1/login"
+            className="inline-block px-6 py-3 rounded-lg bg-[#00355f] hover:bg-[#0f4c81] text-xs font-bold text-white uppercase tracking-wider transition-colors"
+          >
+            Go to Login
+          </Link>
+          <p className="text-[11px] text-slate-500 font-mono">Redirecting to login in 5 seconds...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative min-h-screen w-full flex flex-col lg:flex-row bg-slate-900 text-slate-900 font-body">
+
+      {/* 1. BRIGHT CAMPUS BACKGROUND PANEL (LEFT SIDE) */}
+      <div className="relative w-full lg:w-1/2 min-h-[300px] lg:min-h-screen overflow-hidden bg-slate-800">
+        <div
+          className="absolute inset-0 bg-cover bg-center brightness-105 contrast-105 scale-100 transition-transform duration-1000 hover:scale-105"
+          style={{ backgroundImage: "url('/Login.png')" }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/40" />
+
+        {/* QUOTE OVERLAY */}
+        <div className="absolute inset-0 flex flex-col justify-end p-8 sm:p-12 text-white max-w-lg z-10">
+          <p className="font-display text-lg sm:text-xl font-medium leading-relaxed italic mb-4 text-slate-100 drop-shadow-md">
+            &ldquo;Enlightenment through education is the highest form of service to humanity. We strive to maintain the sanctuary where knowledge meets character.&rdquo;
+          </p>
+          <div className="h-1 w-16 bg-sky-400 rounded-full mb-3" />
+          <p className="font-mono text-xs uppercase tracking-widest font-bold text-sky-300 drop-shadow-sm">
+            JAIN International Residential School
+          </p>
+          <p className="font-body text-slate-300 text-xs mt-0.5 opacity-90">
+            Infrastructure &amp; Maintenance Division
           </p>
         </div>
+      </div>
 
-        {/* Verifying Spinner */}
-        {verifying && (
-          <div className="py-12 text-center space-y-3">
-            <div className="w-10 h-10 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin mx-auto" />
-            <p className="text-xs text-slate-400 font-medium">Verifying reset token and user account...</p>
-          </div>
-        )}
-
-        {/* Invalid Token / User Not Found */}
-        {!verifying && !userFound && (
-          <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-5 text-center space-y-4">
-            <Icon name="error_outline" className="text-3xl text-red-400 mx-auto block" />
-            <div>
-              <h3 className="font-bold text-sm text-red-300">Link Invalid or Unregistered Email</h3>
-              <p className="text-xs text-red-200/80 mt-1">{invalidReason}</p>
-            </div>
-            <Link
-              href="/login"
-              className="inline-block px-5 py-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-xs font-bold text-white transition-colors"
-            >
-              Return to Login
-            </Link>
-          </div>
-        )}
-
-        {/* Password Reset Success Screen */}
-        {!verifying && userFound && success && (
-          <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-6 text-center space-y-4">
-            <Icon name="check_circle" className="text-4xl text-emerald-400 mx-auto block" />
-            <div>
-              <h3 className="font-bold text-lg text-emerald-300">Password Reset Complete!</h3>
-              <p className="text-xs text-emerald-200/80 mt-1">
-                Your password for <strong>{userEmail}</strong> has been updated successfully.
-              </p>
-            </div>
-            <button
-              onClick={() => router.push("/login")}
-              className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 font-bold text-xs text-white shadow-lg shadow-emerald-500/20 transition-all cursor-pointer"
-            >
-              Proceed to Login
-            </button>
-          </div>
-        )}
-
-        {/* Reset Password Form */}
-        {!verifying && userFound && !success && (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Read-Only Email Field */}
-            <div className="space-y-1.5">
-              <label className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400 block">
-                User Email Address (Read-Only)
-              </label>
-              <div className="relative">
-                <input
-                  type="email"
-                  value={userEmail || ""}
-                  readOnly
-                  disabled
-                  className="w-full bg-slate-950/70 border border-slate-700/80 rounded-xl px-4 py-3 text-xs font-bold text-slate-300 cursor-not-allowed opacity-90 select-all focus:outline-none"
+      {/* 2. RESET PASSWORD FORM CARD PANEL (RIGHT SIDE) */}
+      <div className="w-full lg:w-1/2 min-h-screen flex items-center justify-center p-4 sm:p-6 bg-gradient-to-br from-slate-50/90 via-sky-50/40 to-blue-50/20">
+        <div className="w-full max-w-md bg-white/95 backdrop-blur-md rounded-2xl p-5 sm:p-7 shadow-2xl shadow-slate-300/60 border border-slate-200/80 text-slate-900 transition-all space-y-5">
+          
+          {/* Top Bar Navigation & Centered Brand Logo */}
+          <div className="space-y-3 pb-3 border-b border-slate-100">
+            <div className="flex items-center justify-between">
+              <Link
+                href="/auth/v1/login"
+                className="inline-flex items-center gap-1.5 text-[#00355f] font-mono text-[11px] font-bold uppercase tracking-wider hover:bg-sky-50 px-2.5 py-1 rounded-lg transition-colors group"
+              >
+                <Icon
+                  name="arrow_back"
+                  className="text-sm transition-transform group-hover:-translate-x-1 text-[#00355f]"
                 />
-                <Icon name="lock" className="text-slate-500 absolute right-3.5 top-3.5 text-sm" />
-              </div>
+                Back to Login
+              </Link>
             </div>
 
-            {/* New Password Input */}
-            <div className="space-y-1.5">
-              <label htmlFor="newPassword" className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-300 block">
-                New Password
-              </label>
-              <input
-                id="newPassword"
-                type="password"
-                required
-                minLength={6}
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="Enter new password (min. 6 chars)"
-                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-xs font-medium text-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all"
+            {/* Centered Large Brand Logo (Covering 65% Card Width) */}
+            <div className="flex justify-center items-center py-1">
+              <img
+                src="/Logo.png"
+                alt="JIRS Official Logo"
+                className="w-[65%] max-w-[280px] h-auto max-h-24 object-contain transition-transform duration-500 hover:scale-105"
               />
             </div>
+          </div>
 
-            {/* Confirm Password Input */}
-            <div className="space-y-1.5">
-              <label htmlFor="confirmPassword" className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-300 block">
-                Confirm New Password
-              </label>
-              <input
-                id="confirmPassword"
-                type="password"
-                required
-                minLength={6}
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Re-enter new password"
-                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-xs font-medium text-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all"
-              />
+          <div className="space-y-1">
+            <h2 className="font-display text-2xl font-black text-[#00355f] tracking-tight">Set New Password</h2>
+            <p className="font-body text-slate-600 text-xs">
+              Choose a strong password to secure your account.
+            </p>
+          </div>
+
+          {/* Verifying Spinner */}
+          {verifying && (
+            <div className="py-8 text-center space-y-3">
+              <div className="w-8 h-8 border-3 border-[#00355f]/20 border-t-[#00355f] rounded-full animate-spin mx-auto" />
+              <p className="text-xs text-slate-500 font-mono">Verifying reset security token...</p>
             </div>
+          )}
 
-            {/* Error Banner */}
-            {errorMsg && (
-              <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-xs font-bold text-red-400">
-                {errorMsg}
+          {/* Password Reset Success Screen */}
+          {!verifying && userFound && success && (
+            <div className="bg-gradient-to-br from-sky-50 to-blue-50/60 border border-sky-200/80 rounded-2xl p-6 text-center space-y-4 shadow-sm animate-fade-in">
+              <div className="w-12 h-12 rounded-full bg-[#00355f] text-white flex items-center justify-center mx-auto shadow-md">
+                <Icon name="check" className="text-2xl" />
               </div>
-            )}
+              <div className="space-y-1">
+                <h3 className="font-display font-black text-lg text-[#00355f]">Password Reset Successful!</h3>
+                <p className="text-xs text-slate-600 font-body leading-relaxed">
+                  Your password for <strong className="text-[#00355f]">{userEmail}</strong> has been updated successfully.
+                </p>
+              </div>
+              <div className="pt-2 border-t border-sky-100/80">
+                <p className="font-mono text-[11px] text-sky-800 font-semibold flex items-center justify-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-sky-500 animate-ping" />
+                  Redirecting to login in 3 seconds...
+                </p>
+              </div>
+              <button
+                onClick={() => router.push("/auth/v1/login")}
+                className="w-full py-3 rounded-lg bg-[#00355f] hover:bg-[#0f4c81] font-bold text-xs text-white uppercase tracking-wider shadow-md transition-all cursor-pointer"
+              >
+                GO TO LOGIN NOW
+              </button>
+            </div>
+          )}
 
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={submitting}
-              className="w-full py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-xs tracking-wider uppercase shadow-lg shadow-indigo-600/25 transition-all cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2"
-            >
-              {submitting ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Updating Password...
-                </>
-              ) : (
-                "Reset Password"
+          {/* Reset Password Form */}
+          {!verifying && userFound && !success && (
+            <form onSubmit={handleSubmit} className="space-y-3.5">
+              {/* Read-Only Email Field */}
+              <div className="space-y-1">
+                <label className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 block">
+                  Account Email
+                </label>
+                <div className="relative">
+                  <input
+                    type="email"
+                    value={userEmail || ""}
+                    readOnly
+                    disabled
+                    className="w-full bg-slate-100 border border-slate-300 rounded-lg px-3.5 py-2.5 text-xs font-bold text-slate-700 cursor-not-allowed opacity-90 outline-none"
+                  />
+                  <Icon name="lock" className="text-slate-400 absolute right-3 top-3 text-sm" />
+                </div>
+              </div>
+
+              {/* New Password Input */}
+              <div className="space-y-1">
+                <label htmlFor="newPassword" className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 block">
+                  New Password
+                </label>
+                <input
+                  id="newPassword"
+                  type="password"
+                  required
+                  minLength={6}
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="Enter new password (min. 6 chars)"
+                  className="w-full bg-[#f8f9ff] border border-slate-300 rounded-lg px-3.5 py-2.5 text-xs font-medium text-slate-900 focus:border-[#00355f] focus:ring-2 focus:ring-[#00355f]/20 outline-none transition-all"
+                />
+              </div>
+
+              {/* Confirm Password Input */}
+              <div className="space-y-1">
+                <label htmlFor="confirmPassword" className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 block">
+                  Confirm Password
+                </label>
+                <input
+                  id="confirmPassword"
+                  type="password"
+                  required
+                  minLength={6}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Re-enter new password"
+                  className="w-full bg-[#f8f9ff] border border-slate-300 rounded-lg px-3.5 py-2.5 text-xs font-medium text-slate-900 focus:border-[#00355f] focus:ring-2 focus:ring-[#00355f]/20 outline-none transition-all"
+                />
+              </div>
+
+              {/* Error Banner */}
+              {errorMsg && (
+                <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-xs font-bold text-red-600">
+                  {errorMsg}
+                </div>
               )}
-            </button>
-          </form>
-        )}
 
+              {/* Submit Button */}
+              <button
+                type="submit"
+                disabled={submitting}
+                className="w-full py-3.5 rounded-lg bg-[#00355f] hover:bg-[#0f4c81] text-white font-bold text-xs tracking-wider uppercase shadow-lg transition-all cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2 mt-2"
+              >
+                {submitting ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Updating Password...
+                  </>
+                ) : (
+                  "UPDATE PASSWORD"
+                )}
+              </button>
+            </form>
+          )}
+
+          {/* COPYRIGHT FOOTER */}
+          <div className="pt-3 border-t border-slate-100 text-center">
+            <p className="font-mono text-[10px] text-slate-400">
+              © 2026 JAIN International Residential School. All rights reserved.
+            </p>
+          </div>
+
+        </div>
       </div>
     </div>
   );
 }
+

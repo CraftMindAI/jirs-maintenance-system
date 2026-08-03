@@ -1,16 +1,6 @@
-import type { Metadata } from "next";
-import AuthSimpleShell from "@/components/auth/AuthSimpleShell";
-import ForgotPasswordForm from "@/components/auth/ForgotPasswordForm";
+import { redirect } from "next/navigation";
 
-export const metadata: Metadata = {
-  title: "Forgot Password | JMMS",
-  description: "Reset your JMMS account password.",
-};
-
-export default function ForgotPasswordPage() {
-  return (
-    <AuthSimpleShell>
-      <ForgotPasswordForm />
-    </AuthSimpleShell>
-  );
+export default function ForgotPasswordRedirect() {
+  redirect("/auth/v1/forgot-password");
 }
+

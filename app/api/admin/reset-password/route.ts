@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
-import { collection, query, where, getDocs } from "firebase/firestore";
-import { db } from "@/lib/firebase";
-import { adminAuth } from "@/lib/firebaseAdmin";
+import { adminAuth, adminDb } from "@/lib/firebaseAdmin";
 import { decryptResetToken } from "@/utils/crypto";
 
 export async function POST(req: Request) {
@@ -27,17 +25,34 @@ export async function POST(req: Request) {
     }
 
     // Query user document in Firestore by email
-    const usersQuery = query(collection(db, "users"), where("email", "==", targetEmail.toLowerCase().trim()));
-    const snapshot = await getDocs(usersQuery);
+    const snapshot = await adminDb
+      .collection("users")
+      .where("email", "==", targetEmail.toLowerCase().trim())
+      .get();
 
     if (snapshot.empty) {
       return NextResponse.json({ error: "User account not found in system." }, { status: 444 });
     }
 
+    const userDoc = snapshot.docs[0];
+
+    // Self-service links carry a token: it must match the one last issued for this
+    // user and still be within its validity window, otherwise the link is either
+    // already used (cleared below) or stale.
+    if (token) {
+      const data = userDoc.data();
+      if (data.resetToken !== token || !data.resetTokenExpiresAt || data.resetTokenExpiresAt < Date.now()) {
+        return NextResponse.json({ error: "This reset link has already been used or has expired." }, { status: 410 });
+      }
+    }
+
     // The Firestore user doc ID is the same as the Firebase Auth UID (set at signup),
     // so update the real Auth password via the Admin SDK — this is what login actually checks.
-    const userDoc = snapshot.docs[0];
     await adminAuth.updateUser(userDoc.id, { password: newPassword });
+
+    if (token) {
+      await userDoc.ref.update({ resetToken: null, resetTokenExpiresAt: null });
+    }
 
     return NextResponse.json({
       success: true,

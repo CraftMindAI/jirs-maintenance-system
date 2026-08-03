@@ -73,18 +73,19 @@ export default function SignupForm() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="space-y-1">
-        <h2 className="font-display text-3xl font-black text-primary dark:text-slate-100 tracking-tight">Create Account</h2>
-        <p className="font-body-md text-on-surface-variant dark:text-slate-400 text-sm">
+    <div className="space-y-3 text-slate-900">
+      <div className="space-y-0.5">
+        <h2 className="font-display text-2xl font-black text-[#00355f] tracking-tight">Create Account</h2>
+        <p className="font-body text-slate-600 text-xs">
           Register for the JAIN Maintenance Management System.
         </p>
       </div>
-      <form className="space-y-4" onSubmit={handleSubmit}>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-1">
-            <label htmlFor="name" className="font-bold text-xs uppercase tracking-widest text-on-surface-variant dark:text-slate-300 block mb-1.5">
-              FULL NAME
+
+      <form className="space-y-2.5" onSubmit={handleSubmit}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+          <div className="space-y-0.5">
+            <label htmlFor="name" className="font-mono text-[10px] font-bold uppercase tracking-wider text-slate-700 block">
+              Full Name
             </label>
             <input
               id="name"
@@ -92,12 +93,12 @@ export default function SignupForm() {
               type="text"
               required
               placeholder="John Doe"
-              className="w-full rounded-xl px-4 py-3.5 font-body-md premium-input dark:text-slate-100"
+              className="w-full rounded-lg px-3 py-2 font-body text-xs bg-[#f8f9ff] border border-slate-300 text-slate-900 placeholder-slate-400 focus:border-[#00355f] focus:ring-2 focus:ring-[#00355f]/20 outline-none transition-all"
             />
           </div>
-          <div className="space-y-1">
-            <label htmlFor="phone" className="font-bold text-xs uppercase tracking-widest text-on-surface-variant dark:text-slate-300 block mb-1.5">
-              PHONE NUMBER
+          <div className="space-y-0.5">
+            <label htmlFor="phone" className="font-mono text-[10px] font-bold uppercase tracking-wider text-slate-700 block">
+              Phone Number
             </label>
             <input
               id="phone"
@@ -105,31 +106,33 @@ export default function SignupForm() {
               type="tel"
               required
               placeholder="+91 00000 00000"
-              className="w-full rounded-xl px-4 py-3.5 font-body-md premium-input dark:text-slate-100"
+              className="w-full rounded-lg px-3 py-2 font-body text-xs bg-[#f8f9ff] border border-slate-300 text-slate-900 placeholder-slate-400 focus:border-[#00355f] focus:ring-2 focus:ring-[#00355f]/20 outline-none transition-all"
             />
           </div>
         </div>
 
-        <div className="space-y-1">
-          <label htmlFor="email" className="font-bold text-xs uppercase tracking-widest text-on-surface-variant dark:text-slate-300 block mb-1.5">
-            EMAIL ADDRESS
-          </label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            required
-            placeholder="name@organization.com"
-            className="w-full rounded-xl px-4 py-3.5 font-body-md premium-input dark:text-slate-100"
-          />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+          <div className="space-y-0.5">
+            <label htmlFor="email" className="font-mono text-[10px] font-bold uppercase tracking-wider text-slate-700 block">
+              Email Address
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              required
+              placeholder="name@organization.com"
+              className="w-full rounded-lg px-3 py-2 font-body text-xs bg-[#f8f9ff] border border-slate-300 text-slate-900 placeholder-slate-400 focus:border-[#00355f] focus:ring-2 focus:ring-[#00355f]/20 outline-none transition-all"
+            />
+          </div>
+
+          <RoleSelect />
         </div>
 
-        <RoleSelect />
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-1">
-            <label htmlFor="password" className="font-bold text-xs uppercase tracking-widest text-on-surface-variant dark:text-slate-300 block mb-1.5">
-              PASSWORD
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+          <div className="space-y-0.5">
+            <label htmlFor="password" className="font-mono text-[10px] font-bold uppercase tracking-wider text-slate-700 block">
+              Password
             </label>
             <input
               id="password"
@@ -138,12 +141,12 @@ export default function SignupForm() {
               required
               minLength={6}
               placeholder="••••••••"
-              className="w-full rounded-xl px-4 py-3.5 font-body-md premium-input dark:text-slate-100"
+              className="w-full rounded-lg px-3 py-2 font-body text-xs bg-[#f8f9ff] border border-slate-300 text-slate-900 placeholder-slate-400 focus:border-[#00355f] focus:ring-2 focus:ring-[#00355f]/20 outline-none transition-all"
             />
           </div>
-          <div className="space-y-1">
-            <label htmlFor="confirmPassword" className="font-bold text-xs uppercase tracking-widest text-on-surface-variant dark:text-slate-300 block mb-1.5">
-              CONFIRM PASSWORD
+          <div className="space-y-0.5">
+            <label htmlFor="confirmPassword" className="font-mono text-[10px] font-bold uppercase tracking-wider text-slate-700 block">
+              Confirm Password
             </label>
             <input
               id="confirmPassword"
@@ -152,21 +155,23 @@ export default function SignupForm() {
               required
               minLength={6}
               placeholder="••••••••"
-              className="w-full rounded-xl px-4 py-3.5 font-body-md premium-input dark:text-slate-100"
+              className="w-full rounded-lg px-3 py-2 font-body text-xs bg-[#f8f9ff] border border-slate-300 text-slate-900 placeholder-slate-400 focus:border-[#00355f] focus:ring-2 focus:ring-[#00355f]/20 outline-none transition-all"
             />
           </div>
         </div>
 
-        {error && <p className="text-error text-xs font-semibold">{error}</p>}
+        {error && <p className="text-red-600 text-xs font-mono font-semibold bg-red-50 p-2 rounded-lg border border-red-200">{error}</p>}
 
         <button
           type="submit"
           disabled={submitting}
-          className="w-full rounded-xl bg-primary py-4 font-bold text-white shadow-lg shadow-primary/20 hover:bg-opacity-95 transition-all scale-100 active:scale-[0.98] disabled:opacity-70 text-sm cursor-pointer mt-4"
+          className="w-full rounded-lg bg-[#00355f] hover:bg-[#0f4c81] py-2.5 font-bold text-white shadow-md transition-all scale-100 active:scale-[0.98] disabled:opacity-70 text-xs uppercase tracking-widest cursor-pointer mt-2"
         >
-          {submitting ? "SUBMITTING..." : "REGISTER ACCOUNT"}
+          {submitting ? "REGISTERING..." : "REQUEST REGISTRATION"}
         </button>
       </form>
     </div>
   );
 }
+
+

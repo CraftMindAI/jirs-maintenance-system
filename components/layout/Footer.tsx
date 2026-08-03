@@ -92,7 +92,6 @@ export default function Footer() {
                   <h3 className="font-display font-bold text-xl text-white">
                     {activeModal === "privacy" ? "Privacy Policy" : "Terms of Service"}
                   </h3>
-                  <p className="text-xs font-mono text-sky-400">JMMS Security & Legal Governance</p>
                 </div>
               </div>
               <button
@@ -107,14 +106,9 @@ export default function Footer() {
             <div className="space-y-4 text-sm text-slate-300 leading-relaxed max-h-[60vh] overflow-y-auto custom-scrollbar pr-2">
               {activeModal === "privacy" ? (
                 <>
-                  <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs font-medium flex items-start gap-3">
-                    <Icon name="verified_user" className="text-lg shrink-0 mt-0.5 text-emerald-400" />
-                    <div>
-                      <strong>Secure School Infrastructure:</strong> All user data, student ticket logs, and maintenance media are strictly stored in the secure JIRS school database with enterprise-grade encryption.
-                    </div>
-                  </div>
+                 
                   <p>
-                    <strong>1. Data Collection & Purpose:</strong> JMMS collects minimal personal information (such as name, room number, and campus credentials) strictly necessary to verify and dispatch maintenance services.
+                    <strong>1. Data Collection & Purpose:</strong> JMMS collects minimal personal information (such as name, Email, and campus credentials) strictly necessary to verify and dispatch maintenance services.
                   </p>
                   <p>
                     <strong>2. Student & Parent Privacy:</strong> We prioritize absolute privacy for all residential students and parents. Information logged in tickets is visible only to authorized campus admins and assigned facility staff.
@@ -128,12 +122,7 @@ export default function Footer() {
                 </>
               ) : (
                 <>
-                  <div className="p-4 rounded-2xl bg-sky-500/10 border border-sky-500/20 text-sky-300 text-xs font-medium flex items-start gap-3">
-                    <Icon name="info" className="text-lg shrink-0 mt-0.5 text-sky-400" />
-                    <div>
-                      <strong>Fair Usage Governance:</strong> JMMS is an official service platform maintained exclusively for the JIRS campus community.
-                    </div>
-                  </div>
+               
                   <p>
                     <strong>1. Campus Code of Conduct:</strong> Users must submit authentic, respectful, and accurate maintenance requests. Abuse of the priority dispatch engine or submitting false reports is strictly prohibited under school policies.
                   </p>

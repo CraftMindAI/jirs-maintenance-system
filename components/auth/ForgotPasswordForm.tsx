@@ -1,25 +1,6 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { sendPasswordResetEmail } from "firebase/auth";
-import { FirebaseError } from "firebase/app";
-import { auth } from "@/lib/firebase";
-
-function friendlyError(error: unknown): string {
-  if (error instanceof FirebaseError) {
-    switch (error.code) {
-      case "auth/invalid-email":
-        return "Please enter a valid email address.";
-      case "auth/user-not-found":
-        return "No account found with this email.";
-      case "auth/too-many-requests":
-        return "Too many attempts. Please try again later.";
-      default:
-        return `Something went wrong (${error.code}). Please try again.`;
-    }
-  }
-  return "Something went wrong. Please try again.";
-}
 
 export default function ForgotPasswordForm() {
   const [submitting, setSubmitting] = useState(false);
@@ -34,13 +15,21 @@ export default function ForgotPasswordForm() {
 
     setSubmitting(true);
     try {
-      await sendPasswordResetEmail(auth, email, {
-        url: `${window.location.origin}/reset-password`,
-        handleCodeInApp: true,
+      const res = await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
       });
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || "Something went wrong. Please try again.");
+        return;
+      }
+
       setSent(true);
-    } catch (err) {
-      setError(friendlyError(err));
+    } catch {
+      setError("Something went wrong. Please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -48,29 +37,27 @@ export default function ForgotPasswordForm() {
 
   if (sent) {
     return (
-      <div className="space-y-4">
-        <h2 className="font-headline text-2xl font-semibold text-primary">Check Your Email</h2>
-        <p className="font-body-md text-on-surface-variant">
-          We&rsquo;ve sent a password reset link to your email address. Follow
-          the link to choose a new password.
+      <div className="space-y-4 text-slate-900">
+        <h2 className="font-display text-2xl font-black text-[#00355f]">Check Your Email</h2>
+        <p className="font-body text-slate-600 text-sm leading-relaxed">
+          We&rsquo;ve sent a password reset link to your email address. Follow the instructions in the email to set a new password.
         </p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 text-slate-900">
       <div className="space-y-2">
-        <h2 className="font-headline text-2xl font-semibold text-primary">Forgot Password</h2>
-        <p className="font-body-md text-on-surface-variant">
-          Enter your account email and we&rsquo;ll send you a link to reset
-          your password.
+        <h2 className="font-display text-3xl font-black text-[#00355f] tracking-tight">Forgot Password</h2>
+        <p className="font-body text-slate-600 text-sm">
+          Enter your account email and we&rsquo;ll send you a link to reset your password.
         </p>
       </div>
       <form className="space-y-4" onSubmit={handleSubmit}>
         <div className="space-y-1">
-          <label htmlFor="email" className="font-label-md text-on-surface block">
-            EMAIL ADDRESS
+          <label htmlFor="email" className="font-mono text-xs font-bold uppercase tracking-wider text-slate-700 block">
+            Email Address
           </label>
           <input
             id="email"
@@ -78,18 +65,18 @@ export default function ForgotPasswordForm() {
             type="email"
             required
             placeholder="e.g. admin@jirs.ac.in"
-            className="w-full rounded-lg border border-outline-variant bg-surface px-4 py-3 font-body-md focus:outline-none focus:ring-2 focus:ring-secondary/20"
+            className="w-full rounded-lg px-4 py-3 font-body text-sm bg-[#f8f9ff] border border-slate-300 text-slate-900 placeholder-slate-400 focus:border-[#00355f] focus:ring-2 focus:ring-[#00355f]/20 outline-none transition-all"
           />
         </div>
 
-        {error && <p className="text-error text-sm">{error}</p>}
+        {error && <p className="text-red-600 text-xs font-mono font-semibold bg-red-50 p-3 rounded-lg border border-red-200">{error}</p>}
 
         <button
           type="submit"
           disabled={submitting}
-          className="w-full rounded-lg bg-primary py-4 font-label-md text-white shadow-lg transition-transform active:scale-[0.98] hover:bg-primary-container disabled:opacity-70"
+          className="w-full rounded-lg bg-[#00355f] hover:bg-[#0f4c81] py-3.5 font-bold text-white shadow-lg transition-all scale-100 active:scale-[0.98] disabled:opacity-70 text-xs uppercase tracking-widest cursor-pointer mt-2"
         >
-          {submitting ? "SENDING..." : "SEND RESET LINK"}
+          {submitting ? "SENDING..." : "SEND RESET INSTRUCTIONS"}
         </button>
       </form>
     </div>
