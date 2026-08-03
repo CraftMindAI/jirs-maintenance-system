@@ -58,12 +58,6 @@ const STEPS = [
 const STANDARD_STEPS = ["Pending", "Approved", "Assigned", "In Progress", "Completed", "Closed"];
 const REJECTED_STEPS = ["Pending", "Rejected"];
 
-function getStepIndex(currentStatus: string) {
-  const normCurrent = currentStatus === "Verified" ? "Approved" : currentStatus;
-  const idx = STATUS_ORDER.indexOf(normCurrent);
-  return idx !== -1 ? idx : 0;
-}
-
 export default function ComplaintTrackDetailsCard({ complaint }: { complaint: Complaint }) {
   const currentStatus = complaint.status || "Pending";
   const isRejected = currentStatus === "Rejected";

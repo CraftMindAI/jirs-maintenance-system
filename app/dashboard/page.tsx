@@ -9,7 +9,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { useComplaintsFeed } from "@/hooks/useComplaintsFeed";
 
 export type Complaint = {
-  imageUrls: any;
+  imageUrls?: any;
   id: string;
   category: string;
   location: string;

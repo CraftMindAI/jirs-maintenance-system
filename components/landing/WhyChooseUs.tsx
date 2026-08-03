@@ -44,7 +44,7 @@ export default function WhyChooseUs() {
 
       <Container className="relative z-10">
         <SectionHeading
-          
+          eyebrow="Why JMMS"
           title="Why Choose JMMS?"
           description="Transforming traditional facility operations into a seamless, high-speed digital service for students, parents, and campus staff."
           light

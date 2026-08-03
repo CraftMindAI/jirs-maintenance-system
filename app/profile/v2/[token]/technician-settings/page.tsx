@@ -14,22 +14,11 @@ export default function TechnicianSettings() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [department, setDepartment] = useState("Maintenance");
   const [role, setRole] = useState("Technician");
 
   const [profileSaving, setProfileSaving] = useState(false);
   const [profileSaved, setProfileSaved] = useState(false);
   const [profileError, setProfileError] = useState<string | null>(null);
-
-  // Security states
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [showNew, setShowNew] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
-
-  const [securityUpdating, setSecurityUpdating] = useState(false);
-  const [securityUpdated, setSecurityUpdated] = useState(false);
-  const [passwordError, setPasswordError] = useState<string | null>(null);
 
   // Listen to auth state and fetch profile from Firestore
   useEffect(() => {
@@ -46,7 +35,6 @@ export default function TechnicianSettings() {
             const data = docSnap.data();
             setFullName(data.name || "");
             setPhone(data.phone || "");
-            setDepartment(data.department || "Maintenance");
             setRole(data.role || "Technician");
           } else {
             // Document doesn't exist yet, populate with auth defaults
@@ -76,7 +64,6 @@ export default function TechnicianSettings() {
         name: fullName,
         email: email,
         phone: phone,
-        department: department,
         role: role,
         updatedAt: new Date().toISOString()
       }, { merge: true });
@@ -91,61 +78,6 @@ export default function TechnicianSettings() {
     }
   };
 
-  const getPasswordStrength = () => {
-    if (!newPassword) return { score: 0, label: "None", color: "bg-slate-200" };
-    let score = 0;
-    if (newPassword.length >= 6) score += 1;
-    if (newPassword.length >= 10) score += 1;
-    if (/[A-Z]/.test(newPassword)) score += 1;
-    if (/[0-9]/.test(newPassword)) score += 1;
-    if (/[^A-Za-z0-9]/.test(newPassword)) score += 1;
-
-    if (score <= 2) return { score, label: "Weak", color: "bg-red-500" };
-    if (score <= 4) return { score, label: "Medium", color: "bg-amber-500" };
-    return { score, label: "Strong", color: "bg-emerald-500" };
-  };
-
-  const handleUpdatePassword = async (e: FormEvent) => {
-    e.preventDefault();
-    setPasswordError(null);
-    setSecurityUpdated(false);
-
-    if (!user) {
-      setPasswordError("You must be logged in to update your password.");
-      return;
-    }
-
-    if (newPassword !== confirmPassword) {
-      setPasswordError("New passwords do not match.");
-      return;
-    }
-
-    if (newPassword.length < 6) {
-      setPasswordError("Password must be at least 6 characters.");
-      return;
-    }
-
-    setSecurityUpdating(true);
-
-    try {
-      await updatePassword(user, newPassword);
-      setSecurityUpdated(true);
-      setNewPassword("");
-      setConfirmPassword("");
-      setTimeout(() => setSecurityUpdated(false), 3000);
-    } catch (error: any) {
-      console.error("Error updating password:", error);
-      if (error.code === 'auth/requires-recent-login') {
-        setPasswordError("This action requires a recent login. Please log out and log back in to change your password.");
-      } else {
-        setPasswordError(error.message || "Failed to update password.");
-      }
-    } finally {
-      setSecurityUpdating(false);
-    }
-  };
-
-  const strength = getPasswordStrength();
   const initialLetter = (fullName || email || "T").charAt(0).toUpperCase();
 
   return (
