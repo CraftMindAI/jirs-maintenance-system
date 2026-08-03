@@ -5,17 +5,19 @@ import Container from "@/components/ui/Container";
 import SectionHeading from "@/components/ui/SectionHeading";
 import Reveal from "@/components/ui/Reveal";
 import Icon from "@/components/ui/Icon";
+import founder from "@/public/founder.png";
 
 const TESTIMONIALS = [
   {
     quote:
       "JMMS has completely transformed our campus operations. Maintenance complaints that used to take days of paper routing are now resolved within 24 hours.",
-    name: "Dr. Amit Sharma",
-    role: "Campus Administrator",
+    name: "Dr. Chenraj Roychand",
+
+    role: "Founder Chairman",
     tag: "Verified Leadership",
     rating: 5,
     avatar:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuB1cGJyD3gqlIGl0XpYxlLf0T5Lo3RmLogtIYJWvTKXff0oNgjIHQ9WiFdW16wHlwrOZFKRtlbBujBjddIjQj8KaYtU0K7jWl1tK3FClKQJ3yoI4Thj_kCU9RVccRWeSJuCHqFBt_atdBznTdoQfG1Tmp2snN5cNDpI3Z29xB3qBW7wmRUGexvoOINOZtfXuONu9gXx1q_AL1_SoD4ul_jFKa4oQOOu4dTH9rITnhas0u-Scc0AaPcXvA",
+      founder.src,
   },
   {
     quote:
