@@ -164,6 +164,7 @@ function ViewComplaintsContent({ params }: { params: Promise<{ token: string }> 
   const detailedComplaint = complaints.find((c) => c.id === selectedComplaintId) || null;
   const updatingComplaint = complaints.find((c) => c.id === updatingComplaintId) || null;
   const assigningComplaint = complaints.find((c) => c.id === assigningTicketId) || null;
+  const deletingComplaint = complaints.find((c) => c.id === showDeleteConfirm) || null;
 
   return (
     <div className="space-y-8 pb-12">
@@ -225,9 +226,10 @@ function ViewComplaintsContent({ params }: { params: Promise<{ token: string }> 
       )}
 
       {/* 6. MODAL: DELETE */}
-      {showDeleteConfirm && (
+      {showDeleteConfirm && deletingComplaint && (
         <DeleteTicketModal
-          ticketId={showDeleteConfirm}
+          category={deletingComplaint.category}
+          description={deletingComplaint.description}
           onCancel={() => setShowDeleteConfirm(null)}
           onConfirm={() => handleDelete(showDeleteConfirm)}
         />

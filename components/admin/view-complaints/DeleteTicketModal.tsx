@@ -1,11 +1,13 @@
 import Icon from "@/components/ui/Icon";
 
 export default function DeleteTicketModal({
-  ticketId,
+  category,
+  description,
   onCancel,
   onConfirm,
 }: {
-  ticketId: string;
+  category: string;
+  description: string;
   onCancel: () => void;
   onConfirm: () => void;
 }) {
@@ -17,7 +19,9 @@ export default function DeleteTicketModal({
         </div>
         <div>
           <h4 className="text-lg font-bold text-slate-900 dark:text-[#dae2fd]">Confirm Ticket Removal</h4>
-          <p className="text-xs text-slate-500 dark:text-[#908fa0] mt-1">Permanently remove complaint ticket **{ticketId}**?</p>
+          <p className="text-xs text-slate-500 dark:text-[#908fa0] mt-1">
+            Permanently remove the <strong>{category}</strong> complaint ticket &mdash; &ldquo;{description}&rdquo;?
+          </p>
         </div>
         <div className="flex gap-3">
           <button onClick={onCancel} className="flex-1 py-3 border border-slate-200 dark:border-[#464554]/30 text-slate-600 dark:text-[#908fa0] hover:bg-slate-100 dark:hover:bg-[#222a3d] rounded-xl font-bold text-xs cursor-pointer">Cancel</button>

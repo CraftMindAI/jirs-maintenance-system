@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Icon from "@/components/ui/Icon";
 import { auth, db } from "@/lib/firebase";
 import { addDoc, collection, Bytes, serverTimestamp } from "firebase/firestore";
+import { showToast } from "@/lib/toast";
 
 export default function AddComplaint({
   params,
@@ -85,6 +86,15 @@ export default function AddComplaint({
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    const now = new Date();
+    const hours = now.getHours() + now.getMinutes() / 60;
+    if (hours < 9 || hours >= 18) {
+      showToast.warning("We accept complaints from 9:00 AM to 6:00 PM only.");
+      handleReset();
+      router.push(`${basePath}/dashboard`);
+      return;
+    }
 
     if (!category) {
       setError("Please select a complaint category.");
