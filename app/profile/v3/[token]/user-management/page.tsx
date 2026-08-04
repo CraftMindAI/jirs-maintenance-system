@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { collection, deleteDoc, doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "@/lib/firebase";
@@ -28,7 +28,8 @@ export type UserItem = {
   };
 };
 
-export default function AdminUserManagement() {
+export default function AdminUserManagement({ params }: { params: Promise<{ token: string }> }) {
+  const { token } = use(params);
   const [users, setUsers] = useState<UserItem[]>([]);
   const [ticketCountsMap, setTicketCountsMap] = useState<
     Record<string, { assigned: number; inProgress: number; completed: number; total: number }>
@@ -194,6 +195,7 @@ export default function AdminUserManagement() {
       ) : (
         <UsersTable
           users={filteredUsers}
+          basePath={`/profile/v3/${token}`}
           currentUserId={currentUserId}
           onToggleStatus={handleToggleStatus}
           onDeleteRequest={setShowDeleteConfirm}

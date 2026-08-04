@@ -31,8 +31,9 @@ function formatDate(value?: string) {
   return date.toLocaleDateString("default", { year: "numeric", month: "short", day: "numeric" });
 }
 
-export default function UserDetailsPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+export default function UserDetailsPage({ params }: { params: Promise<{ token: string; id: string }> }) {
+  const { token, id } = use(params);
+  const basePath = `/profile/v3/${token}`;
   const [user, setUser] = useState<UserDetail | null>(null);
   const [latestTicket, setLatestTicket] = useState<LatestTicket | null>(null);
   const [loading, setLoading] = useState(true);
@@ -134,7 +135,7 @@ export default function UserDetailsPage({ params }: { params: Promise<{ id: stri
 
       <div>
         <Link
-          href="/admin/user-management"
+          href={`${basePath}/user-management`}
           className="inline-flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-[#908fa0] hover:text-primary dark:hover:text-[#c0c1ff] mb-2 transition-colors"
         >
           <Icon name="arrow_back" className="text-sm" />
@@ -197,7 +198,7 @@ export default function UserDetailsPage({ params }: { params: Promise<{ id: stri
               <div className="flex flex-col items-end gap-3">
                 <StatusBadge status={latestTicket.status} />
                 <Link
-                  href={`/admin/view-complaints/${latestTicket.id}`}
+                  href={`${basePath}/view-complaints/${latestTicket.id}`}
                   className="text-xs font-bold text-primary dark:text-[#c0c1ff] hover:underline flex items-center gap-1"
                 >
                   View Ticket <Icon name="open_in_new" className="text-sm" />

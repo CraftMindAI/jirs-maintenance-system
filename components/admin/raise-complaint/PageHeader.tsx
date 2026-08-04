@@ -1,11 +1,11 @@
 import Link from "next/link";
 import Icon from "@/components/ui/Icon";
 
-export default function PageHeader() {
+export default function PageHeader({ backHref }: { backHref: string }) {
   return (
     <div>
       <Link
-        href="/admin/view-complaints"
+        href={backHref}
         className="inline-flex items-center gap-2 text-[#908fa0] font-bold hover:text-[#c0c1ff] transition-colors text-xs uppercase tracking-wider"
       >
         <Icon name="arrow_back" className="text-lg" />

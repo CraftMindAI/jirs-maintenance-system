@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Icon from "@/components/ui/Icon";
 
-export default function WelcomeHeader() {
+export default function WelcomeHeader({ reportsHref }: { reportsHref: string }) {
   return (
     <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
       <div>
@@ -15,7 +15,7 @@ export default function WelcomeHeader() {
 
       <div className="flex gap-3 shrink-0 lg:hidden">
         <Link
-          href="/admin/reports"
+          href={reportsHref}
           className="flex items-center gap-2 vibrant-gradient text-white px-5 py-2.5 rounded-xl text-xs font-bold hover:brightness-110 transition-all shadow-lg shadow-[#8083ff]/20 cursor-pointer uppercase tracking-wider"
         >
           <Icon name="download" className="text-base" />

@@ -35,7 +35,7 @@ export default function AdminDashboardHome({
       <title>Operational Overview | JMMS Admin</title>
 
       {/* 1. WELCOME HEADER */}
-      <WelcomeHeader />
+      <WelcomeHeader reportsHref={`${basePath}/reports`} />
 
       {/* 2. STATS CARDS ROW */}
       <StatsCards stats={stats} />

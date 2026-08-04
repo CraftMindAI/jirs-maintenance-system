@@ -4,12 +4,14 @@ import { UserItem } from "@/app/profile/v3/[token]/user-management/page";
 
 export default function UsersTable({
   users,
+  basePath,
   currentUserId,
   onToggleStatus,
   onDeleteRequest,
   onResetPasswordRequest,
 }: {
   users: UserItem[];
+  basePath: string;
   currentUserId?: string | null;
   onToggleStatus: (id: string) => void;
   onDeleteRequest: (id: string) => void;
@@ -76,7 +78,7 @@ export default function UsersTable({
                   {user.id !== currentUserId && (
                     <div className="flex justify-end gap-3 text-slate-400 dark:text-[#908fa0]">
                       <Link
-                        href={`/admin/user-details/${user.id}`}
+                        href={`${basePath}/user-details/${user.id}`}
                         title="View Details"
                         className="hover:text-primary dark:hover:text-[#c0c1ff] transition-colors cursor-pointer"
                       >
