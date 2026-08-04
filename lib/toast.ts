@@ -7,6 +7,9 @@ const defaultOptions: ToastOptions = {
   closeOnClick: true,
   pauseOnHover: true,
   draggable: true,
+  className: "!bg-blue-600 !text-white !rounded-xl !shadow-lg",
+  progressClassName: "!bg-white",
+  icon: false,
 };
 
 export const showToast = {

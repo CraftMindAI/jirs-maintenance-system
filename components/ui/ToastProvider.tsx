@@ -15,6 +15,17 @@ export default function ToastProvider() {
       pauseOnFocusLoss
       draggable
       pauseOnHover
+      toastClassName="!bg-blue-600 !text-white !rounded-xl !shadow-lg"
+      progressClassName="!bg-white"
+      closeButton={({ closeToast }) => (
+        <button
+          onClick={closeToast}
+          className="self-start mt-1 text-white/80 hover:text-white"
+          aria-label="Close"
+        >
+          ✕
+        </button>
+      )}
     />
   );
 }

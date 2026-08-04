@@ -65,7 +65,7 @@ export default function ViewComplaintDetailPage({
       setStatusOverride("Rejected");
       showToast.warning("Complaint ticket marked as Rejected.");
       setTimeout(() => {
-        router.push("/admin/view-complaints");
+        router.push(`${basePath}/view-complaints`);
       }, 500);
     } catch (err) {
       console.error("Error rejecting complaint:", err);
@@ -82,7 +82,7 @@ export default function ViewComplaintDetailPage({
       setStatusOverride("Verified");
       showToast.success("Complaint ticket verified and closed.");
       setTimeout(() => {
-        router.push("/admin/view-complaints");
+        router.push(`${basePath}/view-complaints`);
       }, 500);
     } catch (err) {
       console.error("Error verifying complaint:", err);
