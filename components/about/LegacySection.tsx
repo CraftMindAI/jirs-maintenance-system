@@ -4,7 +4,7 @@ import Image from "next/image";
 import Container from "@/components/ui/Container";
 import Reveal from "@/components/ui/Reveal";
 import Icon from "@/components/ui/Icon";
-import LegacyImage from "@/public/Legacy.png";
+import LegacyImage from "@/public/Legacy.jpeg";
 
 const STATS = [
   { value: "350+", label: "ACRE CAMPUS", icon: "square_foot" },
@@ -38,15 +38,7 @@ export default function LegacySection() {
                 </div>
                 
                 {/* Floating Founded Badge */}
-                <div className="absolute -bottom-6 -right-4 sm:right-6 bg-slate-900/90 backdrop-blur-2xl p-6 rounded-3xl shadow-2xl border border-sky-400/30 flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-sky-500/20 text-sky-400 flex items-center justify-center">
-                    <Icon name="military_tech" className="text-2xl" />
-                  </div>
-                  <div>
-                    <span className="text-sky-400 font-display font-black text-2xl block tracking-tight">Est. 1999</span>
-                    <span className="text-slate-400 text-xs font-mono font-bold uppercase tracking-wider block">25+ Years Legacy</span>
-                  </div>
-                </div>
+                
               </div>
             </Reveal>
           </div>

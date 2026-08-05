@@ -49,7 +49,7 @@ export default function ContactSection() {
 
               <Reveal delay={200}>
                 <a
-                  href="tel:+917899888099"
+                  href="tel:+9194489 52482"
                   className="group flex items-center gap-6 py-3 border-b border-white/10 hover:border-indigo-400 transition-colors"
                 >
                   <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 group-hover:bg-indigo-500 group-hover:text-white transition-all duration-300">
@@ -58,7 +58,7 @@ export default function ContactSection() {
                   <div className="flex-1">
                     <span className="text-xs font-mono font-bold uppercase text-slate-400 tracking-wider block">24/7 Emergency Hotline</span>
                     <span className="text-lg font-display font-semibold text-white group-hover:text-indigo-300 transition-colors">
-                      +91 7899888099
+                      +91 94489 52482
                     </span>
                   </div>
                   <Icon name="arrow_outward" className="text-slate-500 group-hover:text-indigo-400 group-hover:translate-x-1 group-hover:-translate-y-1 transition-all" />
