@@ -116,7 +116,7 @@ export default function AdminReports() {
 
   return (
     <div className="space-y-8 pb-12 print:p-0">
-      <title>Reports Console | JMMS Admin</title>
+      <title>Reports Console | JFM Admin</title>
 
       <PageHeader />
 

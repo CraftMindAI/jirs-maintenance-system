@@ -50,7 +50,7 @@ export default function ProcessTimeline() {
         <SectionHeading 
           eyebrow="Workflow Engine" 
           title="The Maintenance Journey" 
-          description="How JMMS ensures swift 3-day turnaround from initial ticket submission to final facility sign-off."
+          description="How JFM ensures swift 3-day turnaround from initial ticket submission to final facility sign-off."
           light
         />
 

@@ -10,7 +10,7 @@ export default function Footer() {
             <div className="w-9 h-9 vibrant-gradient rounded-xl flex items-center justify-center text-white shadow-md">
               <Icon name="architecture" className="text-xl" />
             </div>
-            <h4 className="font-display text-xl font-extrabold text-[#dae2fd]">JMMS Admin</h4>
+            <h4 className="font-display text-xl font-extrabold text-[#dae2fd]">JFM Admin</h4>
           </div>
           <p className="text-[#c7c4d7] leading-relaxed text-xs opacity-70">
             Industry-leading facility management engine for Jain International Residential School. Real-time intelligence and automated maintenance workflows.

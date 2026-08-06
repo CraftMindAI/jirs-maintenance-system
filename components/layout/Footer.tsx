@@ -21,7 +21,7 @@ export default function Footer() {
               <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-sky-400 flex items-center justify-center shadow-md shadow-blue-500/20">
                 <Icon name="school" className="text-lg text-white" />
               </div>
-              <span className="font-display text-xl font-black tracking-wider text-white">JMMS</span>
+              <span className="font-display text-xl font-black tracking-wider text-white">JFM</span>
             </div>
             <p className="font-body text-xs text-slate-400 leading-relaxed max-w-xs">
               Elevating residential life through enterprise-grade facility maintenance management at Jain International Residential School.
@@ -108,7 +108,7 @@ export default function Footer() {
                 <>
                  
                   <p>
-                    <strong>1. Data Collection & Purpose:</strong> JMMS collects minimal personal information (such as name, Email, and campus credentials) strictly necessary to verify and dispatch maintenance services.
+                    <strong>1. Data Collection & Purpose:</strong> JFM collects minimal personal information (such as name, Email, and campus credentials) strictly necessary to verify and dispatch maintenance services.
                   </p>
                   <p>
                     <strong>2. Student & Parent Privacy:</strong> We prioritize absolute privacy for all residential students and parents. Information logged in tickets is visible only to authorized campus admins and assigned facility staff.

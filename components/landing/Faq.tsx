@@ -9,7 +9,7 @@ const FAQS = [
       'Once logged in, navigate to the "My Tasks" or "History" tab. You will see a comprehensive list of your complaints with their current live status (Pending, Assigned, In-Progress, Resolved).',
   },
   {
-    question: "Who can use the JMMS portal?",
+    question: "Who can use the JFM portal?",
     answer:
       "All registered students, faculty members, and residential staff of JIRS are granted access to use the portal for reporting facility-related issues across the campus.",
   },

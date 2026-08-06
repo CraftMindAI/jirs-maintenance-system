@@ -7,7 +7,7 @@ import FeedbackFeed from "@/components/feedback/FeedbackFeed";
 import FeedbackCta from "@/components/feedback/FeedbackCta";
 
 export const metadata: Metadata = {
-  title: "Feedback | JMMS",
+  title: "Feedback | JFM",
   description: "Share your experience with the JIRS Maintenance Management System.",
 };
 

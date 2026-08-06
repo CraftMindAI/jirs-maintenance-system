@@ -135,7 +135,7 @@ export default function DashboardLayout({
         darkMode={darkMode}
         onLogout={handleLogout}
         menuItems={MENU_ITEMS}
-        brandTitle="JMMS"
+        brandTitle="JFM"
         brandSubtitle="Facility Portal"
         quickAction={QUICK_ACTION}
       />

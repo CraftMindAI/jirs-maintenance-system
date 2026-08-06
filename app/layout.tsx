@@ -18,20 +18,20 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL("http://localhost:3000"),
   title: {
-    default: "JMMS — Jain International Residential School Maintenance Management System",
-    template: "%s | JMMS JIRS Portal",
+    default: "JFM — Jain International Residential School Maintenance Management System",
+    template: "%s | JFM JIRS Portal",
   },
   description:
-    "Official JMMS Portal for Jain International Residential School (JIRS). Centralized digital facility management, ticket tracking, maintenance management system for campus, hostel, electrical, plumbing, and HVAC support.",
+    "Official JFM Portal for Jain International Residential School (JIRS). Centralized digital facility management, ticket tracking, maintenance management system for campus, hostel, electrical, plumbing, and HVAC support.",
   keywords: [
-    "JMMS",
-    "JMMS Portal",
+    "JFM",
+    "JFM Portal",
     "Jain",
     "JIRS",
-    "JMMS JIRS",
+    "JFM JIRS",
     "Jain International Residential School",
     "JIRS Maintenance System",
-    "JMMS Maintenance Management System",
+    "JFM Maintenance Management System",
     "JIRS Facility Portal",
     "Jain School Maintenance",
     "JIRS Complaints",
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
   authors: [{ name: "Jain International Residential School (JIRS)" }],
   creator: "JIRS IT & Facilities Team",
   publisher: "Jain Group of Institutions",
-  applicationName: "JMMS JIRS Portal",
+  applicationName: "JFM JIRS Portal",
   robots: {
     index: true,
     follow: true,
@@ -56,8 +56,8 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_IN",
     url: "http://localhost:3000",
-    siteName: "JMMS JIRS Portal",
-    title: "JMMS — Jain International Residential School Maintenance System",
+    siteName: "JFM JIRS Portal",
+    title: "JFM — Jain International Residential School Maintenance System",
     description:
       "Enterprise facility management portal for JIRS students, staff, and technicians. Real-time complaint tracking and resolution.",
     images: [
@@ -65,13 +65,13 @@ export const metadata: Metadata = {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "JMMS - Jain International Residential School Maintenance Management System",
+        alt: "JFM - Jain International Residential School Maintenance Management System",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "JMMS — Jain International Residential School Maintenance System",
+    title: "JFM — Jain International Residential School Maintenance System",
     description:
       "Enterprise facility management portal for JIRS students, staff, and technicians.",
     images: ["/og-image.png"],

@@ -144,7 +144,7 @@ export default function TechnicianComplaintDetail({
 
   return (
     <div className="max-w-5xl mx-auto space-y-6 pb-12">
-      <title>{`Task #${complaintId} | Technician | JMMS`}</title>
+      <title>{`Task #${complaintId} | Technician | JFM`}</title>
 
       {/* Top Header Row with Transparent Back Button */}
       <div className="flex items-center justify-between">

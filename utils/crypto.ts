@@ -1,6 +1,6 @@
 import crypto from "crypto";
 
-const SECRET_KEY = process.env.RESET_TOKEN_SECRET || "jmms-password-reset-secret-key-2026";
+const SECRET_KEY = process.env.RESET_TOKEN_SECRET || "JFM-password-reset-secret-key-2026";
 
 /**
  * Encrypts an email into a URL-safe encrypted token string.

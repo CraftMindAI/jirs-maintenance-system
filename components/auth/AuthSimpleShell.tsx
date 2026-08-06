@@ -27,7 +27,7 @@ export default function AuthSimpleShell({ children }: { children: ReactNode }) {
               <img src="/Logo.png" alt="JIRS Logo" className="w-full h-full object-contain" />
             </div>
             <div>
-              <span className="font-display text-xl font-black text-[#00355f] tracking-wide block">JIRS JMMS</span>
+              <span className="font-display text-xl font-black text-[#00355f] tracking-wide block">JIRS JFM</span>
               <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-sky-600 block">School Maintenance Portal</span>
             </div>
           </div>

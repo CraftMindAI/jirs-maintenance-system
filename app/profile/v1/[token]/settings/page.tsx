@@ -7,7 +7,7 @@ import SecuritySettings from "@/components/admin/settings/SecuritySettings";
 export default function DashboardSettings() {
   return (
     <div className="space-y-8 pb-12 max-w-5xl mx-auto">
-      <title>Settings | JMMS</title>
+      <title>Settings | JFM</title>
 
       <PageHeader />
 

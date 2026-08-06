@@ -13,7 +13,7 @@ export default function TopNavbar({
   userProfile,
   onLogout,
   profileHref = "/admin/settings",
-  brandLabel = "JMMS",
+  brandLabel = "JFM",
   onMenuToggle,
 }: {
   darkMode: boolean;

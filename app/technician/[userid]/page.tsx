@@ -103,7 +103,7 @@ export default function TechnicianDetailTimelinePage({
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#0b101d] text-slate-900 dark:text-[#dae2fd] p-6 lg:p-6 md:p-10 space-y-8">
-      <title>{techUser?.name || "Technician"} Timeline | JMMS</title>
+      <title>{techUser?.name || "Technician"} Timeline | JFM</title>
 
       {/* Header Breadcrumb & Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-[#464554]/20 pb-6">

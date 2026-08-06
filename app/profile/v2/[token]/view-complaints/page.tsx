@@ -106,7 +106,7 @@ export default function TechnicianViewComplaints({
 
   return (
     <div className="space-y-10 pb-16 max-w-[1440px] mx-auto">
-      <title>View Complaints | Technician | JMMS</title>
+      <title>View Complaints | Technician | JFM</title>
 
       {/* Header info */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">

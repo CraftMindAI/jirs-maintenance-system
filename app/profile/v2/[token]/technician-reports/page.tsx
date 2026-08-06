@@ -152,7 +152,7 @@ export default function TechnicianReportsPage() {
 
   return (
     <div className="space-y-8 pb-12 print:p-0">
-      <title>Reports | Technician | JMMS</title>
+      <title>Reports | Technician | JFM</title>
 
       <PageHeader />
 

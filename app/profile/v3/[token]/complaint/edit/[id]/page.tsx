@@ -86,7 +86,7 @@ export default function EditComplaintPage({
   if (notFound || !initialData) {
     return (
       <div className="space-y-8 pb-12 max-w-4xl mx-auto">
-        <title>Edit Complaint | JMMS Admin</title>
+        <title>Edit Complaint | JFM Admin</title>
         <div className="bg-white dark:bg-[#171f33] border border-[#ff516a]/20 rounded-3xl p-8 md:p-16 text-center shadow-sm">
           <Icon name="search_off" className="text-4xl text-slate-400 dark:text-[#908fa0] mb-3 block mx-auto" />
           <h3 className="font-display text-xl font-bold text-slate-900 dark:text-[#dae2fd]">Ticket Not Found</h3>
@@ -104,7 +104,7 @@ export default function EditComplaintPage({
 
   return (
     <div className="space-y-8 pb-12 max-w-4xl mx-auto">
-      <title>Edit Complaint | JMMS Admin</title>
+      <title>Edit Complaint | JFM Admin</title>
 
       <div>
         <Link

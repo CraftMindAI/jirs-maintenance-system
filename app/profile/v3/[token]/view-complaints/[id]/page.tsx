@@ -112,7 +112,7 @@ export default function ViewComplaintDetailPage({
 
   return (
     <div className="space-y-6 pb-12">
-      <title>{`Complaint #${complaintId} | JMMS Admin`}</title>
+      <title>{`Complaint #${complaintId} | JFM Admin`}</title>
 
       {/* Navigation & Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">

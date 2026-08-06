@@ -164,7 +164,7 @@ export default function AddComplaint({
 
   return (
     <div className="space-y-8 pb-12 max-w-4xl mx-auto">
-      <title>Add Complaint | JMMS</title>
+      <title>Add Complaint | JFM</title>
 
       {/* Breadcrumb path back */}
       <div>

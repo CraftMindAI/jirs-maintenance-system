@@ -136,7 +136,7 @@ export default function TechnicianLayout({ children }: { children: React.ReactNo
         darkMode={darkMode}
         onLogout={handleLogout}
         menuItems={MENU_ITEMS}
-        brandTitle="JMMS Tech"
+        brandTitle="JFM Tech"
         brandSubtitle="Maintenance"
         quickAction={null}
       />
@@ -157,7 +157,7 @@ export default function TechnicianLayout({ children }: { children: React.ReactNo
         {breadcrumbs.length > 0 && (
           <div className="px-6 lg:px-10 pt-6 flex items-center gap-2 text-sm font-semibold flex-wrap">
             <Link href="/technician" className={darkMode ? "text-[#908fa0] hover:text-[#c0c1ff]" : "text-slate-400 hover:text-primary"}>
-              JMMS
+              JFM
             </Link>
             {breadcrumbs.map((crumb, idx) => (
               <div key={crumb.href} className="flex items-center gap-2">

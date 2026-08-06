@@ -96,7 +96,7 @@ export default function DashboardHome({
 
   return (
     <div className="space-y-8 pb-12">
-      <title>Dashboard | JMMS</title>
+      <title>Dashboard | JFM</title>
 
       {/* 2. STATS CARDS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">

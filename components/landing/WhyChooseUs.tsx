@@ -37,15 +37,15 @@ const REASONS = [
 
 export default function WhyChooseUs() {
   return (
-    <section id="why-jmms" className="py-24 md:py-32 relative overflow-hidden bg-slate-950 text-white">
+    <section id="why-JFM" className="py-24 md:py-32 relative overflow-hidden bg-slate-950 text-white">
       {/* Dynamic Background Glows */}
       <div className="absolute top-1/2 left-0 w-96 h-96 bg-blue-600/10 rounded-full blur-[140px] pointer-events-none" />
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-indigo-600/10 rounded-full blur-[140px] pointer-events-none" />
 
       <Container className="relative z-10">
         <SectionHeading
-          eyebrow="Why JMMS"
-          title="Why Choose JMMS?"
+          eyebrow="Why JFM"
+          title="Why Choose JFM?"
           description="Transforming traditional facility operations into a seamless, high-speed digital service for students, parents, and campus staff."
           light
         />

@@ -7,7 +7,7 @@ import SecuritySettings from "@/components/admin/settings/SecuritySettings";
 export default function AdminSettings() {
   return (
     <div className="space-y-8 pb-12 max-w-5xl mx-auto">
-      <title>Settings & Profile | JMMS Admin</title>
+      <title>Settings & Profile | JFM Admin</title>
 
       <PageHeader />
 

@@ -50,7 +50,7 @@ export async function POST(req: Request) {
         <div style="padding: 24px;">
           <p style="color: #0f172a; font-size: 14px; margin: 0 0 8px;">Hello,</p>
           <p style="color: #334155; font-size: 13px; line-height: 1.6; margin: 0 0 20px;">
-            We received a request to reset the password for your JMMS account
+            We received a request to reset the password for your JFM account
             (${cleanEmail}). Click the button below to choose a new password.
             If you didn&rsquo;t request this, you can safely ignore this email.
           </p>
@@ -82,7 +82,7 @@ export async function POST(req: Request) {
     await transporter.sendMail({
       from: `"JIRS Maintenance Management System" <${process.env.EMAIL_USER}>`,
       to: cleanEmail,
-      subject: "Reset Your JMMS Password",
+      subject: "Reset Your JFM Password",
       html,
       attachments: [
         {

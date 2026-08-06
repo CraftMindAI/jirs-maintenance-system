@@ -114,7 +114,7 @@ export default function DashboardFeedback() {
 
   return (
     <div className="space-y-8 pb-12 max-w-5xl mx-auto">
-      <title>Community Feedback | JMMS</title>
+      <title>Community Feedback | JFM</title>
 
       {/* Header Info */}
       <div>

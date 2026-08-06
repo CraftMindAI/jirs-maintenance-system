@@ -50,7 +50,7 @@ export async function POST(req: Request) {
         <div style="padding: 24px;">
           <p style="color: #0f172a; font-size: 14px; margin: 0 0 8px;">Dear ${name},</p>
           <p style="color: #334155; font-size: 13px; line-height: 1.6; margin: 0 0 20px;">
-            An administrator has created a Technician account for you on the JMMS platform.
+            An administrator has created a Technician account for you on the JFM platform.
             Your login credentials are below.
           </p>
 
@@ -67,7 +67,7 @@ export async function POST(req: Request) {
 
           <div style="text-align: center; margin-bottom: 20px;">
             <a href="${loginUrl}" style="display: inline-block; background-color: #0f4c81; color: #ffffff; font-size: 13px; font-weight: 700; text-decoration: none; padding: 12px 28px; border-radius: 8px;">
-              LOG IN TO JMMS
+              LOG IN TO JFM
             </a>
           </div>
 
@@ -92,7 +92,7 @@ export async function POST(req: Request) {
     await transporter.sendMail({
       from: `"JIRS Maintenance Management System" <${process.env.EMAIL_USER}>`,
       to: cleanEmail,
-      subject: "Your JMMS Technician Account Has Been Created",
+      subject: "Your JFM Technician Account Has Been Created",
       html,
       attachments: [
         {

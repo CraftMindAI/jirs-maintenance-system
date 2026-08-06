@@ -32,7 +32,7 @@ export default function AdminDashboardHome({
 
   return (
     <div className="space-y-8 pb-12">
-      <title>Operational Overview | JMMS Admin</title>
+      <title>Operational Overview | JFM Admin</title>
 
       {/* 1. WELCOME HEADER */}
       <WelcomeHeader reportsHref={`${basePath}/reports`} />

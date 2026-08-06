@@ -49,7 +49,7 @@ export default function ReportSummary({
             <div className="w-8 h-8 vibrant-gradient rounded-lg flex items-center justify-center text-white">
               <Icon name="architecture" className="text-lg" />
             </div>
-            <h2 className="font-display text-xl font-extrabold text-slate-900 dark:text-[#dae2fd]">JMMS Summary</h2>
+            <h2 className="font-display text-xl font-extrabold text-slate-900 dark:text-[#dae2fd]">JFM Summary</h2>
           </div>
           <p className="text-[10px] text-slate-500 dark:text-[#908fa0] mt-1 font-mono uppercase tracking-widest">{reportType}</p>
         </div>

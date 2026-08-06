@@ -152,7 +152,7 @@ export default function TechnicianReportsPage() {
 
   return (
     <div className="space-y-8 pb-12 max-w-7xl mx-auto px-4 md:px-8 print:p-0 print:m-0 print:space-y-6 print:max-w-none">
-      <title>Reports | Technician | JMMS</title>
+      <title>Reports | Technician | JFM</title>
 
       {/* Header (Hidden when printing) */}
       <div className="print:hidden mt-4">
@@ -259,7 +259,7 @@ export default function TechnicianReportsPage() {
                 <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
               </div>
               <div>
-                <h2 className="text-2xl font-black text-slate-900 dark:text-white">JMMS Summary</h2>
+                <h2 className="text-2xl font-black text-slate-900 dark:text-white">JFM Summary</h2>
                 <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 mt-1">{reportType.toUpperCase()}</p>
               </div>
             </div>

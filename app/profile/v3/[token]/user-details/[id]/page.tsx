@@ -131,7 +131,7 @@ export default function UserDetailsPage({ params }: { params: Promise<{ token: s
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#0b101d] text-slate-900 dark:text-[#dae2fd] p-6 lg:p-6 md:p-10 space-y-8">
-      <title>{user.name} | User Details | JMMS Admin</title>
+      <title>{user.name} | User Details | JFM Admin</title>
 
       <div>
         <Link

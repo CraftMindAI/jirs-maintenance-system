@@ -82,7 +82,7 @@ export default function TechnicianSettings() {
 
   return (
     <div className="space-y-8 pb-12 max-w-5xl mx-auto">
-      <title>Settings | Technician | JMMS</title>
+      <title>Settings | Technician | JFM</title>
 
       {/* Header info */}
       <div>

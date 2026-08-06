@@ -32,7 +32,7 @@ export default function Sidebar({
   darkMode = true,
   onLogout,
   menuItems = ADMIN_MENU_ITEMS,
-  brandTitle = "JMMS Admin",
+  brandTitle = "JFM Admin",
   brandSubtitle = "Facility Management",
   quickAction = ADMIN_QUICK_ACTION,
   mobileOpen = false,

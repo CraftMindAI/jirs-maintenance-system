@@ -227,7 +227,7 @@ export default function ComplaintForm({
         createdAt: serverTimestamp(),
       });
 
-      const stored = localStorage.getItem("jmms_complaints");
+      const stored = localStorage.getItem("JFM_complaints");
       const list: Complaint[] = stored ? JSON.parse(stored) : [];
 
       const newId = `REQ-${Math.floor(8900 + Math.random() * 100)}`;
@@ -241,7 +241,7 @@ export default function ComplaintForm({
         description,
       };
 
-      localStorage.setItem("jmms_complaints", JSON.stringify([newComplaint, ...list]));
+      localStorage.setItem("JFM_complaints", JSON.stringify([newComplaint, ...list]));
 
       setSubmitting(false);
       setSuccess(true);

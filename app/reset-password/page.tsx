@@ -4,8 +4,8 @@ import AuthSimpleShell from "@/components/auth/AuthSimpleShell";
 import ResetPasswordForm from "@/components/auth/ResetPasswordForm";
 
 export const metadata: Metadata = {
-  title: "Reset Password | JMMS",
-  description: "Choose a new password for your JMMS account.",
+  title: "Reset Password | JFM",
+  description: "Choose a new password for your JFM account.",
 };
 
 export default function ResetPasswordPage() {

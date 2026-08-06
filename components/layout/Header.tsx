@@ -72,7 +72,7 @@ export default function Header() {
               }`}
             >
               <Icon name="school" className="text-3xl text-sky-400" />
-              <span>JMMS</span>
+              <span>JFM</span>
             </Link>
             <div className="hidden md:flex items-center gap-8">
               {NAV_LINKS.map((link) => {
@@ -130,7 +130,7 @@ export default function Header() {
           <div className="flex items-center justify-between pb-6 border-b border-white/10 mb-6">
             <div className="flex items-center gap-2">
               <Icon name="school" className="text-3xl text-sky-400" />
-              <span className="font-display text-2xl font-black tracking-wider text-white">JMMS</span>
+              <span className="font-display text-2xl font-black tracking-wider text-white">JFM</span>
             </div>
             <button
               onClick={() => setMobileMenuOpen(false)}

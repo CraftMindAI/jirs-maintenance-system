@@ -137,7 +137,7 @@ export default function TechnicianLayout({
         darkMode={darkMode}
         onLogout={handleLogout}
         menuItems={MENU_ITEMS}
-        brandTitle="JMMS Tech"
+        brandTitle="JFM Tech"
         brandSubtitle="Maintenance"
         quickAction={null}
       />

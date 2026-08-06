@@ -78,7 +78,7 @@ export default function AdminFeedbacksPage() {
 
   return (
     <div className="space-y-8 pb-16 max-w-[1440px] mx-auto selection:bg-primary/20">
-      <title>Community Feedback Hub | Admin | JMMS</title>
+      <title>Community Feedback Hub | Admin | JFM</title>
 
       {/* Hero Header Banner with Modern Gradient Glow */}
       <div className="relative overflow-hidden bg-gradient-to-r from-slate-900 via-[#171f33] to-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl">

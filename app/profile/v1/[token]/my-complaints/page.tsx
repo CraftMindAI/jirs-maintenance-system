@@ -282,7 +282,7 @@ export default function MyComplaints({
 
   return (
     <div className="space-y-8 pb-12">
-      <title>My Complaints | JMMS</title>
+      <title>My Complaints | JFM</title>
 
       {/* Header and Action */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">

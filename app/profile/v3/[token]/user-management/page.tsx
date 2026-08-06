@@ -182,7 +182,7 @@ export default function AdminUserManagement({ params }: { params: Promise<{ toke
 
   return (
     <div className="space-y-8 pb-12">
-      <title>User Management | JMMS Admin</title>
+      <title>User Management | JFM Admin</title>
 
       <PageHeader onAddTechnician={() => setShowAddTechnician(true)} />
 

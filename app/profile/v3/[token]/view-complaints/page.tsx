@@ -168,7 +168,7 @@ function ViewComplaintsContent({ params }: { params: Promise<{ token: string }> 
 
   return (
     <div className="space-y-8 pb-12">
-      <title>All Complaints | JMMS Admin</title>
+      <title>All Complaints | JFM Admin</title>
 
       {/* Toast Alert Popup */}
       {showToast && <Toast message={showToast} />}
