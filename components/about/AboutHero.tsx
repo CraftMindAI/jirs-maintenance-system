@@ -17,8 +17,8 @@ export default function AboutHero() {
       <div className="relative z-10 px-margin-mobile md:px-margin-desktop text-center max-w-4xl">
         
         <h1 className="font-display text-4xl md:text-6xl font-black text-white mb-6 leading-[1.15] tracking-tight">
-          About JIRS Maintenance <br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-400">Management System</span>
+          About JAIN<br />
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-400">Facilities Management</span>
         </h1>
         <p className="text-slate-300 font-body-lg mb-10 max-w-2xl mx-auto text-base md:text-lg leading-relaxed">
           Empowering a world-class educational environment through digital

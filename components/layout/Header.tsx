@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -71,7 +72,14 @@ export default function Header() {
                 isDarkPage ? "text-white" : "text-black dark:text-white"
               }`}
             >
-              <Icon name="school" className="text-3xl text-sky-400" />
+              <Image
+                src="/logo/logo.png"
+                alt="JFM logo"
+                width={40}
+                height={40}
+                className="h-10 w-auto object-contain"
+                priority
+              />
               <span>JFM</span>
             </Link>
             <div className="hidden md:flex items-center gap-8">
@@ -129,7 +137,14 @@ export default function Header() {
           {/* Mobile Overlay Top Header with Close Button */}
           <div className="flex items-center justify-between pb-6 border-b border-white/10 mb-6">
             <div className="flex items-center gap-2">
-              <Icon name="school" className="text-3xl text-sky-400" />
+              <Image
+                src="/logo/logo.png"
+                alt="JFM logo"
+                width={36}
+                height={36}
+                className="h-9 w-auto object-contain"
+                priority
+              />
               <span className="font-display text-2xl font-black tracking-wider text-white">JFM</span>
             </div>
             <button

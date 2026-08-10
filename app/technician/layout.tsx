@@ -24,7 +24,6 @@ const BOTTOM_NAV_ITEMS: BottomNavItem[] = [
   { label: "Complaints", icon: "assignment", href: "/technician/view-complaints" },
   { label: "Track", icon: "my_location", href: "/technician/track-complaint" },
   { label: "Reports", icon: "assessment", href: "/technician/reports" },
-  { label: "Profile", icon: "settings", href: "/technician/settings" },
 ];
 
 export default function TechnicianLayout({ children }: { children: React.ReactNode }) {

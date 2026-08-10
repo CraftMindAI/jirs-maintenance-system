@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import Container from "@/components/ui/Container";
 import Reveal from "@/components/ui/Reveal";
 import Icon from "@/components/ui/Icon";
@@ -46,7 +47,6 @@ export default function AdvantageCards() {
 
       <Container className="relative z-10">
         <SectionHeading
-          eyebrow="Campus Standard"
           title="The JIRS Advantage"
           description="Pioneering holistic residential education, world-class sports facilities, and personalized mentorship."
           light
@@ -76,10 +76,15 @@ export default function AdvantageCards() {
                   </p>
                 </div>
 
-                <div className="relative z-10 pt-6 mt-6 border-t border-white/10 flex items-center gap-2 text-xs font-bold text-sky-400 group-hover:text-sky-300">
+                <Link
+                  href="https://www.jirs.ac.in/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="relative z-10 pt-6 mt-6 border-t border-white/10 flex items-center gap-2 text-xs font-bold text-sky-400 group-hover:text-sky-300"
+                >
                   <span>Discover More</span>
                   <Icon name="arrow_forward" className="text-sm group-hover:translate-x-1 transition-transform" />
-                </div>
+                </Link>
               </div>
             </Reveal>
           ))}

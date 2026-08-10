@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Icon from "@/components/ui/Icon";
@@ -71,9 +72,14 @@ export default function Sidebar({
         {/* Brand Header */}
         <div className="flex items-center justify-between mb-8 px-2">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 vibrant-gradient rounded-xl flex items-center justify-center text-white shadow-lg shadow-[#8083ff]/20 shrink-0">
-              <Icon name="architecture" className="text-2xl" />
-            </div>
+            <Image
+              src="/logo/logo.png"
+              alt="JFM logo"
+              width={36}
+              height={36}
+              className="h-9 w-auto object-contain shrink-0"
+              priority
+            />
             <div>
               <h2 className={`font-display text-lg font-extrabold tracking-tight ${darkMode ? "text-[#c0c1ff]" : "text-primary"}`}>
                 {brandTitle}

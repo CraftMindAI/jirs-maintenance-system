@@ -33,7 +33,7 @@ export default function AuthHeroPanel() {
               JAIN International Residential School
             </p>
             <p className="font-body text-slate-400 text-xs mt-1">
-              Infrastructure &amp; Maintenance Division
+              Facilities Management
             </p>
           </div>
         </div>

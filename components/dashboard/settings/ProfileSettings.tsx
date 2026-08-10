@@ -102,30 +102,30 @@ export default function ProfileSettings() {
       )}
 
       {/* Sleek Profile Banner Card */}
-      <div className="bg-slate-50 dark:bg-[#131b2e] border border-slate-200 dark:border-[#464554]/20 rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-sm">
-        <div className="flex items-center gap-5">
+      <div className="bg-slate-50 dark:bg-[#131b2e] border border-slate-200 dark:border-[#464554]/20 rounded-2xl p-4 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 shadow-sm min-w-0">
+        <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-5 w-full sm:w-auto min-w-0">
           {/* Avatar Badge */}
           <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/30 to-emerald-500/30 dark:from-[#8083ff]/30 dark:to-[#00a572]/30 border border-primary/40 dark:border-[#8083ff]/40 text-slate-800 dark:text-[#dae2fd] text-2xl font-black flex items-center justify-center shadow-lg shrink-0">
             {initialLetter}
           </div>
 
-          <div className="space-y-1 text-center sm:text-left">
-            <div className="flex items-center gap-2 justify-center sm:justify-start">
-              <h2 className="font-display text-lg font-bold text-slate-900 dark:text-[#dae2fd]">
+          <div className="space-y-1 text-center sm:text-left min-w-0 w-full sm:w-auto">
+            <div className="flex flex-wrap items-center gap-2 justify-center sm:justify-start min-w-0">
+              <h2 className="font-display text-lg font-bold text-slate-900 dark:text-[#dae2fd] truncate max-w-full">
                 {fullName || "Your Name"}
               </h2>
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-primary/15 dark:bg-[#8083ff]/15 text-primary dark:text-[#c0c1ff] border border-primary/20 dark:border-[#8083ff]/20">
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-primary/15 dark:bg-[#8083ff]/15 text-primary dark:text-[#c0c1ff] border border-primary/20 dark:border-[#8083ff]/20 shrink-0">
                 {role}
               </span>
             </div>
-            <p className="text-xs text-slate-500 dark:text-[#908fa0] flex items-center gap-2 justify-center sm:justify-start">
-              <Icon name="mail" className="text-sm text-primary dark:text-[#8083ff]" />
-              <span>{email}</span>
+            <p className="text-xs text-slate-500 dark:text-[#908fa0] flex items-center gap-2 justify-center sm:justify-start min-w-0 break-all">
+              <Icon name="mail" className="text-sm text-primary dark:text-[#8083ff] shrink-0" />
+              <span className="break-all min-w-0">{email}</span>
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 bg-white dark:bg-[#171f33] px-3.5 py-2 rounded-xl border border-slate-200 dark:border-[#464554]/20">
+        <div className="flex items-center gap-2 bg-white dark:bg-[#171f33] px-3.5 py-2 rounded-xl border border-slate-200 dark:border-[#464554]/20 shrink-0 justify-center sm:justify-start w-full sm:w-auto">
           <Icon name="verified_user" className="text-emerald-600 dark:text-[#00a572] text-lg" />
           <span className="text-xs font-mono text-slate-900 dark:text-[#dae2fd] font-bold">Verified Account</span>
         </div>
@@ -214,11 +214,11 @@ export default function ProfileSettings() {
         </div>
 
         {/* Action Button Row */}
-        <div className="pt-4 border-t border-slate-200 dark:border-[#464554]/20 flex justify-end">
+        <div className="pt-4 border-t border-slate-200 dark:border-[#464554]/20 flex flex-col sm:flex-row justify-end items-stretch sm:items-center">
           <button
             type="submit"
             disabled={profileSaving}
-            className="px-6 py-3.5 vibrant-gradient text-white rounded-xl font-bold shadow-lg shadow-primary/20 dark:shadow-[#8083ff]/20 text-xs cursor-pointer tracking-wider disabled:opacity-60 flex items-center gap-2 hover:scale-[1.01] transition-transform"
+            className="w-full sm:w-auto px-6 py-3.5 vibrant-gradient text-white rounded-xl font-bold shadow-lg shadow-primary/20 dark:shadow-[#8083ff]/20 text-xs cursor-pointer tracking-wider disabled:opacity-60 flex items-center justify-center gap-2 hover:scale-[1.01] transition-transform"
           >
             {profileSaving ? (
               <>

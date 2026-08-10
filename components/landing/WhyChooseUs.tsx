@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import Container from "@/components/ui/Container";
 import SectionHeading from "@/components/ui/SectionHeading";
 import Reveal from "@/components/ui/Reveal";
@@ -44,7 +45,6 @@ export default function WhyChooseUs() {
 
       <Container className="relative z-10">
         <SectionHeading
-          eyebrow="Why JFM"
           title="Why Choose JFM?"
           description="Transforming traditional facility operations into a seamless, high-speed digital service for students, parents, and campus staff."
           light
@@ -78,10 +78,13 @@ export default function WhyChooseUs() {
                   </p>
                 </div>
 
-                <div className="pt-6 mt-6 border-t border-white/10 flex items-center gap-2 text-xs font-bold text-slate-400 group-hover:text-white transition-colors">
+                <Link
+                  href="/auth/v1/login"
+                  className="pt-6 mt-6 border-t border-white/10 flex items-center gap-2 text-xs font-bold text-slate-400 group-hover:text-white transition-colors"
+                >
                   <span>Explore Feature</span>
                   <Icon name="arrow_forward" className="text-sm group-hover:translate-x-1 transition-transform" />
-                </div>
+                </Link>
               </div>
             </Reveal>
           ))}

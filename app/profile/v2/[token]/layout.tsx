@@ -37,7 +37,6 @@ export default function TechnicianLayout({
     { label: "Complaints", icon: "assignment", href: `${basePath}/view-complaints` },
     { label: "Track", icon: "my_location", href: `${basePath}/track-complaint` },
     { label: "Reports", icon: "assessment", href: `${basePath}/technician-reports` },
-    { label: "Profile", icon: "settings", href: `${basePath}/technician-settings` },
   ];
 
   const router = useRouter();

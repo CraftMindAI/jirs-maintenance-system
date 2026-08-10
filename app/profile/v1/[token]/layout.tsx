@@ -37,7 +37,7 @@ export default function DashboardLayout({
     { label: "Home", icon: "dashboard", href: `${basePath}/dashboard` },
     { label: "Complaints", icon: "assignment_late", href: `${basePath}/my-complaints` },
     { label: "Track", icon: "my_location", href: `${basePath}/track-complaint` },
-    { label: "Profile", icon: "settings_applications", href: `${basePath}/settings` },
+    { label: "Feedback", icon: "comment", href: `${basePath}/feedback` },
   ];
 
   const BOTTOM_QUICK_ACTION: BottomNavQuickAction = { icon: "add", href: `${basePath}/add-complaint` };

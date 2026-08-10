@@ -5,7 +5,7 @@ export default function SectionHeading({
   align = "center",
   light = false,
 }: {
-  eyebrow: string;
+  eyebrow?: string;
   title: string;
   description?: string;
   align?: "center" | "left";
@@ -17,13 +17,15 @@ export default function SectionHeading({
         align === "center" ? "text-center mx-auto" : "text-left"
       } ${description ? "max-w-2xl" : ""} ${align === "center" ? "max-w-2xl" : ""}`}
     >
-      <span
-        className={`font-label-md uppercase tracking-widest ${
-          light ? "text-tertiary-fixed/60" : "text-secondary-container"
-        }`}
-      >
-        {eyebrow}
-      </span>
+      {eyebrow && (
+        <span
+          className={`font-label-md uppercase tracking-widest ${
+            light ? "text-tertiary-fixed/60" : "text-secondary-container"
+          }`}
+        >
+          {eyebrow}
+        </span>
+      )}
       <h2 className={`font-headline text-3xl md:text-4xl font-semibold ${light ? "text-white" : "text-primary"}`}>
         {title}
       </h2>

@@ -78,7 +78,7 @@ export default function AnimatedTechnicianAuth({
             JAIN International Residential School
           </p>
           <p className="font-body text-slate-300 text-xs mt-0.5 opacity-90">
-            Infrastructure &amp; Maintenance Division
+            Facilities Management
           </p>
         </div>
       </div>
