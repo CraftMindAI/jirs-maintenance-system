@@ -18,11 +18,11 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL("http://localhost:3000"),
   title: {
-    default: "JFM — Jain International Residential School Maintenance Management System",
+    default: "JFM — Jain International Residential School Facilities Management",
     template: "%s | JFM JIRS Portal",
   },
   description:
-    "Official JFM Portal for Jain International Residential School (JIRS). Centralized digital facility management, ticket tracking, maintenance management system for campus, hostel, electrical, plumbing, and HVAC support.",
+    "Official JFM Portal for Jain International Residential School (JIRS). Centralized digital facility management, ticket tracking, Facilities Management for campus, hostel, electrical, plumbing, and HVAC support.",
   keywords: [
     "JFM",
     "JFM Portal",
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     "JFM JIRS",
     "Jain International Residential School",
     "JIRS Maintenance System",
-    "JFM Maintenance Management System",
+    "JFM Facilities Management",
     "JIRS Facility Portal",
     "Jain School Maintenance",
     "JIRS Complaints",
@@ -65,7 +65,7 @@ export const metadata: Metadata = {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "JFM - Jain International Residential School Maintenance Management System",
+        alt: "JFM - Jain International Residential School Facilities Management",
       },
     ],
   },

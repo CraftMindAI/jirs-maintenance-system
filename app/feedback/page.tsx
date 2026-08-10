@@ -8,7 +8,7 @@ import FeedbackCta from "@/components/feedback/FeedbackCta";
 
 export const metadata: Metadata = {
   title: "Feedback | JFM",
-  description: "Share your experience with the JIRS Maintenance Management System.",
+  description: "Share your experience with the JIRS Facilities Management.",
 };
 
 export default function FeedbackPage() {

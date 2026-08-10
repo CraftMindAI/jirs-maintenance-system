@@ -38,7 +38,7 @@ export async function POST(request: Request) {
             JAIN INTERNATIONAL RESIDENTIAL SCHOOL
           </h1>
           <p style="color: #94a3b8; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; margin: 4px 0 0;">
-            Maintenance Management System
+            Facilities Management
           </p>
         </div>
 
@@ -93,7 +93,7 @@ export async function POST(request: Request) {
 
         <div style="background-color: #f8fafc; padding: 14px 24px; text-align: center; border-top: 1px solid #e2e8f0;">
           <p style="color: #94a3b8; font-size: 10px; margin: 0;">
-            This is an automated notification from the JIRS Maintenance Management System. Please do not reply directly to this email.
+            This is an automated notification from the JIRS Facilities Management. Please do not reply directly to this email.
           </p>
         </div>
       </div>
@@ -101,7 +101,7 @@ export async function POST(request: Request) {
     `;
 
     await transporter.sendMail({
-      from: `"JIRS Maintenance Management System" <${process.env.EMAIL_USER}>`,
+      from: `"JIRS Facilities Management" <${process.env.EMAIL_USER}>`,
       to: technicianEmail,
       subject: `New Maintenance Ticket Assigned — ${ticketId}`,
       html,

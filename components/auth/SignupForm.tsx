@@ -77,7 +77,7 @@ export default function SignupForm() {
       <div className="space-y-0.5">
         <h2 className="font-display text-2xl font-black text-[#00355f] tracking-tight">Create Account</h2>
         <p className="font-body text-slate-600 text-xs">
-          Register for the JAIN Maintenance Management System.
+          Register for the JAIN Facilities Management.
         </p>
       </div>
 

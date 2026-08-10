@@ -3,7 +3,7 @@ import AnimatedTechnicianAuth from "@/components/auth/AnimatedTechnicianAuth";
 
 export const metadata: Metadata = {
   title: "Login | JFM Technician Portal",
-  description: "Log in to the JIRS Maintenance Management System.",
+  description: "Log in to the JIRS Facilities Management.",
 };
 
 export default function LoginPage() {

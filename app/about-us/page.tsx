@@ -10,7 +10,7 @@ import FloatingActions from "@/components/about/FloatingActions";
 export const metadata: Metadata = {
   title: "About Us | JAIN International Residential School",
   description:
-    "Learn about JIRS and how the Maintenance Management System supports its world-class residential campus.",
+    "Learn about JIRS and how the Facilities Management supports its world-class residential campus.",
 };
 
 export default function AboutUsPage() {

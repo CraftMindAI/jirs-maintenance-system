@@ -1,14 +1,32 @@
+"use client";
+
+import { useState } from "react";
 import Icon from "@/components/ui/Icon";
+import { UserItem } from "@/app/profile/v3/[token]/user-management/page";
 
 export default function DeleteUserModal({
-  userName,
+  user,
   onCancel,
   onConfirm,
 }: {
-  userName: string;
+  user: UserItem;
   onCancel: () => void;
-  onConfirm: () => void;
+  onConfirm: (user: UserItem) => Promise<void>;
 }) {
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleDelete = async () => {
+    setSubmitting(true);
+    setError(null);
+    try {
+      await onConfirm(user);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to delete user.");
+      setSubmitting(false);
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 dark:bg-[#0b1326]/80 backdrop-blur-md p-6">
       <div className="bg-white dark:bg-[#171f33] border border-slate-200 dark:border-[#464554]/30 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-6">
@@ -17,11 +35,35 @@ export default function DeleteUserModal({
         </div>
         <div>
           <h4 className="text-lg font-bold text-slate-900 dark:text-[#dae2fd]">Delete Account</h4>
-          <p className="text-xs text-slate-500 dark:text-[#908fa0] mt-1">Permanently remove user account **{userName}**?</p>
+          <p className="text-xs text-slate-500 dark:text-[#908fa0] mt-1">
+            Permanently remove user account <span className="font-bold text-slate-700 dark:text-[#dae2fd]">{user.name}</span>? This will also revoke their login access.
+          </p>
         </div>
+
+        {error && <p className="text-xs font-semibold text-red-500">{error}</p>}
+
         <div className="flex gap-3">
-          <button onClick={onCancel} className="flex-1 py-3 border border-slate-200 dark:border-[#464554]/30 text-slate-600 dark:text-[#908fa0] hover:bg-slate-100 dark:hover:bg-[#222a3d] rounded-xl font-bold text-xs cursor-pointer">Cancel</button>
-          <button onClick={onConfirm} className="flex-1 py-3 bg-red-500 text-white rounded-xl font-bold text-xs shadow-lg shadow-red-500/20 cursor-pointer">Delete</button>
+          <button
+            onClick={onCancel}
+            disabled={submitting}
+            className="flex-1 py-3 border border-slate-200 dark:border-[#464554]/30 text-slate-600 dark:text-[#908fa0] hover:bg-slate-100 dark:hover:bg-[#222a3d] rounded-xl font-bold text-xs cursor-pointer disabled:opacity-50"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleDelete}
+            disabled={submitting}
+            className="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white rounded-xl font-bold text-xs shadow-lg shadow-red-500/20 cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2"
+          >
+            {submitting ? (
+              <>
+                <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                Deleting...
+              </>
+            ) : (
+              "Delete"
+            )}
+          </button>
         </div>
       </div>
     </div>

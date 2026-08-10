@@ -43,7 +43,7 @@ export async function POST(req: Request) {
             JAIN INTERNATIONAL RESIDENTIAL SCHOOL
           </h1>
           <p style="color: #94a3b8; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; margin: 4px 0 0;">
-            Maintenance Management System
+            Facilities Management
           </p>
         </div>
 
@@ -82,7 +82,7 @@ export async function POST(req: Request) {
 
         <div style="background-color: #f8fafc; padding: 14px 24px; text-align: center; border-top: 1px solid #e2e8f0;">
           <p style="color: #94a3b8; font-size: 10px; margin: 0;">
-            This is an automated notification from the JIRS Maintenance Management System. Please do not reply directly to this email.
+            This is an automated notification from the JIRS Facilities Management. Please do not reply directly to this email.
           </p>
         </div>
       </div>
@@ -90,7 +90,7 @@ export async function POST(req: Request) {
     `;
 
     await transporter.sendMail({
-      from: `"JIRS Maintenance Management System" <${process.env.EMAIL_USER}>`,
+      from: `"JIRS Facilities Management" <${process.env.EMAIL_USER}>`,
       to: cleanEmail,
       subject: "Your JFM Technician Account Has Been Created",
       html,
@@ -103,6 +103,8 @@ export async function POST(req: Request) {
       ],
     });
 
+    await sendWhatsAppLoginMessage(phone, name, cleanEmail, password, loginUrl);
+
     return NextResponse.json({ success: true, newPassword: password });
   } catch (error: any) {
     console.error("Error creating technician account:", error);
@@ -111,5 +113,58 @@ export async function POST(req: Request) {
         ? "An account with this email already exists."
         : error?.message || "Failed to create technician account.";
     return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
+
+function formatWhatsAppNumber(rawPhone: string): string {
+  const digits = rawPhone.replace(/\D/g, "");
+  if (digits.length === 10) return `91${digits}`;
+  return digits;
+}
+
+async function sendWhatsAppLoginMessage(
+  phone: string,
+  name: string,
+  email: string,
+  password: string,
+  loginUrl: string
+) {
+  const accessToken = process.env.WHATSAPP_ACCESS_TOKEN;
+  const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
+
+  if (!accessToken || !phoneNumberId || !phone) return;
+
+  try {
+    const to = formatWhatsAppNumber(phone);
+    const body =
+      `Hi ${name}, this is your login details, login into the portal.\n\n` +
+      `Login URL: ${loginUrl}\n` +
+      `Email: ${email}\n` +
+      `Password: ${password}\n\n` +
+      `Please change your password after logging in for safety.\n- JAIN Team`;
+
+    const res = await fetch(
+      `https://graph.facebook.com/v20.0/${phoneNumberId}/messages`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          messaging_product: "whatsapp",
+          to,
+          type: "text",
+          text: { body },
+        }),
+      }
+    );
+
+    if (!res.ok) {
+      const errText = await res.text();
+      console.error("Error sending WhatsApp login message:", errText);
+    }
+  } catch (error) {
+    console.error("Error sending WhatsApp login message:", error);
   }
 }

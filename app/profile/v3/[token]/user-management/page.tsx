@@ -1,7 +1,7 @@
 "use client";
 
 import { use, useEffect, useState } from "react";
-import { collection, deleteDoc, doc, onSnapshot, updateDoc } from "firebase/firestore";
+import { collection, doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "@/lib/firebase";
 import { showToast } from "@/lib/toast";
@@ -36,7 +36,7 @@ export default function AdminUserManagement({ params }: { params: Promise<{ toke
   >({});
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
+  const [deleteUser, setDeleteUser] = useState<UserItem | null>(null);
   const [resetPasswordUser, setResetPasswordUser] = useState<UserItem | null>(null);
   const [showAddTechnician, setShowAddTechnician] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
@@ -120,15 +120,18 @@ export default function AdminUserManagement({ params }: { params: Promise<{ toke
     }
   };
 
-  const handleDeleteUser = async (id: string) => {
-    try {
-      await deleteDoc(doc(db, "users", id));
-      setShowDeleteConfirm(null);
-      showToast.success("User account deleted.");
-    } catch (error) {
-      console.error("Error deleting user:", error);
-      showToast.error("Failed to delete user.");
-    }
+  const handleDeleteUser = async (targetUser: UserItem) => {
+    const res = await fetch("/api/admin/delete-user", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: targetUser.id }),
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Failed to delete user");
+
+    setDeleteUser(null);
+    showToast.success(`${targetUser.name}'s account has been deleted.`);
   };
 
   const handleConfirmResetEmail = async (targetUser: UserItem) => {
@@ -198,7 +201,7 @@ export default function AdminUserManagement({ params }: { params: Promise<{ toke
           basePath={`/profile/v3/${token}`}
           currentUserId={currentUserId}
           onToggleStatus={handleToggleStatus}
-          onDeleteRequest={setShowDeleteConfirm}
+          onDeleteRequest={(id) => setDeleteUser(users.find((u) => u.id === id) || null)}
           onResetPasswordRequest={(u) => setResetPasswordUser(u)}
         />
       )}
@@ -213,11 +216,11 @@ export default function AdminUserManagement({ params }: { params: Promise<{ toke
       )}
 
       {/* Delete User Modal */}
-      {showDeleteConfirm && (
+      {deleteUser && (
         <DeleteUserModal
-          userName={users.find((u) => u.id === showDeleteConfirm)?.name || "Unknown User"}
-          onCancel={() => setShowDeleteConfirm(null)}
-          onConfirm={() => handleDeleteUser(showDeleteConfirm)}
+          user={deleteUser}
+          onCancel={() => setDeleteUser(null)}
+          onConfirm={handleDeleteUser}
         />
       )}
 
