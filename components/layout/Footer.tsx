@@ -1,5 +1,5 @@
 "use client";
-
+import Image from "next/image";
 import { useState } from "react";
 import Link from "next/link";
 import Icon from "@/components/ui/Icon";
@@ -18,9 +18,14 @@ export default function Footer() {
           {/* Brand Col */}
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-sky-400 flex items-center justify-center shadow-md shadow-blue-500/20">
-                <Icon name="school" className="text-lg text-white" />
-              </div>
+              <Image
+                              src="/logo/logo.png"
+                              alt="JFM logo"
+                              width={40}
+                              height={40}
+                              className="h-10 w-auto object-contain"
+                              priority
+                            />
               <span className="font-display text-xl font-black tracking-wider text-white">JFM</span>
             </div>
             <p className="font-body text-xs text-slate-400 leading-relaxed max-w-xs">
