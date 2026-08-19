@@ -31,7 +31,7 @@ export default function ContactSection() {
             <div className="space-y-8 pt-2">
               <Reveal delay={100}>
                 <a
-                  href="mailto:jirsmaintenance@gmail.com"
+                  href="mailto:jainfacilitiesmanagement@gmail.com "
                   className="group flex items-center gap-6 py-3 border-b border-white/10 hover:border-sky-400 transition-colors"
                 >
                   <div className="w-12 h-12 rounded-2xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400 group-hover:bg-sky-500 group-hover:text-slate-950 transition-all duration-300">
@@ -40,7 +40,7 @@ export default function ContactSection() {
                   <div className="flex-1">
                     <span className="text-xs font-mono font-bold uppercase text-slate-400 tracking-wider block">Email Support</span>
                     <span className="text-lg font-display font-semibold text-white group-hover:text-sky-300 transition-colors">
-                      jirsmaintenance@gmail.com
+                      jainfacilitiesmanagement@gmail.com 
                     </span>
                   </div>
                   <Icon name="arrow_outward" className="text-slate-500 group-hover:text-sky-400 group-hover:translate-x-1 group-hover:-translate-y-1 transition-all" />
