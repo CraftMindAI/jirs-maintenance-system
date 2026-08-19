@@ -103,7 +103,7 @@ export async function POST(req: Request) {
       ],
     });
 
-    await sendWhatsAppLoginMessage(phone, name, cleanEmail, password, loginUrl);
+    await sendWhatsAppSignupMessage(phone, name, cleanEmail);
 
     return NextResponse.json({ success: true, newPassword: password });
   } catch (error: any) {
@@ -122,49 +122,47 @@ function formatWhatsAppNumber(rawPhone: string): string {
   return digits;
 }
 
-async function sendWhatsAppLoginMessage(
-  phone: string,
-  name: string,
-  email: string,
-  password: string,
-  loginUrl: string
-) {
-  const accessToken = process.env.WHATSAPP_ACCESS_TOKEN;
-  const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
+async function sendWhatsAppSignupMessage(phone: string, name: string, email: string) {
+  const serviceApi = process.env.WHATS_APP_SERVICE_API;
+  const vendorId = process.env.WHATS_APP_VENDOR_ID;
+  const accessToken = process.env.WHATS_APP_API_ACCESS_TOKEN;
+  const fromPhoneNumberId = process.env.WHATS_APP_PHONE_NUMBER_ID;
+  const templateName = process.env.WHATS_APP_SIGNUP_TEMPLATE;
+  const group = process.env.WHATS_APP_GROUP;
 
-  if (!accessToken || !phoneNumberId || !phone) return;
+  if (!serviceApi || !vendorId || !accessToken || !fromPhoneNumberId || !templateName) return;
+
+  const [firstName, ...rest] = name.trim().split(/\s+/);
+  const lastName = rest.join(" ");
 
   try {
-    const to = formatWhatsAppNumber(phone);
-    const body =
-      `Hi ${name}, this is your login details, login into the portal.\n\n` +
-      `Login URL: ${loginUrl}\n` +
-      `Email: ${email}\n` +
-      `Password: ${password}\n\n` +
-      `Please change your password after logging in for safety.\n- JAIN Team`;
+    const url = `${serviceApi}${vendorId}/contact/send-template-message?token=${accessToken}`;
 
-    const res = await fetch(
-      `https://graph.facebook.com/v20.0/${phoneNumberId}/messages`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        from_phone_number_id: fromPhoneNumberId,
+        phone_number: formatWhatsAppNumber(phone),
+        template_name: templateName,
+        template_language: "en_US",
+        field_1: name,
+        contact: {
+          first_name: firstName,
+          last_name: lastName,
+          email,
+          country: "india",
+          language_code: "en_US",
+          groups: group || "Technician",
         },
-        body: JSON.stringify({
-          messaging_product: "whatsapp",
-          to,
-          type: "text",
-          text: { body },
-        }),
-      }
-    );
+      }),
+    });
 
     if (!res.ok) {
       const errText = await res.text();
-      console.error("Error sending WhatsApp login message:", errText);
+      console.error("Error sending WhatsApp signup message:", errText);
     }
   } catch (error) {
-    console.error("Error sending WhatsApp login message:", error);
+    console.error("Error sending WhatsApp signup message:", error);
   }
 }

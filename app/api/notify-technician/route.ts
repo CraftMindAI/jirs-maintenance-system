@@ -13,6 +13,7 @@ export async function POST(request: Request) {
     const {
       technicianName,
       technicianEmail,
+      technicianPhone,
       ticketId,
       category,
       location,
@@ -114,9 +115,108 @@ export async function POST(request: Request) {
       ],
     });
 
+    await sendWhatsAppTicketNotification({
+      technicianName,
+      technicianEmail,
+      technicianPhone,
+      ticketId,
+      category,
+      location,
+      priority,
+      description,
+      adminName,
+      adminEmail,
+      adminPhone,
+    });
+
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error sending technician assignment email:", error);
     return NextResponse.json({ error: "Failed to send email." }, { status: 500 });
+  }
+}
+
+function formatWhatsAppNumber(rawPhone: string): string {
+  const digits = rawPhone.replace(/\D/g, "");
+  if (digits.length === 10) return `91${digits}`;
+  return digits;
+}
+
+async function sendWhatsAppTicketNotification(params: {
+  technicianName: string;
+  technicianEmail: string;
+  technicianPhone: string;
+  ticketId: string;
+  category: string;
+  location: string;
+  priority: string;
+  description: string;
+  adminName: string;
+  adminEmail: string;
+  adminPhone: string;
+}) {
+  const {
+    technicianName,
+    technicianEmail,
+    technicianPhone,
+    ticketId,
+    category,
+    location,
+    priority,
+    description,
+    adminName,
+    adminEmail,
+    adminPhone,
+  } = params;
+
+  const serviceApi = process.env.WHATS_APP_SERVICE_API;
+  const vendorId = process.env.WHATS_APP_VENDOR_ID;
+  const accessToken = process.env.WHATS_APP_API_ACCESS_TOKEN;
+  const fromPhoneNumberId = process.env.WHATS_APP_PHONE_NUMBER_ID;
+  const templateName = process.env.WHATS_APP_TICKET_ISSUE_TEMPLATE;
+  const group = process.env.WHATS_APP_GROUP;
+
+  if (!serviceApi || !vendorId || !accessToken || !fromPhoneNumberId || !templateName || !technicianPhone) return;
+
+  const [firstName, ...rest] = technicianName.trim().split(/\s+/);
+  const lastName = rest.join(" ");
+
+  try {
+    const url = `${serviceApi}${vendorId}/contact/send-template-message?token=${accessToken}`;
+
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        from_phone_number_id: fromPhoneNumberId,
+        phone_number: formatWhatsAppNumber(technicianPhone),
+        template_name: templateName,
+        template_language: "en_US",
+        field_1: technicianName,
+        field_2: adminName,
+        field_3: ticketId,
+        field_4: category,
+        field_5: location,
+        field_6: priority,
+        field_7: description,
+        field_8: adminEmail,
+        field_9: adminPhone,
+        contact: {
+          first_name: firstName,
+          last_name: lastName,
+          email: technicianEmail,
+          country: "india",
+          language_code: "en_US",
+          groups: group || "Technician",
+        },
+      }),
+    });
+
+    if (!res.ok) {
+      const errText = await res.text();
+      console.error("Error sending WhatsApp ticket notification:", errText);
+    }
+  } catch (error) {
+    console.error("Error sending WhatsApp ticket notification:", error);
   }
 }

@@ -115,6 +115,7 @@ function ViewComplaintsContent({ params }: { params: Promise<{ token: string }> 
         notifyTechnicianAssignment({
           technicianName: selectedTechObj.name,
           technicianEmail: selectedTechObj.email,
+          technicianPhone: selectedTechObj.phone || "",
           ticketId: assigningTicketId,
           category: ticket.category,
           location: ticket.location,

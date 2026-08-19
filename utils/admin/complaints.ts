@@ -71,6 +71,7 @@ export async function updateComplaintProgress(
 export type TechnicianNotificationPayload = {
   technicianName: string;
   technicianEmail: string;
+  technicianPhone: string;
   ticketId: string;
   category: string;
   location: string;

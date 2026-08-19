@@ -7,7 +7,6 @@ import Dropdown from "@/components/ui/Dropdown";
 import { Complaint } from "@/types/complaint";
 import { auth, db } from "@/lib/firebase";
 import { addDoc, collection, doc, updateDoc, Bytes, serverTimestamp } from "firebase/firestore";
-import { showToast } from "@/lib/toast";
 
 const MAX_IMAGES = 2;
 
@@ -160,17 +159,6 @@ export default function ComplaintForm({
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
-
-    if (mode !== "edit") {
-      const now = new Date();
-      const hours = now.getHours() + now.getMinutes() / 60;
-      if (hours < 9 || hours >= 18) {
-        showToast.warning("We accept complaints from 9:00 AM to 6:00 PM only.");
-        handleReset();
-        router.push(basePath ? `${basePath}/dashboard` : "/admin/dashboard");
-        return;
-      }
-    }
 
     if (!category) {
       setError("Please select a complaint category.");
