@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import Icon from "@/components/ui/Icon";
@@ -12,6 +13,8 @@ import { mapComplaintDoc } from "@/hooks/useComplaintsFeed";
 import { getDeadlineInfo } from "@/utils/deadline";
 
 export default function AdminTrackComplaints() {
+  const params = useParams<{ token: string }>();
+  const basePath = `/profile/v3/${params.token}`;
   const [complaints, setComplaints] = useState<Complaint[]>([]);
   const [technicians, setTechnicians] = useState<
     { id: string; name: string; email: string; phone?: string; dept?: string }[]
@@ -229,7 +232,7 @@ export default function AdminTrackComplaints() {
           <div className="w-10 h-10 border-4 border-[#464554]/30 border-t-[#8083ff] rounded-full animate-spin" />
         </div>
       ) : (
-        <TimelineList technicianGroups={technicianGroups} />
+        <TimelineList technicianGroups={technicianGroups} basePath={basePath} />
       )}
     </div>
   );

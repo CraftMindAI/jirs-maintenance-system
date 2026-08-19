@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Icon from "@/components/ui/Icon";
 import StatusBadge from "@/components/ui/StatusBadge";
 import PriorityBadge from "@/components/ui/PriorityBadge";
@@ -22,6 +23,7 @@ export default function ComplaintInfoCard({
   onReopen?: () => void;
   updatingStatus?: boolean;
 }) {
+  const [showCompletionPhoto, setShowCompletionPhoto] = useState(false);
   const normalizedStatus = (complaint.status || "").toLowerCase();
   const isPendingStatus = normalizedStatus.includes("pending");
   const isCompletedStatus = normalizedStatus.includes("completed") || normalizedStatus.includes("resolved");
@@ -86,23 +88,21 @@ export default function ComplaintInfoCard({
           {complaint.completionPhotoUrl && (
             <div className="text-xs text-slate-700 dark:text-[#c7c4d7] pt-3 mt-3 border-t border-primary/10 dark:border-[#8083ff]/10">
               <span className="text-[10px] font-mono text-slate-500 dark:text-[#908fa0] block mb-2">Completion Photo</span>
-              <div className="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 w-full max-w-xs relative group">
-                <img 
-                  src={complaint.completionPhotoUrl} 
-                  alt="Completion Photo" 
-                  className="w-full h-auto object-contain bg-slate-100 dark:bg-[#171f33]" 
+              <div
+                onClick={() => setShowCompletionPhoto(true)}
+                className="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 w-full max-w-xs relative group cursor-pointer"
+              >
+                <img
+                  src={complaint.completionPhotoUrl}
+                  alt="Completion Photo"
+                  className="w-full h-auto object-contain bg-slate-100 dark:bg-[#171f33]"
                 />
-                <a 
-                  href={complaint.completionPhotoUrl} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                >
+                <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                   <span className="text-white font-bold text-xs bg-slate-900/80 px-4 py-2 rounded-lg backdrop-blur-sm flex items-center gap-2">
-                    <Icon name="open_in_new" className="text-sm" />
-                    Open Image
+                    <Icon name="zoom_in" className="text-sm" />
+                    Click to view
                   </span>
-                </a>
+                </div>
               </div>
             </div>
           )}
@@ -173,6 +173,33 @@ export default function ComplaintInfoCard({
                 )}
               </>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Lightbox / Fullscreen Completion Photo Modal */}
+      {showCompletionPhoto && complaint.completionPhotoUrl && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/80 dark:bg-[#0b1326]/90 backdrop-blur-md p-4 animate-fade-in"
+          onClick={() => setShowCompletionPhoto(false)}
+        >
+          <div
+            className="relative max-w-4xl w-full max-h-[90vh] flex flex-col items-center justify-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setShowCompletionPhoto(false)}
+              className="absolute -top-12 right-0 text-white hover:text-rose-400 p-2 rounded-full cursor-pointer bg-slate-900/80 dark:bg-[#171f33]/80 border border-slate-700 dark:border-[#464554]/30"
+              title="Close image view"
+            >
+              <Icon name="close" className="text-2xl" />
+            </button>
+
+            <img
+              src={complaint.completionPhotoUrl}
+              alt="Completion Photo expanded preview"
+              className="max-w-full max-h-[80vh] object-contain rounded-2xl border border-slate-700 dark:border-[#464554]/30 shadow-2xl"
+            />
           </div>
         </div>
       )}

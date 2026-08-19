@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import Icon from "@/components/ui/Icon";
 import StatusBadge from "@/components/ui/StatusBadge";
 import PriorityBadge from "@/components/ui/PriorityBadge";
@@ -16,34 +17,12 @@ export interface TechnicianGroup {
   tickets: Complaint[];
 }
 
-const TIMELINE_STEPS = [
-  { key: "Pending", label: "Submitted" },
-  { key: "Approved", label: "Approved" },
-  { key: "Assigned", label: "Assigned" },
-  { key: "In Progress", label: "In Progress" },
-  { key: "Completed", label: "Completed" },
-  { key: "Closed", label: "Closed" },
-];
-
-const getStepStatus = (stepKey: string, currentStatus: string) => {
-  const order = ["Pending", "Approved", "Assigned", "In Progress", "Completed", "Verified", "Closed"];
-  let currentIdx = order.indexOf(currentStatus);
-  if (currentIdx === -1) currentIdx = 0;
-  
-  let stepIdx = order.indexOf(stepKey);
-  if (stepKey === "Closed" && (currentStatus === "Closed" || currentStatus === "Verified")) {
-    return currentIdx >= order.indexOf("Verified") ? (currentStatus === "Closed" || currentStatus === "Verified" ? "completed" : "active") : "pending";
-  }
-
-  if (currentIdx > stepIdx) return "completed";
-  if (currentIdx === stepIdx) return "active";
-  return "pending";
-};
-
 export default function TimelineList({
   technicianGroups,
+  basePath,
 }: {
   technicianGroups: TechnicianGroup[];
+  basePath?: string;
 }) {
   const [expandedTechIds, setExpandedTechIds] = useState<Set<string>>(new Set());
 
@@ -247,42 +226,17 @@ export default function TimelineList({
                       </div>
                     </div>
 
-                    {/* Timeline Stepper */}
-                    <div className="overflow-x-auto pt-2">
-                      <div className="min-w-[500px] flex items-center justify-between relative px-2">
-                        <div className="absolute top-[14px] left-8 right-8 h-[2px] bg-slate-200 dark:bg-[#131b2e] pointer-events-none" />
-
-                        {TIMELINE_STEPS.map((step, idx) => {
-                          const status = getStepStatus(step.key, ticket.status);
-                          return (
-                            <div key={idx} className="relative flex flex-col items-center gap-1.5 text-center z-10 w-20">
-                              <span
-                                className={`w-7 h-7 rounded-full border-2 flex items-center justify-center text-[10px] font-black transition-all ${
-                                  status === "completed"
-                                    ? "bg-emerald-500 border-emerald-500 text-white"
-                                    : status === "active"
-                                    ? "bg-primary dark:bg-[#8083ff] border-primary text-white scale-110 shadow-md"
-                                    : "bg-white dark:bg-[#171f33] border-slate-300 dark:border-[#464554]/40 text-slate-400"
-                                }`}
-                              >
-                                {status === "completed" ? "✓" : idx + 1}
-                              </span>
-                              <span
-                                className={`text-[9px] font-mono uppercase tracking-wider ${
-                                  status === "completed"
-                                    ? "text-emerald-600 dark:text-emerald-400 font-bold"
-                                    : status === "active"
-                                    ? "text-primary dark:text-[#c0c1ff] font-black"
-                                    : "text-slate-400"
-                                }`}
-                              >
-                                {step.label}
-                              </span>
-                            </div>
-                          );
-                        })}
+                    {basePath && (
+                      <div className="pt-2">
+                        <Link
+                          href={`${basePath}/view-complaints/${ticket.id}`}
+                          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary dark:bg-[#8083ff] text-white text-xs font-bold hover:opacity-90 transition-opacity"
+                        >
+                          <Icon name="visibility" className="text-sm" />
+                          View Ticket
+                        </Link>
                       </div>
-                    </div>
+                    )}
                   </div>
                 );
               })}
