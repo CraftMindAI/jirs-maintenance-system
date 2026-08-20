@@ -12,6 +12,7 @@ export function mapComplaintDoc(doc: QueryDocumentSnapshot<DocumentData>): Compl
 
   return {
     id: doc.id,
+    ticketNumber: data.ticketNumber,
     category: data.category || "Uncategorized",
     location: data.location || "-",
     priority: data.priority || "Medium",

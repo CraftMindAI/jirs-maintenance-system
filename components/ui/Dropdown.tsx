@@ -8,6 +8,9 @@ export interface DropdownOption {
   label: string;
 }
 
+const ITEM_HEIGHT_PX = 40;
+const LIST_PADDING_PX = 12;
+
 export default function Dropdown({
   id,
   options,
@@ -15,6 +18,8 @@ export default function Dropdown({
   onChange,
   placeholder = "Select an option",
   scroll = true,
+  direction = "down",
+  maxVisibleItems,
 }: {
   id?: string;
   options: DropdownOption[];
@@ -22,6 +27,8 @@ export default function Dropdown({
   onChange: (value: string) => void;
   placeholder?: string;
   scroll?: boolean;
+  direction?: "up" | "down";
+  maxVisibleItems?: number;
 }) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -56,8 +63,15 @@ export default function Dropdown({
       </button>
 
       {open && (
-        <div className="absolute z-20 mt-2 w-full bg-white dark:bg-[#171f33] border border-slate-200 dark:border-[#464554]/20 rounded-xl shadow-lg overflow-hidden">
-          <ul className={`p-1.5 ${scroll ? "max-h-60 overflow-y-auto" : ""}`}>
+        <div
+          className={`absolute z-20 w-full bg-white dark:bg-[#171f33] border border-slate-200 dark:border-[#464554]/20 rounded-xl shadow-lg overflow-hidden ${
+            direction === "up" ? "bottom-full mb-2" : "mt-2"
+          }`}
+        >
+          <ul
+            className={`p-1.5 ${maxVisibleItems ? "overflow-y-auto" : scroll ? "max-h-60 overflow-y-auto" : ""}`}
+            style={maxVisibleItems ? { maxHeight: maxVisibleItems * ITEM_HEIGHT_PX + LIST_PADDING_PX } : undefined}
+          >
             {options.map((option) => (
               <li key={option.value}>
                 <button

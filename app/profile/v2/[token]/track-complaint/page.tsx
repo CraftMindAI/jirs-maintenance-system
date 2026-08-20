@@ -226,7 +226,7 @@ function TrackComplaintContent() {
               >
                 <span className="truncate">
                   {selectedComplaint
-                    ? `#${visibleComplaints.findIndex((c) => c.id === selectedTicketId) + 1} — ${selectedComplaint.category}`
+                    ? `#${selectedComplaint.ticketNumber ?? "-"} — ${selectedComplaint.category}`
                     : "Select Ticket"}
                 </span>
                 <Icon
@@ -242,7 +242,7 @@ function TrackComplaintContent() {
                     onClick={() => setDropdownOpen(false)}
                   />
                   <div className="absolute right-0 left-0 top-full mt-2 z-30 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl max-h-[135px] overflow-y-auto custom-scrollbar p-1 divide-y divide-slate-100 dark:divide-slate-800/50">
-                    {visibleComplaints.map((c, idx) => (
+                    {visibleComplaints.map((c) => (
                       <button
                         key={c.id}
                         type="button"
@@ -257,7 +257,7 @@ function TrackComplaintContent() {
                         }`}
                       >
                         <span className="truncate">
-                          #{idx + 1} — {c.category}
+                          #{c.ticketNumber ?? "-"} — {c.category}
                         </span>
                         {c.id === selectedTicketId && (
                           <Icon name="check" className="text-sm shrink-0" />

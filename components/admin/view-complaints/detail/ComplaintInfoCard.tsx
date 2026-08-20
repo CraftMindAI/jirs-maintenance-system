@@ -35,7 +35,7 @@ export default function ComplaintInfoCard({
         <div>
           <div className="flex items-center gap-3">
             <h1 className="font-display text-xl md:text-2xl font-bold text-slate-900 dark:text-[#dae2fd]">
-              Ticket #{complaint.id}
+              Complaint #{complaint.ticketNumber ?? "-"}
             </h1>
             <PriorityBadge priority={complaint.priority} />
           </div>

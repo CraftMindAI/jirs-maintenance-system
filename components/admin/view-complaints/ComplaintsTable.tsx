@@ -44,7 +44,7 @@ export default function ComplaintsTable({
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-slate-50 dark:bg-[#131b2e]/50 border-b border-slate-200 dark:border-[#464554]/10">
-              <th className="py-4 px-6 font-mono text-slate-500 dark:text-[#908fa0] uppercase text-[11px] tracking-[0.15em]">Ticket ID</th>
+              <th className="py-4 px-6 font-mono text-slate-500 dark:text-[#908fa0] uppercase text-[11px] tracking-[0.15em]">Complaint ID</th>
               <th className="py-4 px-6 font-mono text-slate-500 dark:text-[#908fa0] uppercase text-[11px] tracking-[0.15em]">User / Location</th>
               <th className="py-4 px-6 font-mono text-slate-500 dark:text-[#908fa0] uppercase text-[11px] tracking-[0.15em]">Category</th>
               <th className="py-4 px-6 font-mono text-slate-500 dark:text-[#908fa0] uppercase text-[11px] tracking-[0.15em]">Priority</th>
@@ -54,11 +54,17 @@ export default function ComplaintsTable({
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 dark:divide-[#464554]/10 font-medium text-xs">
-            {complaints.map((item, index) => {
+            {complaints.map((item) => {
               const isOwner = !!currentUserId && item.userId === currentUserId;
               const canManage = isOwner && item.status === "Pending";
               const canAssign = isAdmin && (item.status === "Approved" || item.status === "Assigned");
               const canUpdateProgress = isTechnician && (item.status === "Assigned" || item.status === "In Progress");
+              const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+              const canAdminDelete =
+                isAdmin &&
+                item.status === "Closed" &&
+                !!item.completedAt &&
+                Date.now() - new Date(item.completedAt).getTime() >= THIRTY_DAYS_MS;
               const deadline = getDeadlineInfo(item.assignedAt, item.assignedDate, item.status);
               const displayStatus =
                 item.status === "Pending" || item.status === "Approved" ? "Unassigned" : item.status;
@@ -66,7 +72,7 @@ export default function ComplaintsTable({
               <tr key={item.id} className="hover:bg-primary/5 dark:hover:bg-[#8083ff]/5 transition-colors">
                 <td className="py-4 px-6 font-mono text-primary dark:text-[#c0c1ff] font-bold">
                   <Link href={basePath ? `${basePath}/view-complaints/${item.id}` : `/admin/view-complaints/${item.id}`} className="hover:underline">
-                    {index + 1}
+                    {item.ticketNumber ?? "-"}
                   </Link>
                 </td>
                 <td className="py-4 px-6">
@@ -118,6 +124,11 @@ export default function ComplaintsTable({
                     {canUpdateProgress && (
                       <button onClick={() => onUpdateRequest(item.id)} title="Update Progress" className="hover:text-emerald-500 transition-colors cursor-pointer">
                         <Icon name="update" className="text-lg" />
+                      </button>
+                    )}
+                    {canAdminDelete && (
+                      <button onClick={() => onDeleteRequest(item.id)} title="Delete Ticket (Closed 30+ days ago)" className="hover:text-red-500 transition-colors cursor-pointer">
+                        <Icon name="delete" className="text-lg" />
                       </button>
                     )}
                   </div>

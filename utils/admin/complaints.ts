@@ -73,6 +73,7 @@ export type TechnicianNotificationPayload = {
   technicianEmail: string;
   technicianPhone: string;
   ticketId: string;
+  ticketNumber?: number;
   category: string;
   location: string;
   priority: string;

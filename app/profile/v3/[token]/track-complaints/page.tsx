@@ -70,7 +70,7 @@ export default function AdminTrackComplaints() {
   const filteredComplaints = complaints.filter((c) => {
     const matchQuery =
       !trimmedQuery ||
-      c.id.toLowerCase().includes(trimmedQuery) ||
+      String(c.ticketNumber ?? "").toLowerCase().includes(trimmedQuery) ||
       c.category.toLowerCase().includes(trimmedQuery) ||
       c.description.toLowerCase().includes(trimmedQuery) ||
       c.location.toLowerCase().includes(trimmedQuery) ||

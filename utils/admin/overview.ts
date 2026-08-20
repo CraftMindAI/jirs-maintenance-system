@@ -37,7 +37,7 @@ export function buildServiceSplit(complaints: { category: string }[]): ServiceSl
 
 /** The 5 most recently created tickets, formatted for the Recent Requests table. */
 export function buildRecentRequests(
-  complaints: { id: string; description: string; category: string; date: string; technicianName?: string; status: string }[],
+  complaints: { id: string; ticketNumber?: number; description: string; category: string; date: string; technicianName?: string; status: string }[],
 ): RecentRequest[] {
   const byDateDesc = (a: { date: string }, b: { date: string }) => b.date.localeCompare(a.date);
 
@@ -46,6 +46,7 @@ export function buildRecentRequests(
     .slice(0, 5)
     .map((c) => ({
       id: c.id,
+      ticketNumber: c.ticketNumber,
       title: c.description || c.category,
       date: c.date
         ? new Date(`${c.date}T00:00:00`).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })

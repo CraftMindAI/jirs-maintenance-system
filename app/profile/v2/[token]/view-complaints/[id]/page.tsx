@@ -171,7 +171,7 @@ export default function TechnicianComplaintDetail({
               </h1>
               <div className="flex flex-wrap items-center gap-3 mt-3">
                 <span className="px-3 py-1 bg-slate-100 dark:bg-[#131b2e] text-slate-600 dark:text-[#908fa0] rounded-lg text-xs font-mono border border-slate-200 dark:border-[#464554]/30">
-                  ID: {complaint.id}
+                  Complaint #{complaint.ticketNumber ?? "-"}
                 </span>
                 <span className="flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-[#908fa0]">
                   <Icon name="event" className="text-sm" />

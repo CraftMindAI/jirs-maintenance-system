@@ -4,6 +4,7 @@ import { TechnicianOption } from "./constants";
 
 export default function AssignTechnicianModal({
   ticketId,
+  ticketNumber,
   isReassign = false,
   technicians,
   selectedTechnicianId,
@@ -12,6 +13,7 @@ export default function AssignTechnicianModal({
   onConfirm,
 }: {
   ticketId: string;
+  ticketNumber?: number;
   isReassign?: boolean;
   technicians: TechnicianOption[];
   selectedTechnicianId: string;
@@ -19,6 +21,7 @@ export default function AssignTechnicianModal({
   onCancel: () => void;
   onConfirm: () => void;
 }) {
+  const displayTicketId = ticketNumber ?? "-";
   const technicianOptions: DropdownOption[] = technicians.map((t) => ({
     value: t.id,
     label: `${t.name}${t.phone ? ` (${t.phone})` : ""}`,
@@ -36,8 +39,8 @@ export default function AssignTechnicianModal({
           </h4>
           <p className="text-xs text-slate-500 dark:text-[#908fa0] mt-1">
             {isReassign
-              ? <>Reallocate ticket **{ticketId}** to a different technician.</>
-              : <>Allocate ticket **{ticketId}** to specialized division personnel.</>}
+              ? <>Reallocate complaint {displayTicketId} to a different technician.</>
+              : <>Allocate complaint {displayTicketId} to specialized division personnel.</>}
           </p>
         </div>
 
@@ -48,6 +51,8 @@ export default function AssignTechnicianModal({
             value={selectedTechnicianId}
             onChange={setSelectedTechnicianId}
             placeholder="Choose technician..."
+            direction="up"
+            maxVisibleItems={3}
           />
           {technicians.length === 0 && (
             <p className="text-[10px] text-slate-500 dark:text-[#908fa0] mt-1">

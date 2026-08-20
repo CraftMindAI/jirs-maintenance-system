@@ -9,6 +9,7 @@ import Link from "next/link";
 
 interface Complaint {
   id: string;
+  ticketNumber?: number;
   category: string;
   description: string;
   location: string;
@@ -158,7 +159,10 @@ export default function TechnicianViewComplaints({
                   <Icon name="handyman" className="text-2xl" />
                 </div>
                 <div className="pt-1 pr-16 flex-1">
-                  <h3 className="font-bold text-slate-800 dark:text-slate-100 text-xl leading-tight line-clamp-1 group-hover:text-[#0f4c81] dark:group-hover:text-blue-400 transition-colors" title={complaint.category}>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-[#0f4c81] dark:text-blue-400">
+                    Complaint #{complaint.ticketNumber ?? "-"}
+                  </span>
+                  <h3 className="font-bold text-slate-800 dark:text-slate-100 text-xl leading-tight line-clamp-1 group-hover:text-[#0f4c81] dark:group-hover:text-blue-400 transition-colors mt-0.5" title={complaint.category}>
                     {complaint.category}
                   </h3>
                   <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 mt-2 font-medium bg-slate-100 dark:bg-slate-800/50 w-fit px-2.5 py-1 rounded-md">

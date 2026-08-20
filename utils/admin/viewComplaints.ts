@@ -57,7 +57,7 @@ export function filterComplaints(complaints: Complaint[], filters: ComplaintFilt
 
   const filtered = complaints.filter((c) => {
     const matchQuery =
-      c.id.toLowerCase().includes(query) ||
+      String(c.ticketNumber ?? "").toLowerCase().includes(query) ||
       c.category.toLowerCase().includes(query) ||
       c.description.toLowerCase().includes(query) ||
       (c.location && c.location.toLowerCase().includes(query));

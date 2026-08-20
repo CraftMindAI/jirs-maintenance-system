@@ -46,7 +46,7 @@ export default function MyComplaints({
   const [edDescription, setEdDescription] = useState("");
   const [edSaving, setEdSaving] = useState(false);
   const [edError, setEdError] = useState<string | null>(null);
-  const [edSerial, setEdSerial] = useState(0);
+  const [edSerial, setEdSerial] = useState<number | undefined>(undefined);
 
   // Edit modal: image attachment state
   const [edImageFile, setEdImageFile] = useState<File | null>(null);
@@ -74,7 +74,7 @@ export default function MyComplaints({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [edExistingImages]);
 
-  const openEdit = (item: Complaint, serial: number) => {
+  const openEdit = (item: Complaint, serial?: number) => {
     setEditingComplaint(item);
     setEdSerial(serial);
     setEdCategory(item.category);
@@ -361,7 +361,7 @@ export default function MyComplaints({
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="border-b border-slate-100 dark:border-slate-800 text-xs font-black uppercase text-slate-400 bg-slate-50/50 dark:bg-slate-900/50">
-                  <th className="py-4 px-6">S.No</th>
+                  <th className="py-4 px-6">Complaint Number</th>
                   <th className="py-4 px-6">Complaint Category</th>
                   <th className="py-4 px-6">Location</th>
                   <th className="py-4 px-6">Priority</th>
@@ -371,13 +371,13 @@ export default function MyComplaints({
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800 font-semibold text-sm">
-                {filteredComplaints.map((item, idx) => (
+                {filteredComplaints.map((item) => (
                   <tr
                     key={item.id}
                     className="hover:bg-slate-50/40 dark:hover:bg-slate-800/30 transition-colors"
                   >
                     <td className="py-4 px-6 text-slate-800 dark:text-slate-100 font-bold">
-                      {idx + 1}
+                      {item.ticketNumber ?? "-"}
                     </td>
                     <td className="py-4 px-6 text-slate-500 dark:text-slate-400">
                       {item.category}
@@ -422,7 +422,7 @@ export default function MyComplaints({
                       <div className="flex justify-end gap-3 text-slate-400 dark:text-slate-500">
                         {item.status === "Pending" && (
                           <button
-                            onClick={() => openEdit(item, idx + 1)}
+                            onClick={() => openEdit(item, item.ticketNumber)}
                             title="Edit Ticket"
                             className="hover:text-primary dark:hover:text-white transition-colors cursor-pointer"
                           >
@@ -455,14 +455,14 @@ export default function MyComplaints({
 
           {/* Mobile Cards View */}
           <div className="lg:hidden divide-y divide-slate-100 dark:divide-slate-800">
-            {filteredComplaints.map((item, idx) => (
+            {filteredComplaints.map((item) => (
               <div
                 key={item.id}
                 className="p-6 space-y-4 hover:bg-slate-50/20 dark:hover:bg-slate-800/20 transition-colors"
               >
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-bold text-slate-800 dark:text-slate-100">
-                    {idx + 1}
+                    {item.ticketNumber ?? "-"}
                   </span>
                   <span
                     className={`text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full ${
@@ -513,7 +513,7 @@ export default function MyComplaints({
                   <div className="flex gap-4 text-slate-400">
                     {item.status === "Pending" && (
                       <button
-                        onClick={() => openEdit(item, idx + 1)}
+                        onClick={() => openEdit(item, item.ticketNumber)}
                         className="hover:text-primary transition-colors cursor-pointer"
                       >
                         <Icon name="edit" className="text-lg" />
@@ -602,7 +602,7 @@ export default function MyComplaints({
           <div className="p-6 md:p-8 space-y-6 overflow-y-auto custom-scrollbar">
             <div>
               <h4 className="text-xl font-bold text-slate-800 dark:text-slate-100">
-                Edit Ticket #{edSerial}
+                Edit Complaint #{edSerial ?? "-"}
               </h4>
               <p className="text-sm text-slate-400 dark:text-slate-500 mt-1 leading-relaxed">
                 You can edit this ticket while it&rsquo;s still Pending.

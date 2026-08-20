@@ -15,6 +15,7 @@ export async function POST(request: Request) {
       technicianEmail,
       technicianPhone,
       ticketId,
+      ticketNumber,
       category,
       location,
       priority,
@@ -28,6 +29,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Technician email is required." }, { status: 400 });
     }
 
+    const displayTicketId = ticketNumber ?? ticketId;
     const priorityColor = PRIORITY_COLORS[priority] || "#64748b";
 
     const html = `
@@ -52,8 +54,8 @@ export async function POST(request: Request) {
 
           <table style="width: 100%; max-width: 320px; margin: 0 auto 20px; border-collapse: collapse; border: 1px solid #e2e8f0;">
             <tr>
-              <td style="padding: 8px 12px; border: 1px solid #e2e8f0; background-color: #f8fafc; color: #64748b; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">Ticket ID</td>
-              <td style="padding: 8px 12px; border: 1px solid #e2e8f0; color: #0f172a; font-size: 13px; font-weight: 600;">${ticketId}</td>
+              <td style="padding: 8px 12px; border: 1px solid #e2e8f0; background-color: #f8fafc; color: #64748b; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">Complaint ID</td>
+              <td style="padding: 8px 12px; border: 1px solid #e2e8f0; color: #0f172a; font-size: 13px; font-weight: 600;">${displayTicketId}</td>
             </tr>
             <tr>
               <td style="padding: 8px 12px; border: 1px solid #e2e8f0; background-color: #f8fafc; color: #64748b; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">Category</td>
@@ -104,7 +106,7 @@ export async function POST(request: Request) {
     await transporter.sendMail({
       from: `"JIRS Facilities Management" <${process.env.EMAIL_USER}>`,
       to: technicianEmail,
-      subject: `New Maintenance Ticket Assigned — ${ticketId}`,
+      subject: `New Maintenance Ticket Assigned — ${displayTicketId}`,
       html,
       attachments: [
         {
@@ -119,7 +121,7 @@ export async function POST(request: Request) {
       technicianName,
       technicianEmail,
       technicianPhone,
-      ticketId,
+      ticketId: displayTicketId,
       category,
       location,
       priority,
@@ -146,7 +148,7 @@ async function sendWhatsAppTicketNotification(params: {
   technicianName: string;
   technicianEmail: string;
   technicianPhone: string;
-  ticketId: string;
+  ticketId: string | number;
   category: string;
   location: string;
   priority: string;

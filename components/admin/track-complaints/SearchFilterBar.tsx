@@ -17,7 +17,7 @@ export default function SearchFilterBar({
         <Icon name="search" className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#908fa0]" />
         <input
           type="text"
-          placeholder="Search by ticket ID or technician name..."
+          placeholder="Search by complaint ID or technician name..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full pl-12 pr-4 py-3 rounded-xl border border-slate-200 dark:border-[#464554]/20 bg-slate-50 dark:bg-[#131b2e] text-slate-800 dark:text-[#dae2fd] text-xs font-semibold outline-none focus:border-primary dark:focus:border-[#8083ff]"

@@ -60,6 +60,7 @@ export function useComplaintDetail(complaintId: string) {
 
         const fetchedComplaint: Complaint = {
           id: complaintSnap.id,
+          ticketNumber: data.ticketNumber,
           category: data.category || "General",
           location: data.location || "N/A",
           priority: data.priority || "Medium",

@@ -7,6 +7,7 @@ import Icon from "@/components/ui/Icon";
 import { auth, db } from "@/lib/firebase";
 import { addDoc, collection, Bytes, serverTimestamp } from "firebase/firestore";
 import { showToast } from "@/lib/toast";
+import { getNextTicketNumber } from "@/utils/ticketNumber";
 
 export default function AddComplaint({
   params,
@@ -128,8 +129,11 @@ export default function AddComplaint({
           ]
         : [];
 
+      const ticketNumber = await getNextTicketNumber();
+
       await addDoc(collection(db, "complaints"), {
         userId: user.uid,
+        ticketNumber,
         category,
         location,
         priority,

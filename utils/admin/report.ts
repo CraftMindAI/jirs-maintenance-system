@@ -98,7 +98,7 @@ export function buildReportData(
     if (!c.technicianName) return;
     const isResolved = RESOLVED_STATUSES.includes(c.status);
     const isActive = ACTIVE_STATUSES.includes(c.status);
-    const activeLabel = isActive ? `${c.id} - ${c.status}` : null;
+    const activeLabel = isActive ? `${c.ticketNumber ?? c.id} - ${c.status}` : null;
 
     if (c.technicianId) {
       const entry = statsById.get(c.technicianId) || { count: 0, resolved: 0, active: null };
@@ -140,7 +140,7 @@ export function buildReportData(
     .sort((a, b) => b.totalTickets - a.totalTickets);
 
   const complaintRows = complaints.map((c) => ({
-    ticketId: c.id,
+    ticketNumber: c.ticketNumber ?? "-",
     category: c.category || "-",
     priority: c.priority || "-",
     description: c.description || "-",
@@ -199,9 +199,9 @@ export async function exportReportPdf(
 
   autoTable(pdf, {
     startY: cursorY + 4,
-    head: [["Ticket ID", "Category", "Priority", "Description", "Posted By", "Assigned Technician", "Status"]],
+    head: [["Complaint ID", "Category", "Priority", "Description", "Posted By", "Assigned Technician", "Status"]],
     body: reportData.complaintRows.map((r) => [
-      r.ticketId,
+      r.ticketNumber,
       r.category,
       r.priority,
       r.description,

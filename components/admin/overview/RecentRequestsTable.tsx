@@ -4,6 +4,7 @@ import StatusBadge from "@/components/ui/StatusBadge";
 
 export type RecentRequest = {
   id: string;
+  ticketNumber?: number;
   title: string;
   date: string;
   technicianName?: string;
@@ -80,7 +81,7 @@ export default function RecentRequestsTable({
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-slate-50 dark:bg-[#131b2e]/50">
-                <th className="px-8 py-4 font-mono text-slate-500 dark:text-[#908fa0] uppercase tracking-[0.15em] text-[11px]">Request ID</th>
+                <th className="px-8 py-4 font-mono text-slate-500 dark:text-[#908fa0] uppercase tracking-[0.15em] text-[11px]">Complaint ID</th>
                 <th className="px-8 py-4 font-mono text-slate-500 dark:text-[#908fa0] uppercase tracking-[0.15em] text-[11px]">Complaint Details</th>
                 <th className="px-8 py-4 font-mono text-slate-500 dark:text-[#908fa0] uppercase tracking-[0.15em] text-[11px]">Technician</th>
                 <th className="px-8 py-4 font-mono text-slate-500 dark:text-[#908fa0] uppercase tracking-[0.15em] text-[11px]">Status</th>
@@ -90,7 +91,7 @@ export default function RecentRequestsTable({
             <tbody className="divide-y divide-slate-100 dark:divide-[#464554]/10 font-medium text-sm">
               {requests.map((request) => (
                 <tr key={request.id} className="hover:bg-primary/5 dark:hover:bg-[#8083ff]/5 transition-all group">
-                  <td className="px-8 py-5 font-mono text-primary dark:text-[#c0c1ff] font-bold">#{request.id}</td>
+                  <td className="px-8 py-5 font-mono text-primary dark:text-[#c0c1ff] font-bold">#{request.ticketNumber ?? "-"}</td>
                   <td className="px-8 py-5">
                     <div className="font-bold text-slate-900 dark:text-[#dae2fd] group-hover:text-primary dark:group-hover:text-[#c0c1ff] transition-colors truncate max-w-xs">{request.title}</div>
                     <div className="text-xs text-slate-500 dark:text-[#908fa0] mt-1 flex items-center gap-1.5">

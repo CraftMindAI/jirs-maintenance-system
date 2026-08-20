@@ -9,6 +9,7 @@ import { collection, onSnapshot, doc, getDoc } from "firebase/firestore";
 
 export type Complaint = {
   id: string;
+  ticketNumber?: number;
   category: string;
   location: string;
   priority: "High" | "Medium" | "Low";
@@ -192,7 +193,7 @@ export default function TechnicianDashboardHome({
                   <table className="w-full text-left border-collapse">
                     <thead>
                       <tr className="border-b border-slate-100 dark:border-slate-800 text-xs font-black uppercase text-slate-400 bg-slate-50/50 dark:bg-slate-900/50">
-                        <th className="py-4 px-6">SI.NO</th>
+                        <th className="py-4 px-6">Complaint Number</th>
                         <th className="py-4 px-6">Type</th>
                         <th className="py-4 px-6">Priority</th>
                         <th className="py-4 px-6">Status</th>
@@ -201,13 +202,13 @@ export default function TechnicianDashboardHome({
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800 font-semibold text-sm">
-                      {complaints.slice(0, 3).map((item, index) => (
+                      {complaints.slice(0, 3).map((item) => (
                         <tr
                           key={item.id}
                           className="hover:bg-slate-50/40 dark:hover:bg-slate-800/30 transition-colors"
                         >
                           <td className="py-4 px-6 text-slate-800 dark:text-slate-100 font-bold">
-                            {index + 1}
+                            {item.ticketNumber ?? "-"}
                           </td>
                           <td className="py-4 px-6 text-slate-500 dark:text-slate-400">
                             {item.category}
@@ -257,11 +258,11 @@ export default function TechnicianDashboardHome({
 
                 {/* Mobile Card List View */}
                 <div className="md:hidden divide-y divide-slate-100 dark:divide-slate-800">
-                  {complaints.slice(0, 3).map((item, index) => (
+                  {complaints.slice(0, 3).map((item) => (
                     <div key={item.id} className="p-5 space-y-4">
                       <div className="flex justify-between items-center">
                         <span className="text-sm font-bold text-slate-800 dark:text-slate-100">
-                          #{index + 1}
+                          #{item.ticketNumber ?? "-"}
                         </span>
                         <span
                           className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${item.status === "Pending"

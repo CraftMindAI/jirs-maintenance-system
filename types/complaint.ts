@@ -1,6 +1,7 @@
 export type Complaint = {
   imageUrls?: any;
   id: string;
+  ticketNumber?: number;
   category: string;
   location: string;
   priority: "High" | "Medium" | "Low";

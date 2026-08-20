@@ -62,7 +62,7 @@ export default function FiltersToolbar({
         <Icon name="search" className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#908fa0]" />
         <input
           type="text"
-          placeholder="Search by ticket ID, category, location, or issue description..."
+          placeholder="Search by complaint ID, category, location, or issue description..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 dark:border-[#464554]/20 bg-slate-50 dark:bg-[#131b2e] text-slate-800 dark:text-[#dae2fd] text-xs font-semibold outline-none focus:border-primary dark:focus:border-[#8083ff] transition-all"

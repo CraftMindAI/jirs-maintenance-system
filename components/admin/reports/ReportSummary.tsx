@@ -1,7 +1,7 @@
 import Icon from "@/components/ui/Icon";
 
 export type ComplaintRow = {
-  ticketId: string;
+  ticketNumber: number | string;
   category: string;
   priority: string;
   description: string;

@@ -7,6 +7,7 @@ import Dropdown from "@/components/ui/Dropdown";
 import { Complaint } from "@/types/complaint";
 import { auth, db } from "@/lib/firebase";
 import { addDoc, collection, doc, updateDoc, Bytes, serverTimestamp } from "firebase/firestore";
+import { getNextTicketNumber } from "@/utils/ticketNumber";
 
 const MAX_IMAGES = 2;
 
@@ -204,8 +205,11 @@ export default function ComplaintForm({
         return;
       }
 
+      const ticketNumber = await getNextTicketNumber();
+
       await addDoc(collection(db, "complaints"), {
         userId: user.uid,
+        ticketNumber,
         category,
         location,
         priority,

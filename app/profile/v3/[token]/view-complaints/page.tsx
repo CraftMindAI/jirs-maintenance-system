@@ -117,6 +117,7 @@ function ViewComplaintsContent({ params }: { params: Promise<{ token: string }> 
           technicianEmail: selectedTechObj.email,
           technicianPhone: selectedTechObj.phone || "",
           ticketId: assigningTicketId,
+          ticketNumber: ticket.ticketNumber,
           category: ticket.category,
           location: ticket.location,
           priority: ticket.priority,
@@ -209,6 +210,7 @@ function ViewComplaintsContent({ params }: { params: Promise<{ token: string }> 
       {assigningTicketId && (
         <AssignTechnicianModal
           ticketId={assigningTicketId}
+          ticketNumber={assigningComplaint?.ticketNumber}
           isReassign={assigningComplaint?.status === "Assigned"}
           technicians={technicians}
           selectedTechnicianId={selectedTechnicianId}
