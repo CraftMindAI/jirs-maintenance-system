@@ -106,7 +106,7 @@ export async function POST(request: Request) {
     await transporter.sendMail({
       from: `"JIRS Facilities Management" <${process.env.EMAIL_USER}>`,
       to: technicianEmail,
-      subject: `New Maintenance Ticket Assigned — ${displayTicketId}`,
+      subject: `New Maintenance Complaint Assigned — ${displayTicketId}`,
       html,
       attachments: [
         {
