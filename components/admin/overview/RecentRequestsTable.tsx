@@ -4,7 +4,7 @@ import StatusBadge from "@/components/ui/StatusBadge";
 
 export type RecentRequest = {
   id: string;
-  ticketNumber?: number;
+  ticketNumber?: string;
   title: string;
   date: string;
   technicianName?: string;

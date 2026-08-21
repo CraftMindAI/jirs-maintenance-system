@@ -9,7 +9,7 @@ import { collection, onSnapshot, doc, getDoc } from "firebase/firestore";
 
 export type Complaint = {
   id: string;
-  ticketNumber?: number;
+  ticketNumber?: string;
   category: string;
   location: string;
   priority: "High" | "Medium" | "Low";

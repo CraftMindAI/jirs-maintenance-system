@@ -13,6 +13,7 @@ const MAX_IMAGES = 2;
 
 const CATEGORY_OPTIONS = [
   { value: "Electrical", label: "Electrical" },
+    { value: "Solar", label: "Solar" },
   { value: "Plumbing", label: "Plumbing" },
   { value: "Civil", label: "Civil" },
   { value: "Carpentry", label: "Carpentry" },

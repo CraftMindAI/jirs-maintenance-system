@@ -46,7 +46,7 @@ export default function MyComplaints({
   const [edDescription, setEdDescription] = useState("");
   const [edSaving, setEdSaving] = useState(false);
   const [edError, setEdError] = useState<string | null>(null);
-  const [edSerial, setEdSerial] = useState<number | undefined>(undefined);
+  const [edSerial, setEdSerial] = useState<string | undefined>(undefined);
 
   // Edit modal: image attachment state
   const [edImageFile, setEdImageFile] = useState<File | null>(null);
@@ -74,7 +74,7 @@ export default function MyComplaints({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [edExistingImages]);
 
-  const openEdit = (item: Complaint, serial?: number) => {
+  const openEdit = (item: Complaint, serial?: string) => {
     setEditingComplaint(item);
     setEdSerial(serial);
     setEdCategory(item.category);

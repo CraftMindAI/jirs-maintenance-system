@@ -234,6 +234,7 @@ export default function AddComplaint({
               >
                 <option value="" disabled className="bg-white dark:bg-slate-900 text-slate-400">Choose category</option>
                 <option value="Electrical" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">Electrical</option>
+                 <option value="Solar" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">Solar</option>
                 <option value="Plumbing" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">Plumbing</option>
                 <option value="Civil" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">Civil</option>
                 <option value="Carpentry" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">Carpentry</option>

@@ -13,7 +13,7 @@ export default function AssignTechnicianModal({
   onConfirm,
 }: {
   ticketId: string;
-  ticketNumber?: number;
+  ticketNumber?: string;
   isReassign?: boolean;
   technicians: TechnicianOption[];
   selectedTechnicianId: string;

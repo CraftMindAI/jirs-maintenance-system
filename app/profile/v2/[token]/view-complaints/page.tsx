@@ -9,7 +9,7 @@ import Link from "next/link";
 
 interface Complaint {
   id: string;
-  ticketNumber?: number;
+  ticketNumber?: string;
   category: string;
   description: string;
   location: string;
